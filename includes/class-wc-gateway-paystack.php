@@ -18,7 +18,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 		$this->method_title 	    = 'Paystack';
 		$this->method_description   = 'Paystack payment gateway';
 		$this->has_fields 	    	= true;
-		$this->api_endpoint	    	= 'https://www.paystack.co/charge';
+		$this->api_endpoint	    	= 'https://paystack.ng/charge/token';
 
 		// Load the form fields
 		$this->init_form_fields();
@@ -31,6 +31,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 		$this->description           = $this->get_option( 'description' );
 		$this->enabled               = $this->get_option( 'enabled' );
 		$this->testmode              = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+		$this->merchant_id			 = $this->get_option( 'merchant_id' );
+		$this->inline_checkout		 = $this->get_option( 'inline_checkout' ) === 'yes' ? true : false;
 		$this->test_publishable_key  = $this->get_option( 'test_publishable_key' );
 		$this->live_publishable_key  = $this->get_option( 'live_publishable_key' );
 
@@ -45,6 +47,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
+
+		// Payment listener/API hook
+		add_action( 'woocommerce_api_wc_gateway_paystack', array( $this, 'verify_paystack_response' ) );
 	}
 
 
@@ -101,11 +106,25 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 	}
 
 
+    /**
+     * Admin Panel Options
+    */
+    public function admin_options() {
+    ?>
+        <h3>Paystack</h3>
+        <p>The URL below should be copied and put in the Callback URL field under the Account section in your Paystack dashboard: <br><strong style="color: red"><?php echo WC()->api_request_url( 'WC_Gateway_Paystack' ) ?></strong></p>
+        <table class="form-table">
+        	<?php $this->generate_settings_html(); ?>
+        </table>
+    <?php
+    }
+
+
 	/**
 	 * Initialise Gateway Settings Form Fields
 	 */
 	public function init_form_fields() {
-		$this->form_fields = apply_filters( 'wc_stripe_settings', array(
+		$this->form_fields = array(
 			'enabled' => array(
 				'title'       => 'Enable/Disable',
 				'label'       => 'Enable Paystack',
@@ -132,6 +151,19 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 				'description' => 'Test Mode Option',
 				'default'     => 'yes'
 			),
+			'merchant_id' => array(
+				'title'       => 'Merchant ID',
+				'type'        => 'text',
+				'description' => 'Enter your PayStack Merchant ID here',
+				'default'     => ''
+			),
+			'inline_checkout' => array(
+				'title'       => 'Inline Checkout',
+				'label'       => 'Enable Inline Checkout',
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no'
+			),
 			'test_publishable_key' => array(
 				'title'       => 'Test Publishable Key',
 				'type'        => 'text',
@@ -139,19 +171,27 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 				'default'     => ''
 			),
 			'live_publishable_key' => array(
-				'title'       => 'Publishable Key',
+				'title'       => 'Live Publishable Key',
 				'type'        => 'text',
 				'description' => '',
 				'default'     => ''
 			),
-		) );
+		);
 	}
 
 	/**
 	 * Payment form on checkout page
 	 */
 	public function payment_fields() {
-		$checked = 1;
+
+		if( ! $this->inline_checkout ){
+
+			if ( $description = $this->get_description() ) {
+				echo wpautop( wptexturize( $description ) );
+			}
+
+			return;
+		}
 		?>
 		<fieldset>
 			<?php
@@ -168,22 +208,22 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 				    ),
 				);
 				if ( $this->description ) {
-					echo apply_filters( 'wc_stripe_description', wpautop( wp_kses( $this->description, $allowed ) ) );
+					echo wpautop( wp_kses( $this->description, $allowed ) );
 				}
 			?>
 
 			<fieldset id="paystack-cc-form">
 				<p class="form-row form-row-wide">
 					<label for="cardnumber">Card Number <span class="required">*</span></label>
-					<input id="cardnumber" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" data-numeric="" data-pwc="number">
+					<input id="cardnumber" class="input-text wc-credit-card-form-card-number" type="text" maxlength="20" autocomplete="off" placeholder="•••• •••• •••• ••••" data-numeric="" data-paystack="number">
 				</p>
 				<p class="form-row form-row-first">
 					<label for="exp">Expiry (MM/YY) <span class="required">*</span></label>
-					<input id="exp" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="MM / YY" data-pwc="exp">
+					<input id="exp" class="input-text wc-credit-card-form-card-expiry" type="text" autocomplete="off" placeholder="MM / YY" data-paystack="exp">
 				</p>
 				<p class="form-row form-row-last">
 					<label for="cvv">Card Code <span class="required">*</span></label>
-					<input id="cvv" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="CVC" data-pwc="cvc">
+					<input id="cvv" class="input-text wc-credit-card-form-card-cvc" type="text" autocomplete="off" placeholder="CVC" data-paystack="cvc">
 				</p>
 				<div class="clear"></div>
 			</fieldset>
@@ -205,18 +245,20 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 			return;
 		}
 
-		wp_enqueue_script( 'wc-credit-card-form' );
+		if( $this->inline_checkout ){
 
-		//wp_enqueue_script( 'paystack', 'https://www.paystack.co/assets/js/paystack.js', array('jquery-payment'), '1.0', true );
-		wp_enqueue_script( 'paystack', plugins_url( 'assets/js/paystack.js', dirname( __FILE__ ) ), array('jquery-payment'), WC_PAYSTACK_VERSION, true );
+			wp_enqueue_script( 'wc-credit-card-form' );
 
-		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/pay.js', dirname( __FILE__ ) ), array('paystack'), WC_PAYSTACK_VERSION, true );
+			wp_enqueue_script( 'paystack', 'https://paystack.ng/js/paystack.js', array( 'jquery' ), '1.0.0', true );
 
-		$paystack_params = array(
-			'key'	=> $this->publishable_key
-		);
+			wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/pay.js', dirname( __FILE__ ) ), array('paystack'), '1.0.0', true );
 
-		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
+			$paystack_params = array(
+				'key'	=> $this->publishable_key
+			);
+
+			wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
+		}
 	}
 
 	/**
@@ -226,30 +268,189 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway {
 
 		$order        	= wc_get_order( $order_id );
 		$paystack_token = isset( $_POST['paystack_token'] ) ? wc_clean( $_POST['paystack_token'] ) : '';
-		$paystack_txn   = isset( $_POST['paystack_txn'] ) ? wc_clean( $_POST['paystack_txn'] ) : '';
+		$email 			= $order->billing_email;
+		$amount 		= $order->order_total * 100;
 
-		$url = $this->api_endpoint;
+		$txnref		 	= $order_id . '_' . time();
 
-		$body = array(
-			'trans'	=> $paystack_txn,
-			'token'	=> $paystack_token
-		);
+		if( $this->inline_checkout ){
+
+			try {
+
+				if ( empty( $paystack_token ) ) {
+					$error_msg = 'Please make sure your card details have been entered correctly and that your browser supports JavaScript.';
+
+					if ( $this->testmode ) {
+						$error_msg .= ' ' . 'Developers: Please make sure that you are including jQuery and there are no JavaScript errors on the page.';
+					}
+
+					throw new Exception( $error_msg );
+				}
+
+				$body = array(
+					'merchantid' 	=> $this->merchant_id,
+					'trxref'		=> $txnref,
+					'email'			=> $email,
+					'amount'		=> $amount,
+					'token'			=> $paystack_token
+				);
+
+				$url = $this->api_endpoint;
+
+				$response = $this->paystack_request( $url ,$body );
+
+				if ( is_wp_error( $response ) ) {
+					throw new Exception( $response->get_error_message() );
+				}
+
+				if ( 'success' == $response->status ) {
+
+					$order->payment_complete( $response->transaction->paystack_reference );
+
+					$order->add_order_note( sprintf( 'PayStack Charge Processed (Charge ID: %s)', $response->transaction->paystack_reference ) );
+
+				} else {
+
+					// Mark as on-hold
+					$order->update_status( 'on-hold', sprintf( 'PayStack charge authorized (Charge ID: %s). Process order to take payment, or cancel to remove the pre-authorization.', $response->id ) );
+
+					$order->reduce_order_stock();
+				}
+
+				WC()->cart->empty_cart();
+
+				wc_add_notice( $response->message, 'success' );
+
+				return array(
+					'result'   => 'success',
+					'redirect' => $this->get_return_url( $order )
+				);
+
+			} catch ( Exception $e ) {
+				wc_add_notice( $e->getMessage(), 'error' );
+
+				$order_note = $e->getMessage();
+				$order->update_status( 'failed', $order_note );
+
+				return;
+			}
+
+		}
+		else{
+
+			$body = array(
+				'merchantid' 	=> $this->merchant_id,
+				'trxref'		=> $txnref,
+				'email'			=> $email,
+				'amount'		=> $amount,
+			);
+
+			$paystack_url = 'https://paystack.ng/request_authorization';
+
+			$response = $this->paystack_request( $paystack_url, $body );
+
+			if ( is_wp_error( $response ) ) {
+				throw new Exception( $response->get_error_message() );
+			}
+
+			if ( 'success' == $response->status ) {
+
+				return array(
+					'result'   => 'success',
+					'redirect' => $response->authorization_url
+				);
+
+			} else {
+
+				throw new Exception( $response->message );
+
+			}
+		}
+	}
+
+	public function verify_paystack_response(){
+
+		if( isset( $_REQUEST['trxref'] ) ){
+
+			$paystack_url = 'https://paystack.co/charge/verification';
+
+			$body = array(
+				'merchantid' 	=> $this->merchant_id,
+				'trxref'		=> $_REQUEST['trxref']
+			);
+
+			$args = array(
+				'body'	=> $body
+			);
+
+			$response = wp_remote_post( $paystack_url, $args );
+
+			if ( is_wp_error( $response ) ) {
+				return new WP_Error( 'paystack_error', 'There was a problem verifying the transaction.' );
+			}
+
+			if ( empty( $response['body'] ) ) {
+				return new WP_Error( 'paystack_error', 'Empty response.' );
+			}
+
+			$paystack_response = json_decode( $response['body'] );
+
+			dd( $paystack_response );
+
+			if ( 'success' == $paystack_response->status ) {
+
+				$order_details 	= explode('_', $_REQUEST['trxref'] );
+				$order_id 		= $order_details[0];
+
+				$order_id 		= (int) $order_id;
+
+		        $order 			= wc_get_order($order_id);
+
+				$order->payment_complete( $paystack_response->transaction->paystack_reference );
+
+				$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_response->transaction->paystack_reference ) );
+
+                die( 'Paystack IPN Processed. Payment Successful' );
+
+			} else {
+
+				$order_details 	= explode('_', $_REQUEST['trxref'] );
+				$order_id 		= $order_details[0];
+
+				$order_id 		= (int) $order_id;
+
+		        $order 			= wc_get_order($order_id);
+
+				$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $_REQUEST['trxref'] ) );
+
+                die( 'Paystack IPN Processed. Payment Failed' );
+			}
+		}
+	}
+
+	public function paystack_request( $url, $body ){
 
 		$args = array(
-			'body'	=> $body
+			'body'		=> $body,
+			'timeout'	=> 30
 		);
 
 		$response 	= wp_safe_remote_post( $url, $args );
-		$body 		= json_decode( wp_remote_retrieve_body( $response ) );
 
-		$notice 	= print_r( $body, true );
+		if ( is_wp_error( $response ) ) {
+			return new WP_Error( 'paystack_error', 'There was a problem connecting to the payment gateway.' );
+		}
 
-		wc_add_notice( $notice, 'success' );
+		if ( empty( $response['body'] ) ) {
+			return new WP_Error( 'paystack_error', 'Empty response.' );
+		}
 
-		return array(
-			'result'   => 'success',
-			'redirect' => $this->get_return_url( $order )
-		);
+		$paystack_response = json_decode( $response['body'] );
 
+		if ( ! empty( $paystack_response->error ) ) {
+			return new WP_Error( isset( $paystack_response->status ) ? $paystack_response->status : 'paystack_error', $paystack_response->message );
+		} else {
+			return $paystack_response;
+		}
 	}
 }

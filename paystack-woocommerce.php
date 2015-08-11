@@ -41,10 +41,6 @@ class WC_Paystack {
 		}
 		// Includes
 		include_once( 'includes/class-wc-gateway-paystack.php' );
-
-		if ( class_exists( 'WC_Subscriptions_Order' ) ) {
-			//include_once( 'includes/class-wc-gateway-paystack-subscription.php' );
-		}
 	}
 
 	/**
@@ -53,12 +49,6 @@ class WC_Paystack {
 	public function register_gateway( $methods ) {
 
 		$methods[] = 'WC_Gateway_Paystack';
-
-		if ( class_exists( 'WC_Subscriptions_Order' ) ) {
-			//$methods[] = 'WC_Gateway_Paystack_Subscription';
-		} else {
-			//$methods[] = 'WC_Gateway_Paystack';
-		}
 
 		return $methods;
 	}

@@ -1,5 +1,3 @@
-Pwc.setPublishableKey( wc_paystack_params.key );
-
 jQuery( function() {
 
     /* Checkout Form */
@@ -21,6 +19,7 @@ jQuery( function() {
 
 
 function payStackFormHandler() {
+
     if ( jQuery('#payment_method_paystack').is(':checked') ) {
 
         if ( jQuery( 'input.paystack_token' ).size() == 0 ) {
@@ -35,7 +34,14 @@ function payStackFormHandler() {
                 }
             });
 
-            Pwc.createToken( $form,  payStackResponseHandler );
+            var args = {
+                paymentForm: $form,
+                publishableKey: wc_paystack_params.key
+            };
+
+            console.log( args );
+
+            Paystack.createToken( args, payStackResponseHandler );
 
             return false;
         }
@@ -49,9 +55,12 @@ function payStackResponseHandler( status, response ){
 
     var $form   = jQuery("form.checkout, form#order_review");
 
+    console.log( 'Status is ' + status );
+
     if ( response.error ) {
-        console.log( status );
         console.log( response );
+
+        console.log( response.error.message );
 
         // show the errors on the form
         jQuery('.woocommerce_error, .woocommerce-error, .woocommerce-message, .woocommerce_message, .paystack_token').remove();
@@ -59,16 +68,13 @@ function payStackResponseHandler( status, response ){
         $form.unblock();
     }
     else{
-        console.log( status );
         console.log( response );
 
         // response contains id and card, which contains additional card details
         var token = response.token;
-        var trans = 306;
 
         // insert the token into the form so it gets submitted to the server
         $form.append("<input type='hidden' class='paystack_token' name='paystack_token' value='" + token + "'/>");
-        $form.append("<input type='hidden' class='paystack_txn' name='paystack_txn' value='" + trans + "'/>");
         $form.submit();
     }
 }
