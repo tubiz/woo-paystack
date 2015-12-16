@@ -42,35 +42,25 @@ function tbz_wc_paystack_init() {
 			$this->enabled               = $this->get_option( 'enabled' );
 			$this->testmode              = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 			$this->merchant_id			 = $this->get_option( 'merchant_id' );
-			$this->inline_checkout		 = $this->get_option( 'inline_checkout' ) === 'yes' ? true : false;
 			$this->test_publishable_key  = $this->get_option( 'test_publishable_key' );
 			$this->live_publishable_key  = $this->get_option( 'live_publishable_key' );
 
 			$this->publishable_key       = $this->testmode ? $this->test_publishable_key : $this->live_publishable_key;
-
-			if ( $this->testmode ) {
-				$this->description .= '<br/>TEST MODE ENABLED. In test mode, you can use the card number 4123450131001381 with any CVC and a valid expiration date';
-				$this->description  = trim( $this->description );
-			}
 
 			// Hooks
 			add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
 			add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 			add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-
 			add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
 
 			// Payment listener/API hook
-			add_action( 'woocommerce_api_wc_gateway_paystack', array( $this, 'verify_paystack_response' ) );
+			add_action( 'woocommerce_api_tbz_wc_paystack_gateway', array( $this, 'verify_paystack_transaction' ) );
 		}
 
 
 		/**
-		 * get_icon function.
-		 *
-		 * @access public
-		 * @return string
+		 * display paystack payment icon
 		 */
 		public function get_icon() {
 			$icon  = '<img src="' . plugins_url( 'assets/images/cards.png' , __FILE__ ) . '" alt="cards" />';
@@ -80,39 +70,36 @@ function tbz_wc_paystack_init() {
 
 
 		/**
-		 * Check if SSL is enabled and notify the user
+		 * Check if paystack merchant details is filled
 		 */
 		public function admin_notices() {
+
 			if ( $this->enabled == 'no' ) {
 				return;
 			}
 
 			// Check required fields
-			if ( ! $this->publishable_key ) {
-				echo '<div class="error"><p>' . sprintf( 'Paystack error: Please enter your publishable key <a href="%s">here</a>', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paystack' ) ) . '</p></div>';
+			if ( ! ( $this->merchant_id && $this->publishable_key ) ) {
+				echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paystack' ) ) . '</p></div>';
 				return;
 			}
+
 		}
+
 
 		/**
 		 * Check if this gateway is enabled
 		 */
 		public function is_available() {
 
-			return true;
-
 			if ( $this->enabled == "yes" ) {
 
-				if ( ! is_ssl() && ! $this->testmode ) {
-					return false;
-				}
-
-				// Required fields check
-				if ( ! $this->publishable_key ) {
+				if ( ! ( $this->merchant_id && $this->publishable_key ) ) {
 					return false;
 				}
 				return true;
 			}
+
 			return false;
 		}
 
@@ -134,6 +121,7 @@ function tbz_wc_paystack_init() {
 		 * Initialise Gateway Settings Form Fields
 		 */
 		public function init_form_fields() {
+
 			$this->form_fields = array(
 				'enabled' => array(
 					'title'       => 'Enable/Disable',
@@ -161,6 +149,12 @@ function tbz_wc_paystack_init() {
 					'description' => 'Test Mode Option',
 					'default'     => 'yes'
 				),
+				'merchant_id' => array(
+					'title'       => 'Merchant ID',
+					'type'        => 'text',
+					'description' => 'Enter your PayStack Merchant ID here',
+					'default'     => ''
+				),
 				'test_publishable_key' => array(
 					'title'       => 'Test Publishable Key',
 					'type'        => 'text',
@@ -174,14 +168,12 @@ function tbz_wc_paystack_init() {
 					'default'     => ''
 				),
 			);
+
 		}
 
+
 		/**
-		 * payment_scripts function.
-		 *
 		 * Outputs scripts used for paystack payment
-		 *
-		 * @access public
 		 */
 		public function payment_scripts() {
 
@@ -203,7 +195,6 @@ function tbz_wc_paystack_init() {
 				$order_id  = absint( get_query_var( 'order-pay' ) );
 
 				$order        	= wc_get_order( $order_id );
-				$paystack_token = isset( $_POST['paystack_token'] ) ? wc_clean( $_POST['paystack_token'] ) : '';
 				$email 			= $order->billing_email;
 				$amount 		= $order->order_total * 100;
 
@@ -214,18 +205,22 @@ function tbz_wc_paystack_init() {
 					$paystack_params['amount']  = $amount;
 					$paystack_params['txnref']  = $txnref;
 				}
+
+				update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
+
 			}
 
 			wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
 
 		}
 
+
 		/**
 		 * Process the payment
 		 */
-		public function process_payment( $order_id, $retry = true ) {
+		public function process_payment( $order_id ) {
 
-			$order      = wc_get_order( $order_id );
+			$order = wc_get_order( $order_id );
 
 			return array(
 				'result'   => 'success',
@@ -234,106 +229,91 @@ function tbz_wc_paystack_init() {
 
 		}
 
+
+		/**
+		 * Displays the payment page
+		 */
 		public function receipt_page( $order_id ) {
+
 			$order = wc_get_order( $order_id );
 
-			echo '<p>' . __( 'Thank you for your order, please click the button below to pay with credit card using Paystack.', 'woocommerce' ) . '</p>';
+			echo '<p>Thank you for your order, please click the button below to pay with credit card using Paystack.</p>';
 
-			$args = array();
-			$button_args = array();
-			foreach ( $args as $key => $value ) {
-				$button_args[] = 'data-' . esc_attr( $key ) . '="' . esc_attr( $value ) . '"';
-			}
-
-			echo '<button class="button alt" id="paystack-payment-button">' . __( 'Pay Now', 'woocommerce' ) . '</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woocommerce' ) . '</a>
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
 				';
+
 		}
 
-		public function verify_paystack_response(){
 
-			if( isset( $_REQUEST['trxref'] ) ){
+		/**
+		 * Verify paystack payment
+		 */
+		public function verify_paystack_transaction() {
 
-				$paystack_url = 'https://paystack.co/charge/verification';
+			@ob_clean();
+
+			header( 'HTTP/1.1 200 OK' );
+
+			if( isset( $_REQUEST['paystack_txnref'] ) ){
+
+				$paystack_url = 'https://paystack.ng/charge/verification';
 
 				$body = array(
 					'merchantid' 	=> $this->merchant_id,
-					'trxref'		=> $_REQUEST['trxref']
+					'trxref'		=> $_REQUEST['paystack_txnref']
 				);
 
 				$args = array(
 					'body'	=> $body
 				);
 
-				$response = wp_remote_post( $paystack_url, $args );
+				$request = wp_remote_post( $paystack_url, $args );
 
-				if ( is_wp_error( $response ) ) {
-					return new WP_Error( 'paystack_error', 'There was a problem verifying the transaction.' );
-				}
+		        if( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
-				if ( empty( $response['body'] ) ) {
-					return new WP_Error( 'paystack_error', 'Empty response.' );
-				}
+	            	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
-				$paystack_response = json_decode( $response['body'] );
+					if ( 'success' == $paystack_response->status ) {
 
-				dd( $paystack_response );
+						$order_details 	= explode('_', $_REQUEST['paystack_txnref'] );
+						$order_id 		= $order_details[0];
 
-				if ( 'success' == $paystack_response->status ) {
+						$order_id 		= (int) $order_id;
 
-					$order_details 	= explode('_', $_REQUEST['trxref'] );
-					$order_id 		= $order_details[0];
+				        $order 			= wc_get_order($order_id);
 
-					$order_id 		= (int) $order_id;
+						$order->payment_complete( $paystack_response->transaction->paystack_reference );
 
-			        $order 			= wc_get_order($order_id);
+						$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_response->transaction->paystack_reference ) );
 
-					$order->payment_complete( $paystack_response->transaction->paystack_reference );
+						WC()->cart->empty_cart();
 
-					$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_response->transaction->paystack_reference ) );
+					}
+					else {
 
-	                die( 'Paystack IPN Processed. Payment Successful' );
+						$order_details 	= explode('_', $_REQUEST['paystack_txnref'] );
+						$order_id 		= $order_details[0];
 
-				} else {
+						$order_id 		= (int) $order_id;
 
-					$order_details 	= explode('_', $_REQUEST['trxref'] );
-					$order_id 		= $order_details[0];
+				        $order 			= wc_get_order($order_id);
 
-					$order_id 		= (int) $order_id;
+						$order->update_status( 'failed', 'Payment was declined by Paystack.' );
+					}
 
-			        $order 			= wc_get_order($order_id);
+		        }
 
-					$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $_REQUEST['trxref'] ) );
+				wp_redirect( $this->get_return_url( $order ) );
 
-	                die( 'Paystack IPN Processed. Payment Failed' );
-				}
+				exit;
 			}
+
+			wp_redirect( wc_get_page_permalink( 'cart' ) );
+
+			exit;
+
 		}
 
-		public function paystack_request( $url, $body ){
-
-			$args = array(
-				'body'		=> $body,
-				'timeout'	=> 30
-			);
-
-			$response 	= wp_safe_remote_post( $url, $args );
-
-			if ( is_wp_error( $response ) ) {
-				return new WP_Error( 'paystack_error', 'There was a problem connecting to the payment gateway.' );
-			}
-
-			if ( empty( $response['body'] ) ) {
-				return new WP_Error( 'paystack_error', 'Empty response.' );
-			}
-
-			$paystack_response = json_decode( $response['body'] );
-
-			if ( ! empty( $paystack_response->error ) ) {
-				return new WP_Error( isset( $paystack_response->status ) ? $paystack_response->status : 'paystack_error', $paystack_response->message );
-			} else {
-				return $paystack_response;
-			}
-		}
 	}
 
 	/**
