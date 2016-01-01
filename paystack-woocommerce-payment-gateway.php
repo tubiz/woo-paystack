@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name:	Paystack WooCommerce Payment Gateway
-	Plugin URI: 	https://paystack.co
+	Plugin URI: 	https://paystack.con
 	Description: 	WooCommerce payment gateway for Paystack
 	Version: 		1.0.0
 	Author: 		Tunbosun Ayinla
@@ -27,7 +27,7 @@ function tbz_wc_paystack_init() {
 		public function __construct() {
 			$this->id		   			= 'paystack';
 			$this->method_title 	    = 'Paystack';
-			$this->method_description   = 'Paystack payment gateway';
+			$this->method_description   = 'Make payment using your debit and credit cards';
 			$this->has_fields 	    	= true;
 
 			// Load the form fields
@@ -274,7 +274,7 @@ function tbz_wc_paystack_init() {
 
 	            	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
-					if ( 'success' == $paystack_response->status ) {
+					if ( '1' == $paystack_response->transaction->status ) {
 
 						$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
 						$order_id 		= $order_details[0];
@@ -283,11 +283,42 @@ function tbz_wc_paystack_init() {
 
 				        $order 			= wc_get_order($order_id);
 
-						$order->payment_complete( $paystack_response->transaction->paystack_reference );
+		        		$order_total	= $order->get_total();
 
-						$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_response->transaction->paystack_reference ) );
+		        		$amount_paid	= $paystack_response->transaction->amount / 100;
 
-						WC()->cart->empty_cart();
+		        		$paystack_ref 	= $paystack_response->transaction->paystack_reference;
+
+						// check if the amount paid is equal to the order amount.
+						if( $order_total !=  $amount_paid ) {
+
+							$order->update_status( 'on-hold', '' );
+
+							add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
+
+							$notice = 'Thank you for shopping with us.<br />Your payment transaction was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+							$notice_type = 'notice';
+
+							// Add Customer Order Note
+		                    $order->add_order_note( $notice, 1 );
+
+		                    // Add Admin Order Note
+		                    $order->add_order_note('<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>&#8358;'.$amount_paid.'</strong> while the total order amount is <strong>&#8358;'.$order_total.'</strong><br />Paystack Transaction Reference: '.$paystack_ref );
+
+							$order->reduce_order_stock();
+
+							wc_add_notice( $notice, $notice_type );
+
+							wc_empty_cart();
+						}
+						else{
+
+							$order->payment_complete( $paystack_ref );
+
+							$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
+
+							wc_empty_cart();
+						}
 
 					}
 					else {
