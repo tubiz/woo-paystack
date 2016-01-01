@@ -47,9 +47,7 @@ jQuery( function( $ ) {
             ref: wc_paystack_params.txnref,
             callback: paystack_callback,
             onClose: function() {
-                console.log( response );
-                console.log('Closed window');
-                //suppressed
+                $( this.el ).unblock();
             }
         });
         handler.openIframe();
