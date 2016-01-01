@@ -8,7 +8,7 @@ jQuery( function( $ ) {
     });
 
 
-    jQuery( 'form#order_review' ).submit( function() {
+    jQuery( '#paystack_form form#order_review' ).submit( function() {
         return payStackFormHandler();
     });
 
@@ -53,6 +53,7 @@ jQuery( function( $ ) {
         handler.openIframe();
 
         return false;
+
     }
 
 } );

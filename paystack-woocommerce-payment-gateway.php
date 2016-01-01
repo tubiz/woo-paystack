@@ -2,7 +2,7 @@
 /*
 	Plugin Name:	Paystack WooCommerce Payment Gateway
 	Plugin URI: 	https://paystack.co
-	Description: 	A payment gateway for paystack.co
+	Description: 	WooCommerce payment gateway for Paystack
 	Version: 		1.0.0
 	Author: 		Tunbosun Ayinla
 	Author URI: 	http://bosun.me
@@ -198,7 +198,7 @@ function tbz_wc_paystack_init() {
 				$email 			= $order->billing_email;
 				$amount 		= $order->order_total * 100;
 
-				$txnref		 	= $order_id . '_' . time();
+				$txnref		 	= $order_id . '_' . time() . $this->merchant_id;
 
 				if ( $order->id == $order_id && $order->order_key == $order_key ) {
 					$paystack_params['email'] 	= $email;
@@ -264,7 +264,8 @@ function tbz_wc_paystack_init() {
 				);
 
 				$args = array(
-					'body'	=> $body
+					'body'		=> $body,
+					'timeout'	=> 60
 				);
 
 				$request = wp_remote_post( $paystack_url, $args );
@@ -275,7 +276,7 @@ function tbz_wc_paystack_init() {
 
 					if ( 'success' == $paystack_response->status ) {
 
-						$order_details 	= explode('_', $_REQUEST['paystack_txnref'] );
+						$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
 						$order_id 		= $order_details[0];
 
 						$order_id 		= (int) $order_id;
@@ -296,7 +297,7 @@ function tbz_wc_paystack_init() {
 
 						$order_id 		= (int) $order_id;
 
-				        $order 			= wc_get_order($order_id);
+				        $order 			= wc_get_order( $order_id );
 
 						$order->update_status( 'failed', 'Payment was declined by Paystack.' );
 					}
