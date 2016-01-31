@@ -157,25 +157,25 @@ function tbz_wc_paystack_init() {
 				'test_secret_key' => array(
 					'title'       => 'Test Secret Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Test Secret Key here',
 					'default'     => ''
 				),
 				'test_public_key' => array(
 					'title'       => 'Test Public Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Test Public Key here.',
 					'default'     => ''
 				),
 				'live_secret_key' => array(
 					'title'       => 'Live Secret Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Live Secret Key here.',
 					'default'     => ''
 				),
 				'live_public_key' => array(
 					'title'       => 'Live Public Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Live Public Key here.',
 					'default'     => ''
 				),
 			);
