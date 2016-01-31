@@ -1,7 +1,7 @@
 <?php
 /*
 	Plugin Name:	Paystack WooCommerce Payment Gateway
-	Plugin URI: 	https://paystack.con
+	Plugin URI: 	https://paystack.com
 	Description: 	WooCommerce payment gateway for Paystack
 	Version: 		1.0.0
 	Author: 		Tunbosun Ayinla
@@ -37,15 +37,19 @@ function tbz_wc_paystack_init() {
 			$this->init_settings();
 
 			// Get setting values
-			$this->title                 = $this->get_option( 'title' );
-			$this->description           = $this->get_option( 'description' );
-			$this->enabled               = $this->get_option( 'enabled' );
-			$this->testmode              = $this->get_option( 'testmode' ) === 'yes' ? true : false;
-			$this->merchant_id			 = $this->get_option( 'merchant_id' );
-			$this->test_publishable_key  = $this->get_option( 'test_publishable_key' );
-			$this->live_publishable_key  = $this->get_option( 'live_publishable_key' );
+			$this->title                = $this->get_option( 'title' );
+			$this->description          = $this->get_option( 'description' );
+			$this->enabled            	= $this->get_option( 'enabled' );
+			$this->testmode             = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 
-			$this->publishable_key       = $this->testmode ? $this->test_publishable_key : $this->live_publishable_key;
+			$this->test_public_key  	= $this->get_option( 'test_public_key' );
+			$this->test_secret_key  	= $this->get_option( 'test_secret_key' );
+
+			$this->live_public_key  	= $this->get_option( 'live_public_key' );
+			$this->live_secret_key  	= $this->get_option( 'live_secret_key' );
+
+			$this->public_key      		= $this->testmode ? $this->test_public_key : $this->live_public_key;
+			$this->secret_key      		= $this->testmode ? $this->test_secret_key : $this->live_secret_key;
 
 			// Hooks
 			add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
@@ -79,7 +83,7 @@ function tbz_wc_paystack_init() {
 			}
 
 			// Check required fields
-			if ( ! ( $this->merchant_id && $this->publishable_key ) ) {
+			if ( ! ( $this->public_key && $this->secret_key ) ) {
 				echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paystack' ) ) . '</p></div>';
 				return;
 			}
@@ -94,7 +98,7 @@ function tbz_wc_paystack_init() {
 
 			if ( $this->enabled == "yes" ) {
 
-				if ( ! ( $this->merchant_id && $this->publishable_key ) ) {
+				if ( ! ( $this->public_key && $this->secret_key ) ) {
 					return false;
 				}
 				return true;
@@ -149,13 +153,25 @@ function tbz_wc_paystack_init() {
 					'description' => 'Test Mode Option',
 					'default'     => 'yes'
 				),
-				'test_publishable_key' => array(
+				'test_secret_key' => array(
+					'title'       => 'Test Secret Key',
+					'type'        => 'text',
+					'description' => '',
+					'default'     => ''
+				),
+				'test_public_key' => array(
 					'title'       => 'Test Public Key',
 					'type'        => 'text',
 					'description' => '',
 					'default'     => ''
 				),
-				'live_publishable_key' => array(
+				'live_secret_key' => array(
+					'title'       => 'Live Secret Key',
+					'type'        => 'text',
+					'description' => '',
+					'default'     => ''
+				),
+				'live_public_key' => array(
 					'title'       => 'Live Public Key',
 					'type'        => 'text',
 					'description' => '',
@@ -175,12 +191,14 @@ function tbz_wc_paystack_init() {
 				return;
 			}
 
-			wp_enqueue_script( 'paystack', 'https://paystack.ng/js/inline.js', array( 'jquery' ), '1.0.0', true );
+			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-			wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack.js', __FILE__ ), array('paystack'), '1.0.0', true );
+			wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), '1.0.0', true );
+
+			wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', __FILE__ ), array('paystack'), '1.0.0', true );
 
 			$paystack_params = array(
-				'key'	=> $this->publishable_key
+				'key'	=> $this->public_key
 			);
 
 			if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
@@ -192,7 +210,7 @@ function tbz_wc_paystack_init() {
 				$email 			= $order->billing_email;
 				$amount 		= $order->order_total * 100;
 
-				$txnref		 	= $order_id . '_' . time() . $this->merchant_id;
+				$txnref		 	= $order_id . '_' .time();
 
 				if ( $order->id == $order_id && $order->order_key == $order_key ) {
 					$paystack_params['email'] 	= $email;
@@ -250,38 +268,36 @@ function tbz_wc_paystack_init() {
 
 			if( isset( $_REQUEST['paystack_txnref'] ) ){
 
-				$paystack_url = 'https://paystack.ng/charge/verification';
+				$paystack_url = 'https://api.paystack.co/transaction/verify/' . $_REQUEST['paystack_txnref'];
 
-				$body = array(
-					'merchantid' 	=> $this->merchant_id,
-					'trxref'		=> $_REQUEST['paystack_txnref']
+				$headers = array(
+					'Authorization' => 'Bearer ' . $this->secret_key
 				);
 
 				$args = array(
-					'body'		=> $body,
+					'headers'	=> $headers,
 					'timeout'	=> 60
 				);
 
-				$request = wp_remote_post( $paystack_url, $args );
+				$request = wp_remote_get( $paystack_url, $args );
 
 		        if( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
 	            	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
-					if ( '1' == $paystack_response->transaction->status ) {
+					if ( 'success' == $paystack_response->data->status ) {
 
-						$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
-						$order_id 		= $order_details[0];
+						$order_details 	= explode( '_', $paystack_response->data->reference );
 
-						$order_id 		= (int) $order_id;
+						$order_id 		= (int) $order_details[0];
 
 				        $order 			= wc_get_order($order_id);
 
 		        		$order_total	= $order->get_total();
 
-		        		$amount_paid	= $paystack_response->transaction->amount / 100;
+		        		$amount_paid	= $paystack_response->data->amount / 100;
 
-		        		$paystack_ref 	= $paystack_response->transaction->paystack_reference;
+		        		$paystack_ref 	= $paystack_response->data->reference;
 
 						// check if the amount paid is equal to the order amount.
 						if( $order_total !=  $amount_paid ) {
@@ -317,10 +333,9 @@ function tbz_wc_paystack_init() {
 					}
 					else {
 
-						$order_details 	= explode('_', $_REQUEST['paystack_txnref'] );
-						$order_id 		= $order_details[0];
+						$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
 
-						$order_id 		= (int) $order_id;
+						$order_id 		= (int) $order_details[0];
 
 				        $order 			= wc_get_order( $order_id );
 
