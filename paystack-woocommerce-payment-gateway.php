@@ -67,7 +67,8 @@ function tbz_wc_paystack_init() {
 		 * display paystack payment icon
 		 */
 		public function get_icon() {
-			$icon  = '<img src="' . plugins_url( 'assets/images/cards.png' , __FILE__ ) . '" alt="cards" />';
+
+			$icon  = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/cards.png' , __FILE__ ) ) . '" alt="cards" />';
 
 			return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
 		}
