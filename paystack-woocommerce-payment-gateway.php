@@ -191,9 +191,11 @@ function tbz_wc_paystack_init() {
 				return;
 			}
 
+			$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
 			wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), '1.0.0', true );
 
-			wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack.js', __FILE__ ), array('paystack'), '1.0.0', true );
+			wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', __FILE__ ), array('paystack'), '1.0.0', true );
 
 			$paystack_params = array(
 				'key'	=> $this->public_key
@@ -208,7 +210,7 @@ function tbz_wc_paystack_init() {
 				$email 			= $order->billing_email;
 				$amount 		= $order->order_total * 100;
 
-				$txnref		 	= $order_id . '|' . time();
+				$txnref		 	= $order_id . '_' .time();
 
 				if ( $order->id == $order_id && $order->order_key == $order_key ) {
 					$paystack_params['email'] 	= $email;
@@ -285,7 +287,7 @@ function tbz_wc_paystack_init() {
 
 					if ( 'success' == $paystack_response->data->status ) {
 
-						$order_details 	= explode( '|', $paystack_response->data->reference );
+						$order_details 	= explode( '_', $paystack_response->data->reference );
 
 						$order_id 		= (int) $order_details[0];
 
@@ -331,7 +333,7 @@ function tbz_wc_paystack_init() {
 					}
 					else {
 
-						$order_details 	= explode( '|', $_REQUEST['paystack_txnref'] );
+						$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
 
 						$order_id 		= (int) $order_details[0];
 
