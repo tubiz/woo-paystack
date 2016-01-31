@@ -149,20 +149,14 @@ function tbz_wc_paystack_init() {
 					'description' => 'Test Mode Option',
 					'default'     => 'yes'
 				),
-				'merchant_id' => array(
-					'title'       => 'Merchant ID',
-					'type'        => 'text',
-					'description' => 'Enter your PayStack Merchant ID here',
-					'default'     => ''
-				),
 				'test_publishable_key' => array(
-					'title'       => 'Test Publishable Key',
+					'title'       => 'Test Public Key',
 					'type'        => 'text',
 					'description' => '',
 					'default'     => ''
 				),
 				'live_publishable_key' => array(
-					'title'       => 'Live Publishable Key',
+					'title'       => 'Live Public Key',
 					'type'        => 'text',
 					'description' => '',
 					'default'     => ''
