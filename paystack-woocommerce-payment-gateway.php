@@ -37,8 +37,7 @@ function tbz_wc_paystack_init() {
 			$this->init_settings();
 
 			// Get setting values
-			$this->title                = $this->get_option( 'title' );
-			$this->description          = $this->get_option( 'description' );
+			$this->title                = 'Debit/Credit Cards';
 			$this->enabled            	= $this->get_option( 'enabled' );
 			$this->testmode             = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 
@@ -67,7 +66,8 @@ function tbz_wc_paystack_init() {
 		 * display paystack payment icon
 		 */
 		public function get_icon() {
-			$icon  = '<img src="' . plugins_url( 'assets/images/cards.png' , __FILE__ ) . '" alt="cards" />';
+
+			$icon  = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-woocommerce.png' , __FILE__ ) ) . '" alt="cards" />';
 
 			return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
 		}
@@ -134,18 +134,6 @@ function tbz_wc_paystack_init() {
 					'description' => '',
 					'default'     => 'no'
 				),
-				'title' => array(
-					'title'       => 'Title',
-					'type'        => 'text',
-					'description' => 'This controls the title which the user sees during checkout.',
-					'default'     => ''
-				),
-				'description' => array(
-					'title'       => 'Description',
-					'type'        => 'textarea',
-					'description' => 'This controls the description which the user sees during checkout.',
-					'default'     => ''
-				),
 				'testmode' => array(
 					'title'       => 'Test mode',
 					'label'       => 'Enable Test Mode',
@@ -156,25 +144,25 @@ function tbz_wc_paystack_init() {
 				'test_secret_key' => array(
 					'title'       => 'Test Secret Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Test Secret Key here',
 					'default'     => ''
 				),
 				'test_public_key' => array(
 					'title'       => 'Test Public Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Test Public Key here.',
 					'default'     => ''
 				),
 				'live_secret_key' => array(
 					'title'       => 'Live Secret Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Live Secret Key here.',
 					'default'     => ''
 				),
 				'live_public_key' => array(
 					'title'       => 'Live Public Key',
 					'type'        => 'text',
-					'description' => '',
+					'description' => 'Enter your Live Public Key here.',
 					'default'     => ''
 				),
 			);
