@@ -1,7 +1,7 @@
 === Paystack WooCommerce Payment Gateway ===
 Contributors: tubiz
 Donate link: http://bosun.me/donate
-Tags: woocommerce, payment gateway, payment gateways, paystack, interswitch, verve cards, tubiz plugins, verve, nigeria, mastercard, visa card
+Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 Requires at least: 4.1
 Tested up to: 4.4
 Stable tag: 1.0.0
