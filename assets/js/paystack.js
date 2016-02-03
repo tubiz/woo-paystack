@@ -7,11 +7,9 @@ jQuery( function( $ ) {
         return payStackFormHandler();
     });
 
-
     jQuery( '#paystack_form form#order_review' ).submit( function() {
         return payStackFormHandler();
     });
-
 
     function payStackFormHandler() {
 

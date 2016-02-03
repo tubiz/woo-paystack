@@ -59,11 +59,34 @@ function tbz_wc_paystack_init() {
 
 			// Payment listener/API hook
 			add_action( 'woocommerce_api_tbz_wc_paystack_gateway', array( $this, 'verify_paystack_transaction' ) );
+
+			// Check if the gateway can be used
+			if ( ! $this->is_valid_for_use() ) {
+				$this->enabled = false;
+			}
 		}
 
 
 		/**
-		 * display paystack payment icon
+		 * Check if this gateway is enabled and available in the user's country.
+		 */
+		public function is_valid_for_use() {
+
+			if( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN' ) ) ) ) {
+
+				$this->msg = 'Paystack does not support your store currency.';
+
+				//$this->msg = 'Paystack doesn\'t support your store currency, set it to Nigerian Naira &#8358 <a href="' . get_bloginfo('wpurl') . '/wp-admin/admin.php?page=wc-settings&tab=general">here</a>';
+
+				return false;
+
+			}
+
+			return true;
+		}
+
+		/**
+		 * Display paystack payment icon
 		 */
 		public function get_icon() {
 
@@ -112,12 +135,20 @@ function tbz_wc_paystack_init() {
 	     * Admin Panel Options
 	    */
 	    public function admin_options() {
-	    ?>
-	        <h3>Paystack</h3>
-	        <table class="form-table">
-	        	<?php $this->generate_settings_html(); ?>
-	        </table>
-	    <?php
+
+            echo '<h3>Paystack</h3>';
+
+			if ( $this->is_valid_for_use() ){
+
+	            echo '<table class="form-table">';
+	            $this->generate_settings_html();
+	            echo '</table>';
+
+            }
+			else{	 ?>
+			<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
+
+			<?php }
 	    }
 
 
@@ -174,6 +205,10 @@ function tbz_wc_paystack_init() {
 		 * Outputs scripts used for paystack payment
 		 */
 		public function payment_scripts() {
+
+			if ( is_checkout() ) {
+				wp_enqueue_style( 'paystack', plugins_url( 'assets/css/paystack.css',  __FILE__ ) );
+			}
 
 			if ( ! is_checkout_pay_page() ) {
 				return;
@@ -237,16 +272,15 @@ function tbz_wc_paystack_init() {
 
 			$order = wc_get_order( $order_id );
 
-			echo '<p>Thank you for your order, please click the button below to pay with credit card using Paystack.</p>';
+			echo '<p>Thank you for your order, please click the button below to pay with debit/credit card using Paystack.</p>';
 
 			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
 				';
-
 		}
 
 
 		/**
-		 * Verify paystack payment
+		 * Verify Paystack payment
 		 */
 		public function verify_paystack_transaction() {
 
@@ -352,7 +386,6 @@ function tbz_wc_paystack_init() {
 		$methods[] = 'Tbz_WC_Paystack_Gateway';
 		return $methods;
 	}
-
 	add_filter( 'woocommerce_payment_gateways', 'tbz_wc_add_paystack_gateway' );
 
 }
