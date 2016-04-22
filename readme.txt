@@ -3,8 +3,8 @@ Contributors: tubiz
 Donate link: http://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 Requires at least: 4.1
-Tested up to: 4.4
-Stable tag: 1.0.0
+Tested up to: 4.5
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 1.1.0 =
+*   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
+
 = 1.0.0 =
 *   First release
 
@@ -108,8 +111,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-There is no need to upgrade just yet.
-
+= 1.1.0 =
+*   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
 
 
 

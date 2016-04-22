@@ -7,9 +7,9 @@
 
 **Requires at least:** 4.1
 
-**Tested up to:** 4.4
+**Tested up to:** 4.5
 
-**Stable tag:** 1.0.0
+**Stable tag:** 1.1.0
 
 **License:** GPLv2 or later
 
@@ -107,6 +107,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog ##
 
+### 1.1.0 ###
+*   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
+
 ### 1.0.0 ###
 *   First release
 
@@ -116,7 +119,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice ##
 
-There is no need to upgrade just yet.
+### 1.1.0 ###
+*   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
+
+
 
 
 
