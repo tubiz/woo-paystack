@@ -151,15 +151,17 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 				'title'       => 'Enable/Disable',
 				'label'       => 'Enable Paystack',
 				'type'        => 'checkbox',
-				'description' => '',
-				'default'     => 'no'
+				'description' => 'Enable Paystack as a payment option on the checkout page',
+				'default'     => 'no',
+				'desc_tip'    => true
 			),
 			'testmode' => array(
 				'title'       => 'Test mode',
 				'label'       => 'Enable Test Mode',
 				'type'        => 'checkbox',
-				'description' => 'Test Mode Option',
-				'default'     => 'yes'
+				'description' => 'Test mode enables you to test payments before going live. <br />Once the LIVE MODE is enabled on your Paystack account uncheck this.',
+				'default'     => 'yes',
+				'desc_tip'    => true
 			),
 			'test_secret_key' => array(
 				'title'       => 'Test Secret Key',

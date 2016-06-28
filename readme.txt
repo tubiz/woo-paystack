@@ -127,6 +127,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 3. Paystack payment field displayed directly on your site
 
+4. Manage saved cards from your account page
 
 
 == Other Notes ==
