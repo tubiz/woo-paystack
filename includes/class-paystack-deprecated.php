@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
+
 	/**
 	 * Constructor
 	 */
@@ -49,6 +50,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		if ( ! $this->is_valid_for_use() ) {
 			$this->enabled = false;
 		}
+
 	}
 
 
@@ -66,6 +68,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		}
 
 		return true;
+
 	}
 
 	/**
@@ -76,6 +79,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		$icon  = '<img src="' . WC_HTTPS::force_https_url( plugins_url( '../assets/images/paystack-woocommerce.png' , __FILE__ ) ) . '" alt="cards" />';
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
+
 	}
 
 
@@ -111,6 +115,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		}
 
 		return false;
+
 	}
 
 
@@ -132,6 +137,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
 
 		<?php }
+
     }
 
 
@@ -259,6 +265,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 		echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
 			';
+
 	}
 
 

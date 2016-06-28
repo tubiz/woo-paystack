@@ -6,6 +6,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
+
 	/**
 	 * Constructor
 	 */
@@ -37,7 +38,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		$this->live_public_key  	= $this->get_option( 'live_public_key' );
 		$this->live_secret_key  	= $this->get_option( 'live_secret_key' );
 
-		$this->saved_cards         	= $this->get_option( 'saved_cards' );
+		$this->saved_cards         	= $this->get_option( 'saved_cards' ) === 'yes' ? true : false;;
 
 		$this->public_key      		= $this->testmode ? $this->test_public_key : $this->live_public_key;
 		$this->secret_key      		= $this->testmode ? $this->test_secret_key : $this->live_secret_key;
@@ -56,6 +57,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		if ( ! $this->is_valid_for_use() ) {
 			$this->enabled = false;
 		}
+
 	}
 
 
@@ -73,6 +75,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		}
 
 		return true;
+
 	}
 
 	/**
@@ -83,6 +86,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		$icon  = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-woocommerce.png' , WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
+
 	}
 
 
@@ -118,6 +122,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		}
 
 		return false;
+
 	}
 
 
@@ -139,6 +144,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
 
 		<?php }
+
     }
 
 
@@ -190,7 +196,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Saved Cards',
 				'label'       => 'Enable Payment via Saved Cards',
 				'type'        => 'checkbox',
-				'description' => 'If enabled, users will be able to pay with a saved card during checkout. Card details are saved on Paystack servers, not on your store.<br>This will only be enabled if you have a valid SSL certificate installed',
+				'description' => 'If enabled, users will be able to pay with a saved card during checkout. Card details are saved on Paystack servers, not on your store.<br>Note that you need to have a valid SSL certificate installed.',
 				'default'     => 'no',
 				'desc_tip'    => true,
 			),
@@ -204,26 +210,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 
-		if( is_ssl() ){
+		if( ! is_ssl() ){
 			wp_enqueue_style( 'paystack', plugins_url( 'assets/css/paystack.css',  WC_PAYSTACK_MAIN_FILE ) );
 			return;
 		}
 
-		$user                 = wp_get_current_user();
-		$display_tokenization = $this->supports( 'tokenization' ) && is_checkout() && $this->saved_cards && $user->ID;
-
-		echo '<div>';
-
-		if ( $display_tokenization ) {
+		if ( $this->supports( 'tokenization' ) && is_checkout() && $this->saved_cards && is_user_logged_in() ) {
 
 			$this->tokenization_script();
-
 			$this->saved_payment_methods();
-
 			$this->save_payment_method_checkbox();
+
 		}
 
-		echo '</div>';
 	}
 
 
@@ -315,6 +314,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			);
 
 		}
+
 	}
 
 
@@ -418,6 +418,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	public function add_payment_method() {
 		wc_add_notice( 'You can only add a new card when placing an order.', 'error' );
 		return;
+
 	}
 
 
@@ -432,6 +433,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
 			';
+
 	}
 
 
