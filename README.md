@@ -134,14 +134,21 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Screenshots ##
 
-1. Paystack WooCommerce Payment Gateway Setting Page
-
-2. Paystack WooCommerce Payment Gateway on the checkout page
-
-3. Paystack payment field displayed directly on your site
-
-4. Manage saved cards from your account page
+###1. Paystack WooCommerce Payment Gateway Setting Page
+###
+![Screenshot 1](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-1.png)
 
 
+###2. Paystack WooCommerce Payment Gateway on the checkout page
+###
+![Screenshot 2](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-2.png)
 
-== Other Notes ==
+
+###3. Paystack payment field displayed directly on your site
+###
+![Screenshot 3](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-3.png)
+
+
+###4. Manage saved cards from your account page
+###
+![Screenshot 4](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-4.png)
