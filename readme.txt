@@ -2,9 +2,9 @@
 Contributors: tubiz
 Donate link: http://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
-Requires at least: 4.1
+Requires at least: 4.3
 Tested up to: 4.5
-Stable tag: 1.1.0
+Stable tag: 2.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 2.0.0 =
+* 	New: Saved cards - allow store customers to save their card details and pay again using the same card. Card details are saved on Paystack servers and not on your store.
+*	Fix: Change payment icon
+
 = 1.1.0 =
 *   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
 
@@ -111,11 +115,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 1.1.0 =
-*   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
-
-
-
+= 2.0.0 =
+*   Changed payment icon and add support for saving customer card details via an authorization code. This allows your customers to pay again using the same card without entering the card details.
 
 
 == Screenshots ==
