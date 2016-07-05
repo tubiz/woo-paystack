@@ -9,7 +9,7 @@
 
 **Tested up to:** 4.5
 
-**Stable tag:** 2.0.0
+**Stable tag:** 2.0.1
 
 **License:** GPLv2 or later
 
@@ -107,6 +107,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog ##
 
+### 2.0.1 ###
+*	Fix: Paystack payment option and settings not available if Paystack WooCommerce Payment Gateway version 2.0.0 is installed and WooCommerce version 2.5.5 and below is installed
+
 ### 2.0.0 ###
 * 	New: Saved cards - allow store customers to save their card details and pay again using the same card. Card details are saved on Paystack servers and not on your store.
 *	Fix: Change payment icon
@@ -123,8 +126,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice ##
 
-### 2.0.0 ###
-*   Changed payment icon and add support for saving customer card details. This allows your customers to pay again using the same card without entering the card details. Card details are saved on Paystack servers and not on your store.
+### 2.0.1 ###
+*  Important update. Fix Paystack payment option and settings not available if Paystack WooCommerce Payment Gateway version 2.0.0 is installed and WooCommerce version 2.5.5 and below is installed
 
 
 
