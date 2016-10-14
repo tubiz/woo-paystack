@@ -46,6 +46,8 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		// Payment listener/API hook
 		add_action( 'woocommerce_api_tbz_wc_paystack_gateway', array( $this, 'verify_paystack_transaction' ) );
 
+		add_action( 'woocommerce_api_tbz_wc_paystack_webhook', array( $this, 'process_webhooks' ) );
+
 		// Check if the gateway can be used
 		if ( ! $this->is_valid_for_use() ) {
 			$this->enabled = false;
@@ -124,7 +126,13 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
     */
     public function admin_options() {
 
-        echo '<h3>Paystack</h3>';
+    	?>
+
+    	<h3>Paystack</h3>
+
+        <h4>If you are having issues with cancelled transactions after successful payment by customers, kindly set the url below as the Webhook URL in your <a href="https://dashboard.paystack.co/#/settings/developer">Paystack account</a> <strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
+
+        <?php
 
 		if ( $this->is_valid_for_use() ){
 
@@ -307,6 +315,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 			        $order 			= wc_get_order($order_id);
 
+			        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+			        	wp_redirect( $this->get_return_url( $order ) );
+						exit;
+			        }
+
 	        		$order_total	= $order->get_total();
 
 	        		$amount_paid	= $paystack_response->data->amount / 100;
@@ -367,6 +380,82 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 		exit;
 
+	}
+
+
+	/**
+	 * Process Webhook
+	 */
+	public function process_webhooks() {
+
+		header( 'HTTP/1.1 200 OK' );
+
+		if ( ( strtoupper( $_SERVER['REQUEST_METHOD'] ) != 'POST' ) || ! array_key_exists( 'HTTP_X_PAYSTACK_SIGNATURE', $_SERVER ) ) {
+			exit;
+		}
+
+	    $json = file_get_contents( "php://input" );
+
+	    $event = json_decode( $json );
+
+	    if( 'charge.success' == $event->event ) {
+
+			$order_details 		= explode( '_', $event->data->reference );
+
+			$order_id 			= (int) $order_details[0];
+
+	        $order 				= wc_get_order($order_id);
+
+	        $paystack_txn_ref 	= get_post_meta( $order_id, '_paystack_txn_ref', true );
+
+	        if( $event->data->reference != $paystack_txn_ref ) {
+	        	exit;
+	        }
+
+	        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+	        	wp_redirect( $this->get_return_url( $order ) );
+				exit;
+	        }
+
+    		$order_total	= $order->get_total();
+
+    		$amount_paid	= $event->data->amount / 100;
+
+    		$paystack_ref 	= $event->data->reference;
+
+			// check if the amount paid is equal to the order amount.
+			if( $order_total !=  $amount_paid ) {
+
+				$order->update_status( 'on-hold', '' );
+
+				add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
+
+				$notice = 'Thank you for shopping with us.<br />Your payment transaction was successful, but the amount paid is not the same as the total order amount.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+				$notice_type = 'notice';
+
+				// Add Customer Order Note
+                $order->add_order_note( $notice, 1 );
+
+                // Add Admin Order Note
+                $order->add_order_note('<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>&#8358;'.$amount_paid.'</strong> while the total order amount is <strong>&#8358;'.$order_total.'</strong><br />Paystack Transaction Reference: '.$paystack_ref );
+
+				$order->reduce_order_stock();
+
+				wc_add_notice( $notice, $notice_type );
+
+				wc_empty_cart();
+			}
+			else{
+
+				$order->payment_complete( $paystack_ref );
+
+				$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
+
+				wc_empty_cart();
+			}
+
+			wp_redirect( $this->get_return_url( $order ) );
+	    }
 	}
 
 }

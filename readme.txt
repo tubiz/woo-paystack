@@ -2,9 +2,9 @@
 Contributors: tubiz
 Donate link: http://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
-Requires at least: 4.3
-Tested up to: 4.5
-Stable tag: 2.0.1
+Requires at least: 4.4
+Tested up to: 4.6
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -99,6 +99,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 2.1.0 =
+*	New: Add support for confirming payment using the webhook url
+
 = 2.0.1 =
 *	Fix: Paystack payment option and settings not available if Paystack WooCommerce Payment Gateway version 2.0.0 is installed and WooCommerce version 2.5.5 and below is installed
 
@@ -118,8 +121,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 2.0.1 =
-*  Important update. Fix Paystack payment option and settings not available if Paystack WooCommerce Payment Gateway version 2.0.0 is installed and WooCommerce version 2.5.5 and below is installed
+= 2.1.0 =
+*	Add support for confirming payment using the webhook url. This will fix issues with cancelled transactions after successful payment by customers.
 
 
 == Screenshots ==
