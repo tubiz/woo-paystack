@@ -137,7 +137,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
     	<h3>Paystack</h3>
 
-        <h4>If you are having issues with cancelled transactions after successful payment by customers, kindly set the url below as the Webhook URL in your <a href="https://dashboard.paystack.co/#/settings/developer">Paystack account</a> <strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
+        <h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
 
         <?php
 
