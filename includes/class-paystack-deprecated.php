@@ -386,13 +386,18 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	 */
 	public function process_webhooks() {
 
-		if ( ( strtoupper( $_SERVER['REQUEST_METHOD'] ) != 'POST' ) || ! array_key_exists( 'HTTP_X_PAYSTACK_SIGNATURE', $_SERVER ) ) {
+		if ( ( strtoupper( $_SERVER['REQUEST_METHOD'] ) != 'POST' ) || ! array_key_exists('HTTP_X_PAYSTACK_SIGNATURE', $_SERVER) ) {
+			exit;
+		}
+
+	    $json = file_get_contents( "php://input" );
+
+		// validate event do all at once to avoid timing attack
+		if( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
 			exit;
 		}
 
 		http_response_code(200);
-
-	    $json = file_get_contents( "php://input" );
 
 	    $event = json_decode( $json );
 
