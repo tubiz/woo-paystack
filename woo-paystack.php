@@ -32,6 +32,8 @@ function tbz_wc_paystack_init() {
 		require_once dirname( __FILE__ ) . '/includes/class-paystack-deprecated.php';
 	}
 
+	require_once dirname( __FILE__ ) . '/includes/polyfill.php';
+
 	/**
 	* Add Settings link to the plugin entry in the plugins menu
 	**/

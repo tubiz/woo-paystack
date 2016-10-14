@@ -454,8 +454,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		@ob_clean();
 
-		header( 'HTTP/1.1 200 OK' );
-
 		if( isset( $_REQUEST['paystack_txnref'] ) ){
 
 			$paystack_url = 'https://api.paystack.co/transaction/verify/' . $_REQUEST['paystack_txnref'];
@@ -558,11 +556,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function process_webhooks() {
 
-		header( 'HTTP/1.1 200 OK' );
-
 		if ( ( strtoupper( $_SERVER['REQUEST_METHOD'] ) != 'POST' ) || ! array_key_exists('HTTP_X_PAYSTACK_SIGNATURE', $_SERVER) ) {
 			exit;
 		}
+
+		http_response_code(200);
 
 	    $json = file_get_contents( "php://input" );
 
