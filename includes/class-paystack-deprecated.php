@@ -397,11 +397,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 			exit;
 		}
 
-		http_response_code(200);
-
 	    $event = json_decode( $json );
 
 	    if( 'charge.success' == $event->event ) {
+
+			http_response_code(200);
 
 			$order_details 		= explode( '_', $event->data->reference );
 
@@ -416,7 +416,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	        }
 
 	        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
-	        	wp_redirect( $this->get_return_url( $order ) );
 				exit;
 	        }
 
@@ -457,8 +456,10 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 				wc_empty_cart();
 			}
 
-			wp_redirect( $this->get_return_url( $order ) );
+			exit;
 	    }
+
+	    exit;
 	}
 
 }
