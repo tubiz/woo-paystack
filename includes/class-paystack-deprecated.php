@@ -61,7 +61,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	 */
 	public function is_valid_for_use() {
 
-		if( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN' ) ) ) ) {
 
 			$this->msg = 'Paystack does not support your store currency. Kindly set it to Nigerian Naira &#8358; <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
@@ -141,8 +141,8 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
             echo '</table>';
 
         }
-		else{	 ?>
-		<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
+		else {	 ?>
+			<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
 
 		<?php }
 
@@ -286,7 +286,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 		@ob_clean();
 
-		if( isset( $_REQUEST['paystack_txnref'] ) ){
+		if ( isset( $_REQUEST['paystack_txnref'] ) ){
 
 			$paystack_url = 'https://api.paystack.co/transaction/verify/' . $_REQUEST['paystack_txnref'];
 
@@ -301,7 +301,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 			$request = wp_remote_get( $paystack_url, $args );
 
-	        if( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
+	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
             	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
@@ -313,7 +313,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 			        $order 			= wc_get_order($order_id);
 
-			        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+			        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 			        	wp_redirect( $this->get_return_url( $order ) );
 						exit;
 			        }
@@ -325,7 +325,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	        		$paystack_ref 	= $paystack_response->data->reference;
 
 					// check if the amount paid is equal to the order amount.
-					if( $order_total !=  $amount_paid ) {
+					if ( $order_total !=  $amount_paid ) {
 
 						$order->update_status( 'on-hold', '' );
 
@@ -346,7 +346,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 						wc_empty_cart();
 					}
-					else{
+					else {
 
 						$order->payment_complete( $paystack_ref );
 
@@ -393,13 +393,13 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	    $json = file_get_contents( "php://input" );
 
 		// validate event do all at once to avoid timing attack
-		if( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
+		if ( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
 			exit;
 		}
 
 	    $event = json_decode( $json );
 
-	    if( 'charge.success' == $event->event ) {
+	    if ( 'charge.success' == $event->event ) {
 
 			http_response_code(200);
 
@@ -411,11 +411,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 	        $paystack_txn_ref 	= get_post_meta( $order_id, '_paystack_txn_ref', true );
 
-	        if( $event->data->reference != $paystack_txn_ref ) {
+	        if ( $event->data->reference != $paystack_txn_ref ) {
 	        	exit;
 	        }
 
-	        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+	        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
 	        }
 
@@ -426,7 +426,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
     		$paystack_ref 	= $event->data->reference;
 
 			// check if the amount paid is equal to the order amount.
-			if( $order_total !=  $amount_paid ) {
+			if ( $order_total !=  $amount_paid ) {
 
 				$order->update_status( 'on-hold', '' );
 
@@ -447,7 +447,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 				wc_empty_cart();
 			}
-			else{
+			else {
 
 				$order->payment_complete( $paystack_ref );
 

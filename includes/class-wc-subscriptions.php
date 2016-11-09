@@ -31,6 +31,34 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 
 	/**
+	 * Process a trial subscription order with 0 total
+	 */
+	public function process_payment( $order_id ) {
+
+		$order = wc_get_order( $order_id );
+
+		// Check for trial subscription order with 0 total
+		if ( $this->order_contains_subscription( $order ) && $order->get_total() == 0 ) {
+
+			$order->payment_complete();
+
+			$order->add_order_note( 'This is a trial subscription reason for the 0 amount' );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $this->get_return_url( $order )
+			);
+
+		} else {
+
+			return parent::process_payment( $order_id );
+
+		}
+
+	}
+
+
+	/**
 	 * Process a subscription renewal
 	 */
 	public function scheduled_subscription_payment( $amount_to_charge, $renewal_order ) {
@@ -53,7 +81,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 		$auth_code =  get_post_meta( $order->id, '_paystack_token', true );
 
-		if( $auth_code ) {
+		if ( $auth_code ) {
 
 			$email 			= $order->billing_email;
 			$order_amount 	= $amount * 100;
@@ -79,7 +107,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 			$request = wp_remote_post( $paystack_url, $args );
 
-	        if( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
+	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
             	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
@@ -103,7 +131,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 	        }
 		}
 
-		return new WP_Error( 'paystack_error', 'This subscription can\'t be renewed automatically. The customer will have to login to his account to renew his subscription.' );
+		return new WP_Error( 'paystack_error', 'This subscription can\'t be renewed automatically. The customer will have to login to his account to renew his subscription' );
 
 	}
 

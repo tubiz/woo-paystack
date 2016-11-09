@@ -76,7 +76,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function is_valid_for_use() {
 
-		if( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN' ) ) ) ) {
 
 			$this->msg = 'Paystack does not support your store currency. Kindly set it to Nigerian Naira &#8358; <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
@@ -129,7 +129,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			if ( ! ( $this->public_key && $this->secret_key ) ) {
 				return false;
 			}
+
 			return true;
+
 		}
 
 		return false;
@@ -157,8 +159,8 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
             echo '</table>';
 
         }
-		else{	 ?>
-		<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
+		else {	 ?>
+			<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg ?></p></div>
 
 		<?php }
 
@@ -229,7 +231,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 
-		if( ! is_ssl() ){
+		if ( ! is_ssl() ){
 
 			wp_enqueue_style( 'paystack', plugins_url( 'assets/css/paystack.css',  WC_PAYSTACK_MAIN_FILE ) );
 
@@ -300,62 +302,46 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function process_payment( $order_id ) {
 
-		$order = wc_get_order( $order_id );
+		if ( isset( $_POST['wc-paystack-payment-token'] ) && 'new' !== $_POST['wc-paystack-payment-token'] ) {
 
-		// Check for trial subscription order with 0 total
-		if( $this->order_contains_subscription( $order ) && $order->get_total() == 0 ) {
+			$token_id = wc_clean( $_POST['wc-paystack-payment-token'] );
+			$token    = WC_Payment_Tokens::get( $token_id );
 
-			$order->payment_complete();
-			$order->add_order_note( 'This is a trial subscription reason for the 0 amount' );
+			if ( $token->get_user_id() !== get_current_user_id() ) {
 
-			return array(
-				'result'   => 'success',
-				'redirect' => $this->get_return_url( $order )
-			);
+				wc_add_notice( 'Invalid token ID', 'error' );
 
-		} else {
+				return;
 
-			if ( isset( $_POST['wc-paystack-payment-token'] ) && 'new' !== $_POST['wc-paystack-payment-token'] ) {
-
-				$token_id = wc_clean( $_POST['wc-paystack-payment-token'] );
-				$token    = WC_Payment_Tokens::get( $token_id );
-
-				if ( $token->get_user_id() !== get_current_user_id() ) {
-
-					wc_add_notice( 'Invalid token ID', 'error' );
-
-					return;
-
-				} else{
-
-					$this->process_token_payment( $token->get_token(), $order_id );
-
-					$order = wc_get_order( $order_id );
-
-					return array(
-						'result'   => 'success',
-						'redirect' => $this->get_return_url( $order )
-					);
-
-				}
 			} else {
 
-				if ( is_user_logged_in() && isset( $_POST['wc-paystack-new-payment-method'] ) && true === (bool) $_POST['wc-paystack-new-payment-method'] && $this->saved_cards ) {
-
-					update_post_meta( $order_id, '_wc_paystack_save_card', true );
-
-				}
+				$this->process_token_payment( $token->get_token(), $order_id );
 
 				$order = wc_get_order( $order_id );
 
 				return array(
 					'result'   => 'success',
-					'redirect' => $order->get_checkout_payment_url( true )
+					'redirect' => $this->get_return_url( $order )
 				);
 
 			}
+		} else {
+
+			if ( is_user_logged_in() && isset( $_POST['wc-paystack-new-payment-method'] ) && true === (bool) $_POST['wc-paystack-new-payment-method'] && $this->saved_cards ) {
+
+				update_post_meta( $order_id, '_wc_paystack_save_card', true );
+
+			}
+
+			$order = wc_get_order( $order_id );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $order->get_checkout_payment_url( true )
+			);
 
 		}
+
 	}
 
 
@@ -364,7 +350,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function process_token_payment( $token, $order_id ) {
 
-		if( $token && $order_id ) {
+		if ( $token && $order_id ) {
 
 			$order        	= wc_get_order( $order_id );
 			$email 			= $order->billing_email;
@@ -391,7 +377,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			$request = wp_remote_post( $paystack_url, $args );
 
-	        if( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
+	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
             	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
@@ -406,7 +392,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	        		$paystack_ref 	= $paystack_response->data->reference;
 
 					// check if the amount paid is equal to the order amount.
-					if( $order_total !=  $amount_paid ) {
+					if ( $order_total !=  $amount_paid ) {
 
 						$order->update_status( 'on-hold', '' );
 
@@ -423,7 +409,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 						wc_add_notice( $notice, $notice_type );
 
-					} else{
+					} else {
 
 						$order->payment_complete( $paystack_ref );
 
@@ -489,7 +475,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		@ob_clean();
 
-		if( isset( $_REQUEST['paystack_txnref'] ) ){
+		if ( isset( $_REQUEST['paystack_txnref'] ) ){
 
 			$paystack_url = 'https://api.paystack.co/transaction/verify/' . $_REQUEST['paystack_txnref'];
 
@@ -504,7 +490,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			$request = wp_remote_get( $paystack_url, $args );
 
-	        if( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
+	        if ( ! is_wp_error( $request ) && 200 == wp_remote_retrieve_response_code( $request ) ) {
 
             	$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
@@ -516,7 +502,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			        $order 			= wc_get_order( $order_id );
 
-			        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+			        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 			        	wp_redirect( $this->get_return_url( $order ) );
 						exit;
 			        }
@@ -528,7 +514,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	        		$paystack_ref 	= $paystack_response->data->reference;
 
 					// check if the amount paid is equal to the order amount.
-					if( $order_total !=  $amount_paid ) {
+					if ( $order_total !=  $amount_paid ) {
 
 						$order->update_status( 'on-hold', '' );
 
@@ -546,7 +532,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 						$order->reduce_order_stock();
 
 						wc_add_notice( $notice, $notice_type );
-					} else{
+					} else {
 
 						$order->payment_complete( $paystack_ref );
 
@@ -596,13 +582,13 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	    $json = file_get_contents( "php://input" );
 
 		// validate event do all at once to avoid timing attack
-		if( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
+		if ( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
 			exit;
 		}
 
 	    $event = json_decode( $json );
 
-	    if( 'charge.success' == $event->event ) {
+	    if ( 'charge.success' == $event->event ) {
 
 			http_response_code( 200 );
 
@@ -614,11 +600,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 	        $paystack_txn_ref 	= get_post_meta( $order_id, '_paystack_txn_ref', true );
 
-	        if( $event->data->reference != $paystack_txn_ref ) {
+	        if ( $event->data->reference != $paystack_txn_ref ) {
 	        	exit;
 	        }
 
-	        if( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
+	        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
 	        }
 
@@ -629,7 +615,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
     		$paystack_ref 	= $event->data->reference;
 
 			// check if the amount paid is equal to the order amount.
-			if( $order_total !=  $amount_paid ) {
+			if ( $order_total !=  $amount_paid ) {
 
 				$order->update_status( 'on-hold', '' );
 
@@ -650,7 +636,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				wc_empty_cart();
 
-			} else{
+			} else {
 
 				$order->payment_complete( $paystack_ref );
 
@@ -709,21 +695,35 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function save_subscription_payment_token( $order_id, $paystack_response ) {
 
+		if ( ! function_exists ( 'wcs_order_contains_subscription' ) ) {
+
+			return;
+
+		}
+
 		if ( $this->order_contains_subscription( $order_id ) && $paystack_response->data->authorization->reusable ) {
 
 			$auth_code 	= $paystack_response->data->authorization->authorization_code;
 
 			// Also store it on the subscriptions being purchased or paid for in the order
 			if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
+
 				$subscriptions = wcs_get_subscriptions_for_order( $order_id );
+
 			} elseif ( function_exists( 'wcs_order_contains_renewal' ) && wcs_order_contains_renewal( $order_id ) ) {
+
 				$subscriptions = wcs_get_subscriptions_for_renewal_order( $order_id );
+
 			} else {
+
 				$subscriptions = array();
+
 			}
 
-			foreach( $subscriptions as $subscription ) {
+			foreach ( $subscriptions as $subscription ) {
+
 				update_post_meta( $subscription->id, '_paystack_token', $auth_code );
+
 			}
 
 		}

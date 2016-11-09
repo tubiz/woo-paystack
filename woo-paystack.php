@@ -29,8 +29,7 @@ function tbz_wc_paystack_init() {
 		require_once dirname( __FILE__ ) . '/includes/class-paystack-deprecated.php';
 	}
 
-	if ( class_exists( 'WC_Subscriptions_Order' ) ) {
-		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
+	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
 	}
 
 	require_once dirname( __FILE__ ) . '/includes/polyfill.php';
@@ -61,7 +60,7 @@ add_filter('plugin_action_links_' . plugin_basename( __FILE__ ), 'tbz_woo_paysta
 **/
 function tbz_wc_add_paystack_gateway( $methods ) {
 
-	if ( class_exists( 'WC_Subscriptions_Order' ) ) {
+	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {
 		$methods[] = 'Tbz_WC_Gateway_Paystack_Subscription';
 	} else {
 		$methods[] = 'Tbz_WC_Paystack_Gateway';
