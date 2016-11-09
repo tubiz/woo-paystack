@@ -6,7 +6,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
-
 	/**
 	 * Constructor
 	 */
@@ -18,7 +17,15 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		$this->supports           	= array(
 			'products',
-			'tokenization'
+			'tokenization',
+			'subscriptions',
+			'subscription_cancellation',
+			'subscription_suspension',
+			'subscription_reactivation',
+			'subscription_amount_changes',
+			'subscription_date_changes',
+			'subscription_payment_method_change',
+			'subscription_payment_method_change_customer'
 		);
 
 		// Load the form fields
@@ -53,6 +60,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		// Payment listener/API hook
 		add_action( 'woocommerce_api_tbz_wc_paystack_gateway', array( $this, 'verify_paystack_transaction' ) );
 
+		// Webhook listener/API hook
 		add_action( 'woocommerce_api_tbz_wc_paystack_webhook', array( $this, 'process_webhooks' ) );
 
 		// Check if the gateway can be used
@@ -80,6 +88,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 	}
 
+
 	/**
 	 * Display paystack payment icon
 	 */
@@ -93,7 +102,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 
 	/**
-	 * Check if paystack merchant details is filled
+	 * Check if Paystack merchant details is filled
 	 */
 	public function admin_notices() {
 
@@ -221,8 +230,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	public function payment_fields() {
 
 		if( ! is_ssl() ){
+
 			wp_enqueue_style( 'paystack', plugins_url( 'assets/css/paystack.css',  WC_PAYSTACK_MAIN_FILE ) );
+
 			return;
+
 		}
 
 		if ( $this->supports( 'tokenization' ) && is_checkout() && $this->saved_cards && is_user_logged_in() ) {
@@ -267,9 +279,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			$txnref		 	= $order_id . '_' .time();
 
 			if ( $order->id == $order_id && $order->order_key == $order_key ) {
+
 				$paystack_params['email'] 	= $email;
 				$paystack_params['amount']  = $amount;
 				$paystack_params['txnref']  = $txnref;
+
 			}
 
 			update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
@@ -286,45 +300,62 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function process_payment( $order_id ) {
 
-		if ( isset( $_POST['wc-paystack-payment-token'] ) && 'new' !== $_POST['wc-paystack-payment-token'] ) {
+		$order = wc_get_order( $order_id );
 
-			$token_id = wc_clean( $_POST['wc-paystack-payment-token'] );
-			$token    = WC_Payment_Tokens::get( $token_id );
+		// Check for trial subscription order with 0 total
+		if( $this->order_contains_subscription( $order ) && $order->get_total() == 0 ) {
 
-			if ( $token->get_user_id() !== get_current_user_id() ) {
-				wc_add_notice( 'Invalid token ID', 'error' );
-				return;
-			}
-			else{
-				$this->process_token_payment( $token->get_token(), $order_id );
+			$order->payment_complete();
+			$order->add_order_note( 'This is a trial subscription reason for the 0 amount' );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $this->get_return_url( $order )
+			);
+
+		} else {
+
+			if ( isset( $_POST['wc-paystack-payment-token'] ) && 'new' !== $_POST['wc-paystack-payment-token'] ) {
+
+				$token_id = wc_clean( $_POST['wc-paystack-payment-token'] );
+				$token    = WC_Payment_Tokens::get( $token_id );
+
+				if ( $token->get_user_id() !== get_current_user_id() ) {
+
+					wc_add_notice( 'Invalid token ID', 'error' );
+
+					return;
+
+				} else{
+
+					$this->process_token_payment( $token->get_token(), $order_id );
+
+					$order = wc_get_order( $order_id );
+
+					return array(
+						'result'   => 'success',
+						'redirect' => $this->get_return_url( $order )
+					);
+
+				}
+			} else {
+
+				if ( is_user_logged_in() && isset( $_POST['wc-paystack-new-payment-method'] ) && true === (bool) $_POST['wc-paystack-new-payment-method'] && $this->saved_cards ) {
+
+					update_post_meta( $order_id, '_wc_paystack_save_card', true );
+
+				}
 
 				$order = wc_get_order( $order_id );
 
 				return array(
 					'result'   => 'success',
-					'redirect' => $this->get_return_url( $order )
+					'redirect' => $order->get_checkout_payment_url( true )
 				);
-			}
-		}
-		else {
-
-			$maybe_saved_card = ! isset( $_POST['wc-paystack-new-payment-method'] ) || ! empty( $_POST['	wc-paystack-new-payment-method'] );
-
-			if ( is_user_logged_in() && isset( $_POST['wc-paystack-new-payment-method'] ) && true === (bool) $_POST['wc-paystack-new-payment-method'] && $this->saved_cards ) {
-
-				update_post_meta( $order_id, '_wc_paystack_save_card', true );
 
 			}
 
-			$order = wc_get_order( $order_id );
-
-			return array(
-				'result'   => 'success',
-				'redirect' => $order->get_checkout_payment_url( true )
-			);
-
 		}
-
 	}
 
 
@@ -339,7 +370,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			$email 			= $order->billing_email;
 			$order_amount 	= $order->order_total * 100;
 
-			$paystack_url = 'https://api.paystack.co/transaction/charge_authorization';
+			$paystack_url 	= 'https://api.paystack.co/transaction/charge_authorization';
 
 			$headers = array(
 				'Content-Type'	=> 'application/json',
@@ -392,18 +423,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 						wc_add_notice( $notice, $notice_type );
 
-					}
-					else{
+					} else{
 
 						$order->payment_complete( $paystack_ref );
 
-						$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
+						$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
 
 					}
 
+					$this->save_subscription_payment_token( $order_id, $paystack_response );
+
 					WC()->cart->empty_cart();
-				}
-				else {
+
+				} else {
 
 			        $order = wc_get_order( $order_id );
 
@@ -414,9 +446,10 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				}
 
 	        }
-		}
-		else {
+		} else {
+
 			wc_add_notice( 'Payment Failed.', 'error' );
+
 		}
 
 	}
@@ -426,7 +459,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 * Show new card can only be added when placing an order notice
 	 */
 	public function add_payment_method() {
+
 		wc_add_notice( 'You can only add a new card when placing an order.', 'error' );
+
 		return;
 
 	}
@@ -511,22 +546,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 						$order->reduce_order_stock();
 
 						wc_add_notice( $notice, $notice_type );
-
-						wc_empty_cart();
-					}
-					else{
+					} else{
 
 						$order->payment_complete( $paystack_ref );
 
-						$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
+						$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
 
-						wc_empty_cart();
 					}
 
 					$this->save_card_details( $paystack_response, $order->get_user_id(), $order_id );
 
-				}
-				else {
+					wc_empty_cart();
+
+				} else {
 
 					$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
 
@@ -535,6 +567,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			        $order 			= wc_get_order( $order_id );
 
 					$order->update_status( 'failed', 'Payment was declined by Paystack.' );
+
 				}
 
 	        }
@@ -571,7 +604,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 	    if( 'charge.success' == $event->event ) {
 
-			http_response_code(200);
+			http_response_code( 200 );
 
 			$order_details 		= explode( '_', $event->data->reference );
 
@@ -616,14 +649,15 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				wc_add_notice( $notice, $notice_type );
 
 				wc_empty_cart();
-			}
-			else{
+
+			} else{
 
 				$order->payment_complete( $paystack_ref );
 
-				$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
+				$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
 
 				wc_empty_cart();
+
 			}
 
 			$this->save_card_details( $event, $order->get_user_id(), $order_id );
@@ -632,6 +666,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	    }
 
 	    exit;
+
 	}
 
 
@@ -640,10 +675,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function save_card_details( $paystack_response, $user_id, $order_id ) {
 
+		$this->save_subscription_payment_token( $order_id, $paystack_response );
+
 		$save_card = get_post_meta( $order_id, '_wc_paystack_save_card', true );
 
-		// Add token to WooCommerce
 		if ( $user_id && $this->saved_cards && $save_card && $paystack_response->data->authorization->reusable ) {
+
 			$last4 		= $paystack_response->data->authorization->last4;
 			$exp_year 	= $paystack_response->data->authorization->exp_year;
 			$brand 		= $paystack_response->data->authorization->card_type;
@@ -661,6 +698,34 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			$token->save();
 
 			delete_post_meta( $order_id, '_wc_paystack_save_card' );
+
+		}
+
+	}
+
+
+	/**
+	 * Save payment token to the order for automatic renewal for further subscription payment
+	 */
+	public function save_subscription_payment_token( $order_id, $paystack_response ) {
+
+		if ( $this->order_contains_subscription( $order_id ) && $paystack_response->data->authorization->reusable ) {
+
+			$auth_code 	= $paystack_response->data->authorization->authorization_code;
+
+			// Also store it on the subscriptions being purchased or paid for in the order
+			if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
+				$subscriptions = wcs_get_subscriptions_for_order( $order_id );
+			} elseif ( function_exists( 'wcs_order_contains_renewal' ) && wcs_order_contains_renewal( $order_id ) ) {
+				$subscriptions = wcs_get_subscriptions_for_renewal_order( $order_id );
+			} else {
+				$subscriptions = array();
+			}
+
+			foreach( $subscriptions as $subscription ) {
+				update_post_meta( $subscription->id, '_paystack_token', $auth_code );
+			}
+
 		}
 
 	}
