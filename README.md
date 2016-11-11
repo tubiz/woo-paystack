@@ -1,26 +1,19 @@
-# Paystack WooCommerce Payment Gateway #
+# Paystack WooCommerce Payment Gateway
 **Contributors:** tubiz
-
 **Donate link:** http://bosun.me/donate
-
 **Tags:** paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
-
 **Requires at least:** 4.4
-
 **Tested up to:** 4.6
-
-**Stable tag:** 2.1.0
-
+**Stable tag:** 3.0.0
 **License:** GPLv2 or later
-
 **License URI:** http://www.gnu.org/licenses/gpl-2.0.html
-
 
 Paystack WooCommerce Payment Gateway allows you to accept online payments from local and international customers
 
 
 
-## Description ##
+
+## Description
 
 This is a Paystack payment gateway for Woocommerce.
 
@@ -34,29 +27,46 @@ With this Paystack Woocommerce Payment Gateway plugin, you will be able to accep
 
 * __MasterCard__
 * __Visa__
-* __Verve Cards__
+* __Verve Card__
 
-### Note ###
+
+### Note
 
 This plugin is meant to be used by merchants in Nigeria.
 
-### Plugin Features ###
 
-*   __Accept payment__ via MasterCard, Visa and Verve Cards.
+### Plugin Features
+
+*   __Accept payment__ via MasterCard, Visa and Verve Card.
 * 	__Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
+* 	__Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
 
 
+### WooCommerce Subscriptions Integration
 
-### Suggestions / Feature Request ###
+*	The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) integration only works with __WooCommerce v2.6 and above__ and __WooCommerce Subscriptions v2.0 and above__.
+
+*	No subscription plans is created on Paystack. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin handles all the subscription functionality.
+
+*	If a customer pays for a subscription using a MasterCard or Visa card, their subscription will renew automatically throughout the duration of the subscription. If an automatic renewal fail their subscription will be put on-hold and they will have to login to their account to renew the subscription.
+
+*	For customers paying with a Verve Card, their subscription can't be renewed automatically, once a payment is due their subscription will be on-hold. The customer will have to login to his account to manually renew his subscription.
+
+*	If a subscription has a free trial and no signup-fee, automatical renewal is not possible for the first payment because the initial order total will be 0, after the free trial the subscription will be put on-hold. The customer will have to login to his account to renew his subscription. If a MasterCard or Visa card is used to renew the subscription subsequent renewals will be automatic throughout the duration of the subscription, if a Verve card is used automatic renewal isn't possible.
+
+
+### Suggestions / Feature Request
 
 If you have suggestions or a new feature request, feel free to get in touch with me via the contact form on my website [here](http://bosun.me/get-in-touch/)
 
 You can also follow me on Twitter! **[@tubiz](http://twitter.com/tubiz)**
 
 
-## Installation ##
 
-### Automatic Installation ###
+## Installation
+
+
+### Automatic Installation
 * 	Login to your WordPress Admin area
 * 	Go to "Plugins > Add New" from the left hand menu
 * 	In the search box type __Paystack Woocommerce Payment Gateway__
@@ -67,7 +77,8 @@ You can also follow me on Twitter! **[@tubiz](http://twitter.com/tubiz)**
 * 	Click on the __Paystack__ link from the available Checkout Options
 *	Configure your __Paystack Payment Gateway__ settings. See below for details.
 
-### Manual Installation ###
+
+### Manual Installation
 1. 	Download the plugin zip file
 2. 	Login to your WordPress Admin. Click on "Plugins > Add New" from the left hand menu.
 3.  Click on the "Upload" option, then click "Choose File" to select the zip file from your computer. Once selected, press "OK" and press the "Install Now" button.
@@ -78,7 +89,8 @@ You can also follow me on Twitter! **[@tubiz](http://twitter.com/tubiz)**
 
 
 
-### Configure the plugin ###
+
+### Configure the plugin
 To configure the plugin, go to __WooCommerce > Settings__ from the left hand menu, then click __Checkout__ from the top tab. You will see __Paystack__ as part of the available Checkout Options. Click on it to configure the payment gateway.
 
 * __Enable/Disable__ - check the box to enable Paystack Payment Gateway.
@@ -95,46 +107,65 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 
 
-## Frequently Asked Questions ##
 
-### What Do I Need To Use The Plugin ###
+## Frequently Asked Questions
+
+
+### What Do I Need To Use The Plugin
 
 1.	You need to have WooCommerce plugin installed and activated on your WordPress site.
 2.	You need to open a Paystack merchant account on [Paystack](https://paystack.com)
 
 
+### WooCommerce Subscriptions Integration
+
+*	The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) integration only works with WooCommerce v2.6 and above and WooCommerce Subscriptions v2.0 and above.
+
+*	No subscription plans is created on Paystack. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) handles all the subscription functionality.
+
+*	If a customer pays for a subscription using a MasterCard or Visa card, their subscription will renew automatically throughout the duration of the subscription. If an automatic renewal fail their subscription will be put on-hold and they will have to login to their account to renew the subscription.
+
+*	For customers paying with a Verve Card, their subscription can't be renewed automatically, once a payment is due their subscription will be on-hold. The customer will have to login to his account to manually renew his subscription.
+
+*	If a subscription has a free trial and no signup-fee, automatical renewal is not possible because the order total will be 0, after the free trial the subscription will be put on-hold. The customer will have to login to his account to renew his subscription. If a MasterCard or Visa card is used to renew subsequent renewals will be automatic throughout the duration of the subscription, if a Verve card is used automatic renewal isn't possible.
 
 
-## Changelog ##
 
-### 2.1.0 ###
+## Changelog
+
+
+### 3.0.0, November 11, 2016
+* 	New: Add support for recurring payment using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin.
+
+
+### 2.1.0, October 15, 2016
 *	New: Add support for confirming payment using the webhook url
 
-### 2.0.1 ###
+
+### 2.0.1, July 5, 2016
 *	Fix: Paystack payment option and settings not available if Paystack WooCommerce Payment Gateway version 2.0.0 is installed and WooCommerce version 2.5.5 and below is installed
 
-### 2.0.0 ###
+
+### 2.0.0, June 28, 2016
 * 	New: Saved cards - allow store customers to save their card details and pay again using the same card. Card details are saved on Paystack servers and not on your store.
 *	Fix: Change payment icon
 
-### 1.1.0 ###
+
+### 1.1.0, April 22, 2016
 *   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
 
-### 1.0.0 ###
+
+### 1.0.0, February 3, 2016
 *   First release
 
 
 
 
-
-## Upgrade Notice ##
-
-### 2.1.0 ###
-*	Add support for confirming payment using the webhook url. This will fix issues with cancelled transactions after successful payment by customers.
+## Upgrade Notice
 
 
-
-
+### 3.0.0
+*	Add support for recurring payment using WooCommerce Subscriptions plugin
 
 
 
