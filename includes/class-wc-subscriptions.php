@@ -42,7 +42,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 			$order->payment_complete();
 
-			$order->add_order_note( 'This is a trial subscription reason for the 0 amount' );
+			$order->add_order_note( 'This subscription has a free trial reason for the 0 amount' );
 
 			return array(
 				'result'   => 'success',
