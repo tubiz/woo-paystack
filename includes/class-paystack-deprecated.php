@@ -61,7 +61,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	 */
 	public function is_valid_for_use() {
 
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN','USD','GBP')  ) ) ) {
 
 			$this->msg = 'Paystack does not support your store currency. Kindly set it to Nigerian Naira &#8358; <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
