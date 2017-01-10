@@ -61,9 +61,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	 */
 	public function is_valid_for_use() {
 
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN','USD','GBP')  ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'GBP' ) ) ) ) {
 
-			$this->msg = 'Paystack does not support your store currency. Kindly set it to Nigerian Naira &#8358; <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
+			$this->msg = 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), USD (&#36;) or GBP (&#163;) <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
 			return false;
 
@@ -111,8 +111,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		if ( $this->enabled == "yes" ) {
 
 			if ( ! ( $this->public_key && $this->secret_key ) ) {
+
 				return false;
+
 			}
+
 			return true;
 		}
 
@@ -235,9 +238,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 			$txnref		 	= $order_id . '_' .time();
 
 			if ( $order->id == $order_id && $order->order_key == $order_key ) {
-				$paystack_params['email'] 	= $email;
-				$paystack_params['amount']  = $amount;
-				$paystack_params['txnref']  = $txnref;
+
+				$paystack_params['email'] 		= $email;
+				$paystack_params['amount']  	= $amount;
+				$paystack_params['txnref']  	= $txnref;
+				$paystack_params['currency']  	= get_woocommerce_currency();
+
 			}
 
 			update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
@@ -307,25 +313,29 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 				if ( 'success' == $paystack_response->data->status ) {
 
-					$order_details 	= explode( '_', $paystack_response->data->reference );
+					$order_details 		= explode( '_', $paystack_response->data->reference );
 
-					$order_id 		= (int) $order_details[0];
+					$order_id 			= (int) $order_details[0];
 
-			        $order 			= wc_get_order($order_id);
+			        $order 				= wc_get_order($order_id);
 
 			        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 			        	wp_redirect( $this->get_return_url( $order ) );
 						exit;
 			        }
 
-	        		$order_total	= $order->get_total();
+	        		$order_total		= $order->get_total();
 
-	        		$amount_paid	= $paystack_response->data->amount / 100;
+					$order_currency 	= $order->get_order_currency();
 
-	        		$paystack_ref 	= $paystack_response->data->reference;
+					$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
+
+	        		$amount_paid		= $paystack_response->data->amount / 100;
+
+	        		$paystack_ref 		= $paystack_response->data->reference;
 
 					// check if the amount paid is equal to the order amount.
-					if ( $order_total !=  $amount_paid ) {
+					if ( $amount_paid < $order_total ) {
 
 						$order->update_status( 'on-hold', '' );
 
@@ -338,15 +348,15 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	                    $order->add_order_note( $notice, 1 );
 
 	                    // Add Admin Order Note
-	                    $order->add_order_note('<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>&#8358;'.$amount_paid.'</strong> while the total order amount is <strong>&#8358;'.$order_total.'</strong><br />Paystack Transaction Reference: '.$paystack_ref );
+	                    $order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br />Paystack Transaction Reference: '.$paystack_ref );
 
 						$order->reduce_order_stock();
 
 						wc_add_notice( $notice, $notice_type );
 
 						wc_empty_cart();
-					}
-					else {
+
+					} else {
 
 						$order->payment_complete( $paystack_ref );
 
@@ -355,8 +365,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 						wc_empty_cart();
 					}
 
-				}
-				else {
+				} else {
 
 					$order_details 	= explode( '_', $_REQUEST['paystack_txnref'] );
 
@@ -419,14 +428,18 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 				exit;
 	        }
 
-    		$order_total	= $order->get_total();
+			$order_currency 	= $order->get_order_currency();
 
-    		$amount_paid	= $event->data->amount / 100;
+			$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
 
-    		$paystack_ref 	= $event->data->reference;
+    		$order_total		= $order->get_total();
+
+    		$amount_paid		= $event->data->amount / 100;
+
+    		$paystack_ref 		= $event->data->reference;
 
 			// check if the amount paid is equal to the order amount.
-			if ( $order_total !=  $amount_paid ) {
+			if ( $amount_paid < $order_total ) {
 
 				$order->update_status( 'on-hold', '' );
 
@@ -439,15 +452,15 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
                 $order->add_order_note( $notice, 1 );
 
                 // Add Admin Order Note
-                $order->add_order_note('<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>&#8358;'.$amount_paid.'</strong> while the total order amount is <strong>&#8358;'.$order_total.'</strong><br />Paystack Transaction Reference: '.$paystack_ref );
+                $order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br />Paystack Transaction Reference: '.$paystack_ref );
 
 				$order->reduce_order_stock();
 
 				wc_add_notice( $notice, $notice_type );
 
 				wc_empty_cart();
-			}
-			else {
+
+			} else {
 
 				$order->payment_complete( $paystack_ref );
 

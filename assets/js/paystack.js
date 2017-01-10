@@ -43,6 +43,7 @@ jQuery( function( $ ) {
             email: wc_paystack_params.email,
             amount: wc_paystack_params.amount,
             ref: wc_paystack_params.txnref,
+            currency: wc_paystack_params.currency,
             callback: paystack_callback,
             onClose: function() {
                 $( this.el ).unblock();

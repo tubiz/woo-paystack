@@ -118,6 +118,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 					$order->payment_complete( $paystack_ref );
 
 					$message = sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref );
+
 					$order->add_order_note( $message );
 
 					return true;

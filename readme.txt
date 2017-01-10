@@ -3,8 +3,8 @@ Contributors: tubiz
 Donate link: http://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 Requires at least: 4.4
-Tested up to: 4.6
-Stable tag: 3.0.0
+Tested up to: 4.7
+Stable tag: 3.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 3.1.0, January 10, 2017 =
+* 	New: Add support for USD and GBP currency. Note this has to be enabled by Paystack for your account before it can be used on your site.
+
 = 3.0.0, November 11, 2016 =
 * 	New: Add support for recurring payment using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin.
 
@@ -143,8 +146,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 3.0.0 =
-*	Add support for recurring payment using WooCommerce Subscriptions plugin
+= 3.1.0 =
+* 	Add support for USD and GBP currency. Note this has to be enabled by Paystack for your account before it can be used on your site.
 
 
 
