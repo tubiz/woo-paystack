@@ -94,7 +94,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function get_icon() {
 
-		$icon  = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-woocommerce.png' , WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+		$icon  = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png' , WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
 

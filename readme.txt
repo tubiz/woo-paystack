@@ -4,7 +4,7 @@ Donate link: http://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 Requires at least: 4.4
 Tested up to: 4.7
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 3.1.1, February 13, 2017 =
+* 	New: Changed Paystack payment methods icon.
+
 = 3.1.0, January 10, 2017 =
 * 	New: Add support for USD and GBP currency. Note this has to be enabled by Paystack for your account before it can be used on your site.
 
@@ -146,8 +149,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 3.1.0 =
-* 	Add support for USD and GBP currency. Note this has to be enabled by Paystack for your account before it can be used on your site.
+= 3.1.1 =
+*	Changed Paystack payment methods icon.
 
 
 
