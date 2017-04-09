@@ -3,7 +3,7 @@
 	Plugin Name:	Paystack WooCommerce Payment Gateway
 	Plugin URI: 	https://paystack.com
 	Description: 	WooCommerce payment gateway for Paystack
-	Version: 		3.1.1
+	Version: 		4.0.0
 	Author: 		Tunbosun Ayinla
 	Author URI: 	http://bosun.me
 	License:        GPL-2.0+
@@ -17,6 +17,8 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 
+define( 'WC_PAYSTACK_VERSION', '4.0.0' );
+
 function tbz_wc_paystack_init() {
 
 	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
@@ -29,7 +31,7 @@ function tbz_wc_paystack_init() {
 		require_once dirname( __FILE__ ) . '/includes/class-paystack-deprecated.php';
 	}
 
-	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
+	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
 	}
 
 	require_once dirname( __FILE__ ) . '/includes/polyfill.php';
@@ -69,3 +71,24 @@ function tbz_wc_add_paystack_gateway( $methods ) {
 	return $methods;
 
 }
+
+
+/**
+* Display the testmode notice
+**/
+function tbz_wc_paystack_testmode_notice(){
+
+	$paystack_settings = get_option( 'woocommerce_paystack_settings' );
+
+	$enabled 	= $paystack_settings['testmode'];
+	$test_mode 	= $paystack_settings['enabled'];
+
+	if ( ( 'yes' == $test_mode ) && ( 'yes' == $enabled ) ) {
+    ?>
+	    <div class="update-nag">
+	        Paystack testmode is still enabled, Click <a href="<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=wc-settings&tab=checkout&section=paystack">here</a> to disable it when you want to start accepting live payment on your site.
+	    </div>
+    <?php
+	}
+}
+add_action( 'admin_notices', 'tbz_wc_paystack_testmode_notice' );

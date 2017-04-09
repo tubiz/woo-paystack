@@ -12,7 +12,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	public function __construct() {
 		$this->id		   			= 'paystack';
 		$this->method_title 	    = 'Paystack';
-		$this->method_description   = 'Make payment using your debit and credit cards';
 		$this->has_fields 	    	= true;
 
 		$this->supports           	= array(
@@ -31,13 +30,16 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		// Load the form fields
 		$this->init_form_fields();
 
-		// Load the settings.
+		// Load the settings
 		$this->init_settings();
 
 		// Get setting values
-		$this->title                = 'Debit/Credit Cards';
+		$this->title 				= $this->get_option( 'title' );
+		$this->description 			= $this->get_option( 'description' );
 		$this->enabled            	= $this->get_option( 'enabled' );
 		$this->testmode             = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+
+		$this->payment_page         = $this->get_option( 'payment_page' );
 
 		$this->test_public_key  	= $this->get_option( 'test_public_key' );
 		$this->test_secret_key  	= $this->get_option( 'test_secret_key' );
@@ -45,13 +47,25 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		$this->live_public_key  	= $this->get_option( 'live_public_key' );
 		$this->live_secret_key  	= $this->get_option( 'live_secret_key' );
 
-		$this->saved_cards         	= $this->get_option( 'saved_cards' ) === 'yes' ? true : false;;
+		$this->saved_cards         	= $this->get_option( 'saved_cards' ) === 'yes' ? true : false;
+
+		$this->custom_metadata      = $this->get_option( 'custom_metadata' ) === 'yes' ? true : false;
+
+		$this->meta_order_id      	= $this->get_option( 'meta_order_id' ) === 'yes' ? true : false;
+		$this->meta_name      		= $this->get_option( 'meta_name' ) === 'yes' ? true : false;
+		$this->meta_email      		= $this->get_option( 'meta_email' ) === 'yes' ? true : false;
+		$this->meta_phone      		= $this->get_option( 'meta_phone' ) === 'yes' ? true : false;
+		$this->meta_billing_address = $this->get_option( 'meta_billing_address' ) === 'yes' ? true : false;
+		$this->meta_shipping_address= $this->get_option( 'meta_shipping_address' ) === 'yes' ? true : false;
+		$this->meta_products      	= $this->get_option( 'meta_products' ) === 'yes' ? true : false;
 
 		$this->public_key      		= $this->testmode ? $this->test_public_key : $this->live_public_key;
 		$this->secret_key      		= $this->testmode ? $this->test_secret_key : $this->live_secret_key;
 
 		// Hooks
 		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
+		add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
+
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
@@ -179,9 +193,23 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Enable/Disable',
 				'label'       => 'Enable Paystack',
 				'type'        => 'checkbox',
-				'description' => 'Enable Paystack as a payment option on the checkout page',
+				'description' => 'Enable Paystack as a payment option on the checkout page.',
 				'default'     => 'no',
 				'desc_tip'    => true
+			),
+			'title' => array(
+				'title' 		=> 'Title',
+				'type' 			=> 'text',
+				'description' 	=> 'This controls the payment method title which the user sees during checkout.',
+    			'desc_tip'      => true,
+				'default' 		=> 'Debit/Credit Cards'
+			),
+			'description' => array(
+				'title' 		=> 'Description',
+				'type' 			=> 'textarea',
+				'description' 	=> 'This controls the payment method description which the user sees during checkout.',
+    			'desc_tip'      => true,
+				'default' 		=> 'Make payment using your debit and credit cards'
 			),
 			'testmode' => array(
 				'title'       => 'Test mode',
@@ -190,6 +218,18 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'description' => 'Test mode enables you to test payments before going live. <br />Once the LIVE MODE is enabled on your Paystack account uncheck this.',
 				'default'     => 'yes',
 				'desc_tip'    => true
+			),
+			'payment_page' => array(
+				'title'       => 'Payment Page',
+				'type'        => 'select',
+				'description' => 'Inline shows the payment popup on the page while Inline Embed shows the payment page directly on the page',
+				'default'     => '',
+				'desc_tip'    => false,
+				'options'     => array(
+					''   		=> 'Select One',
+					'inline'   	=> 'Inline',
+					'embed' 	=> 'Inline Embed'
+				)
 			),
 			'test_secret_key' => array(
 				'title'       => 'Test Secret Key',
@@ -223,6 +263,70 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'default'     => 'no',
 				'desc_tip'    => true
 			),
+			'custom_metadata' 	  => array(
+				'title'       => 'Custom Metadata',
+				'label'       => 'Enable Custom Metadata',
+				'type'        => 'checkbox',
+				'description' => 'If enabled, you will be able to send more information about the order to Paystack.',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_order_id'  => array(
+				'title'       => 'Order ID',
+				'label'       => 'Send Order ID',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the Order ID will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_name'  => array(
+				'title'       => 'Customer Name',
+				'label'       => 'Send Customer Name',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the customer full name will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_email'  => array(
+				'title'       => 'Customer Email',
+				'label'       => 'Send Customer Email',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the customer email address will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_phone'  => array(
+				'title'       => 'Customer Phone',
+				'label'       => 'Send Customer Phone',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the customer phone will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_billing_address'  => array(
+				'title'       => 'Order Billing Address',
+				'label'       => 'Send Order Billing Address',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the order billing address will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_shipping_address'  => array(
+				'title'       => 'Order Shipping Address',
+				'label'       => 'Send Order Shipping Address',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the order shipping address will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
+			'meta_products'  => array(
+				'title'       => 'Product(s) Purchased',
+				'label'       => 'Send Product(s) Purchased',
+				'type'        => 'checkbox',
+				'description' => 'If checked, the product(s) purchased will be sent to Paystack',
+				'default'     => 'no',
+				'desc_tip'    => true
+			),
 		);
 
 	}
@@ -233,20 +337,18 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_fields() {
 
+		if ( $this->description ) {
+			echo wpautop( wptexturize( $this->description ) );
+		}
+
 		if ( ! is_ssl() ){
-
-			wp_enqueue_style( 'paystack', plugins_url( 'assets/css/paystack.css',  WC_PAYSTACK_MAIN_FILE ) );
-
 			return;
-
 		}
 
 		if ( $this->supports( 'tokenization' ) && is_checkout() && $this->saved_cards && is_user_logged_in() ) {
-
 			$this->tokenization_script();
 			$this->saved_payment_methods();
 			$this->save_payment_method_checkbox();
-
 		}
 
 	}
@@ -263,9 +365,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, true );
 
-		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array('paystack'), '1.0.0', true );
+		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array('paystack'), WC_PAYSTACK_VERSION, true );
 
 		$paystack_params = array(
 			'key'	=> $this->public_key
@@ -277,17 +379,93 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			$order_id  = absint( get_query_var( 'order-pay' ) );
 
 			$order        	= wc_get_order( $order_id );
-			$email 			= $order->billing_email;
+			$email 			= $order->get_billing_email();
 			$amount 		= $order->order_total * 100;
 
 			$txnref		 	= $order_id . '_' .time();
 
 			if ( $order->id == $order_id && $order->order_key == $order_key ) {
 
-				$paystack_params['email'] 		= $email;
-				$paystack_params['amount']  	= $amount;
-				$paystack_params['txnref']  	= $txnref;
-				$paystack_params['currency']  	= get_woocommerce_currency();
+				$paystack_params['email'] 				= $email;
+				$paystack_params['amount']  			= $amount;
+				$paystack_params['txnref']  			= $txnref;
+				$paystack_params['pay_page']  			= $this->payment_page;
+				$paystack_params['currency']  			= get_woocommerce_currency();
+
+			}
+
+			if( $this->custom_metadata ) {
+
+				if( $this->meta_order_id ) {
+
+					$paystack_params['meta_order_id'] = $order_id;
+
+				}
+
+				if( $this->meta_name ) {
+
+					$paystack_params['meta_name'] = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+
+				}
+
+				if( $this->meta_email ) {
+
+					$paystack_params['meta_email'] = $email;
+
+				}
+
+				if( $this->meta_phone ) {
+
+					$paystack_params['meta_phone'] = $order->get_billing_phone();
+
+				}
+
+				if( $this->meta_products ) {
+
+					$line_items     = $order->get_items();
+
+					$products 		= '';
+
+					foreach ( $line_items as $item_id => $item ) {
+						$name = $item->get_name();
+						$quantity = $item->get_quantity();
+						$products .= $name .' (Qty: ' . $quantity .')';
+						$products .= ' | ';
+					}
+
+					$products = rtrim( $products, ' | ' );
+
+					$paystack_params['meta_products'] = $products;
+
+				}
+
+				if( $this->meta_billing_address ) {
+
+					$billing_address 	= $order->get_formatted_billing_address();
+					$billing_address 	= esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+					$paystack_params['meta_billing_address'] = $billing_address;
+
+				}
+
+				if( $this->meta_shippingg_address ) {
+
+					$shipping_address 	= $order->get_formatted_shipping_address();
+					$shipping_address 	= esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+
+					if( empty( $shipping_address ) ) {
+
+						$billing_address 	= $order->get_formatted_billing_address();
+						$billing_address 	= esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+						$shipping_address = $billing_address;
+
+					}
+
+					$paystack_params['meta_shipping_address'] = $shipping_address;
+
+				}
+
 
 			}
 
@@ -296,6 +474,21 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		}
 
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
+
+	}
+
+	/**
+	 * Load admin scripts
+	 */
+	public function admin_scripts() {
+
+		if ( 'woocommerce_page_wc-settings' !== get_current_screen()->id ) {
+			return;
+		}
+
+		$suffix = defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ? '' : '.min';
+
+		wp_enqueue_script( 'wc_paystack_admin', plugins_url( 'assets/js/paystack-admin' . $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array(), WC_PAYSTACK_VERSION, true );
 
 	}
 
@@ -475,10 +668,24 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		$order = wc_get_order( $order_id );
 
-		echo '<p>Thank you for your order, please click the button below to pay with debit/credit card using Paystack.</p>';
+		if( 'embed' == $this->payment_page ) {
 
-		echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
-			';
+			echo '<p style="text-align: center; font-weight: bold;">Thank you for your order, please enter your card details below to pay with your debit/credit card using Paystack.</p>';
+
+			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
+
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form>
+				<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #EF3315; display: block; outline: none;">Cancel order &amp; restore cart</a></div>
+				';
+
+		} else {
+
+			echo '<p>Thank you for your order, please click the button below to pay with debit/credit card using Paystack.</p>';
+
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
+				';
+
+		}
 
 	}
 

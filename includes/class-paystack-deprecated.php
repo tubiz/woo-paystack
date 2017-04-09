@@ -13,7 +13,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	public function __construct() {
 		$this->id		   			= 'paystack';
 		$this->method_title 	    = 'Paystack';
-		$this->method_description   = 'Make payment using your debit and credit cards';
 		$this->has_fields 	    	= true;
 
 		// Load the form fields
@@ -23,9 +22,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 		$this->init_settings();
 
 		// Get setting values
-		$this->title                = 'Debit/Credit Cards';
+		$this->title 				= $this->get_option( 'title' );
+		$this->description 			= $this->get_option( 'description' );
 		$this->enabled            	= $this->get_option( 'enabled' );
 		$this->testmode             = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+
+		$this->payment_page         = $this->get_option( 'payment_page' );
 
 		$this->test_public_key  	= $this->get_option( 'test_public_key' );
 		$this->test_secret_key  	= $this->get_option( 'test_secret_key' );
@@ -166,6 +168,32 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 				'default'     => 'no',
 				'desc_tip'    => true
 			),
+			'title' => array(
+				'title' 		=> 'Title',
+				'type' 			=> 'text',
+				'description' 	=> 'This controls the payment method title which the user sees during checkout.',
+    			'desc_tip'      => true,
+				'default' 		=> 'Debit/Credit Cards'
+			),
+			'description' => array(
+				'title' 		=> 'Description',
+				'type' 			=> 'textarea',
+				'description' 	=> 'This controls the payment method description which the user sees during checkout.',
+    			'desc_tip'      => true,
+				'default' 		=> 'Make payment using your debit and credit cards'
+			),
+			'payment_page' => array(
+				'title'       => 'Payment Page',
+				'type'        => 'select',
+				'description' => 'Inline shows the payment popup on the page while Inline Embed shows the payment page directly on the page',
+				'default'     => '',
+				'desc_tip'    => false,
+				'options'     => array(
+					''   		=> 'Select One',
+					'inline'   	=> 'Inline',
+					'embed' 	=> 'Inline Embed'
+				)
+			),
 			'testmode' => array(
 				'title'       => 'Test mode',
 				'label'       => 'Enable Test Mode',
@@ -208,8 +236,8 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 	 */
 	public function payment_scripts() {
 
-		if ( is_checkout() ) {
-			wp_enqueue_style( 'paystack', plugins_url( 'assets/css/paystack.css',  WC_PAYSTACK_MAIN_FILE ) );
+		if ( $this->description ) {
+			echo wpautop( wptexturize( $this->description ) );
 		}
 
 		if ( ! is_checkout_pay_page() ) {
@@ -218,9 +246,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), '1.0.0', true );
+		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, true );
 
-		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array('paystack'), '1.0.0', true );
+		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array('paystack'), WC_PAYSTACK_VERSION, true );
 
 		$paystack_params = array(
 			'key'	=> $this->public_key
@@ -277,10 +305,24 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 		$order = wc_get_order( $order_id );
 
-		echo '<p>Thank you for your order, please click the button below to pay with debit/credit card using Paystack.</p>';
+		if( 'embed' == $this->payment_page ) {
 
-		echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
-			';
+			echo '<p style="text-align: center; font-weight: bold;">Thank you for your order, please enter your card details below to pay with your debit/credit card using Paystack.</p>';
+
+			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
+
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form>
+				<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #EF3315; display: block; outline: none;">Cancel order &amp; restore cart</a></div>
+				';
+
+		} else {
+
+			echo '<p>Thank you for your order, please click the button below to pay with debit/credit card using Paystack.</p>';
+
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
+				';
+
+		}
 
 	}
 

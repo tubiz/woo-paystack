@@ -1,10 +1,10 @@
 === Paystack WooCommerce Payment Gateway ===
 Contributors: tubiz
-Donate link: http://bosun.me/donate
+Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 Requires at least: 4.4
 Tested up to: 4.7
-Stable tag: 3.1.1
+Stable tag: 4.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -120,6 +120,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 4.0.0, April 10, 2017 =
+* 	New: Add support for Paystack Inline Embed.
+*  	New: Add support for sending additional order details to Paystack
+
 = 3.1.1, February 13, 2017 =
 * 	New: Changed Paystack payment methods icon.
 
@@ -142,15 +146,15 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 = 1.1.0, April 22, 2016 =
 *   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
 
-= 1.0.0, February 3, 2016=
+= 1.0.0, February 3, 2016 =
 *   First release
 
 
 
 == Upgrade Notice ==
 
-= 3.1.1 =
-*	Changed Paystack payment methods icon.
+= 4.0.0 =
+*	Add support for Paystack Inline Embed and sending additional order details to Paystack
 
 
 
@@ -160,6 +164,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 2. Paystack WooCommerce Payment Gateway on the checkout page
 
-3. Paystack payment field displayed directly on your site
+3. Paystack inline payment page
 
-4. Manage saved cards from your account page
+4. Paystack inline embed payment page
+
+5. Manage saved cards from your account page

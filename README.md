@@ -2,7 +2,7 @@
 
 **Contributors:** tubiz
 
-**Donate link:** http://bosun.me/donate
+**Donate link:** https://bosun.me/donate
 
 **Tags:** paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 
@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.7
 
-**Stable tag:** 3.1.1
+**Stable tag:** 4.0.0
 
 **License:** GPLv2 or later
 
@@ -141,6 +141,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 4.0.0, April 10, 2017 ###
+* 	New: Add support for Paystack Inline Embed.
+*  	New: Add support for sending additional order details to Paystack
+
 ### 3.1.1, February 13, 2017 ###
 * 	New: Changed Paystack payment methods icon.
 
@@ -176,28 +180,33 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 3.1.1
-*	Changed Paystack payment methods icon.
+### 4.0.0
+*	Add support for Paystack Inline Embed and sending additional order details to Paystack
 
 
 
 ## Screenshots ##
 
-###1. Paystack WooCommerce Payment Gateway Setting Page
+### 1. Paystack WooCommerce Payment Gateway Setting Page
 ###
-![Screenshot 1](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-1.png)
+![Screenshot 1](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-1.png)
 
 
-###2. Paystack WooCommerce Payment Gateway on the checkout page
+### 2. Paystack WooCommerce Payment Gateway on the checkout page
 ###
-![Screenshot 2](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-2.png)
+![Screenshot 2](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-2.png)
 
 
-###3. Paystack payment field displayed directly on your site
+### 3. Paystack inline payment page
 ###
-![Screenshot 3](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-3.png)
+![Screenshot 3](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-3.png)
 
 
-###4. Manage saved cards from your account page
+### 4. Paystack inline embed payment page
 ###
-![Screenshot 4](https://dl.dropboxusercontent.com/u/28591673/woo-paystack/screenshot-4.png)
+![Screenshot 4](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-4.png)
+
+
+### 5. Manage saved cards from your account page
+###
+![Screenshot 5](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-5.png)
