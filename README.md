@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.7
 
-**Stable tag:** 4.0.0
+**Stable tag:** 4.0.1
 
 **License:** GPLv2 or later
 
@@ -141,6 +141,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 4.0.1, April 10, 2017 ###
+* 	Fix: Fatal error if WooCommerce 2.6.14 and below is installed
+
 ### 4.0.0, April 10, 2017 ###
 * 	New: Add support for Paystack Inline Embed.
 *  	New: Add support for sending additional order details to Paystack
@@ -180,8 +183,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 4.0.0
-*	Add support for Paystack Inline Embed and sending additional order details to Paystack
+### 4.0.1
+*	Fix fatal error if WooCommerce 2.6.14 and below is installed
 
 
 

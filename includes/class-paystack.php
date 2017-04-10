@@ -379,7 +379,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			$order_id  = absint( get_query_var( 'order-pay' ) );
 
 			$order        	= wc_get_order( $order_id );
-			$email 			= $order->get_billing_email();
+			$email 			= $order->billing_email;
 			$amount 		= $order->order_total * 100;
 
 			$txnref		 	= $order_id . '_' .time();
@@ -404,7 +404,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				if( $this->meta_name ) {
 
-					$paystack_params['meta_name'] = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
+					$paystack_params['meta_name'] = $order->billing_first_name . ' ' . $order->billing_last_name;
 
 				}
 
@@ -416,7 +416,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				if( $this->meta_phone ) {
 
-					$paystack_params['meta_phone'] = $order->get_billing_phone();
+					$paystack_params['meta_phone'] = $order->billing_phone;
 
 				}
 
@@ -427,8 +427,8 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 					$products 		= '';
 
 					foreach ( $line_items as $item_id => $item ) {
-						$name = $item->get_name();
-						$quantity = $item->get_quantity();
+						$name = $item['name'];
+						$quantity = $item['qty'];
 						$products .= $name .' (Qty: ' . $quantity .')';
 						$products .= ' | ';
 					}
