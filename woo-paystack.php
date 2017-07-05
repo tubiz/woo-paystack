@@ -3,9 +3,9 @@
 	Plugin Name:	Paystack WooCommerce Payment Gateway
 	Plugin URI: 	https://paystack.com
 	Description: 	WooCommerce payment gateway for Paystack
-	Version: 		4.0.1
+	Version: 		4.1.0
 	Author: 		Tunbosun Ayinla
-	Author URI: 	http://bosun.me
+	Author URI: 	https://bosun.me
 	License:        GPL-2.0+
 	License URI:    http://www.gnu.org/licenses/gpl-2.0.txt
 */
@@ -14,10 +14,9 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 
-define( 'WC_PAYSTACK_VERSION', '4.0.1' );
+define( 'WC_PAYSTACK_VERSION', '4.1.0' );
 
 function tbz_wc_paystack_init() {
 

@@ -164,7 +164,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
     	<h3>Paystack</h3>
 
-        <h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
+        <h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer" target="_blank" rel="noopener noreferrer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
 
         <?php
 
@@ -365,9 +365,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
-		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, true );
+		wp_enqueue_script( 'jquery' );
 
-		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array('paystack'), WC_PAYSTACK_VERSION, true );
+		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, false );
+
+		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack'. $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array( 'jquery', 'paystack' ), WC_PAYSTACK_VERSION, false );
 
 		$paystack_params = array(
 			'key'	=> $this->public_key
@@ -375,16 +377,21 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
 
-			$order_key = urldecode( $_GET['key'] );
-			$order_id  = absint( get_query_var( 'order-pay' ) );
+			$order_key 		= urldecode( $_GET['key'] );
+			$order_id  		= absint( get_query_var( 'order-pay' ) );
 
-			$order        	= wc_get_order( $order_id );
-			$email 			= $order->billing_email;
-			$amount 		= $order->order_total * 100;
+			$order    		= wc_get_order( $order_id );
+
+			$email  		= method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+
+			$amount 		= $order->get_total() * 100;
 
 			$txnref		 	= $order_id . '_' .time();
 
-			if ( $order->id == $order_id && $order->order_key == $order_key ) {
+			$the_order_id 	= method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
+	        $the_order_key 	= method_exists( $order, 'get_order_key' ) ? $order->get_order_key() : $order->order_key;
+
+			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
 				$paystack_params['email'] 				= $email;
 				$paystack_params['amount']  			= $amount;
@@ -404,7 +411,10 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				if( $this->meta_name ) {
 
-					$paystack_params['meta_name'] = $order->billing_first_name . ' ' . $order->billing_last_name;
+					$first_name  	= method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+					$last_name  	= method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+
+					$paystack_params['meta_name'] = $first_name . ' ' . $last_name;
 
 				}
 
@@ -416,7 +426,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				if( $this->meta_phone ) {
 
-					$paystack_params['meta_phone'] = $order->billing_phone;
+					$billing_phone  	= method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
+
+					$paystack_params['meta_phone'] = $billing_phone;
 
 				}
 
@@ -448,7 +460,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				}
 
-				if( $this->meta_shippingg_address ) {
+				if( $this->meta_shipping_address ) {
 
 					$shipping_address 	= $order->get_formatted_shipping_address();
 					$shipping_address 	= esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
@@ -591,7 +603,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 	        		$order_total		= $order->get_total();
 
-					$order_currency 	= $order->get_order_currency();
+					$order_currency 	= method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
 					$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
 
@@ -834,7 +846,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				exit;
 	        }
 
-			$order_currency 	= $order->get_order_currency();
+			$order_currency 	= method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
 			$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
 

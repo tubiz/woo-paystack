@@ -3,8 +3,8 @@ Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
 Requires at least: 4.4
-Tested up to: 4.7
-Stable tag: 4.0.1
+Tested up to: 4.8
+Stable tag: 4.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -14,15 +14,15 @@ Paystack WooCommerce Payment Gateway allows you to accept online payments from l
 
 == Description ==
 
-This is a Paystack payment gateway for Woocommerce.
+This is a Paystack payment gateway for WooCommerce.
 
 Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian merchants with the tools and services needed to accept online payments from local and international customers using MasterCard, Visa and Verve Cards.
 
 To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
 
-Paystack Woocommerce Payment Gateway allows you to accept payment on your Woocommerce store using MasterCard, Visa and Verve Cards.
+Paystack WooCommerce Payment Gateway allows you to accept payment on your Woocommerce store using MasterCard, Visa and Verve Cards.
 
-With this Paystack Woocommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
+With this Paystack WooCommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
 
 * __MasterCard__
 * __Visa__
@@ -120,6 +120,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 4.1.0, July 7, 2017 =
+*	Fix: Deprecated WooCommerce 2.X functions
+
 = 4.0.1, April 10, 2017 =
 * 	Fix: Fatal error if WooCommerce 2.6.14 and below is installed
 
@@ -156,8 +159,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 4.0.1 =
-*	Fix fatal error if WooCommerce 2.6.14 and below is installed
+= 4.1.0 =
+*	Fix: Deprecated WooCommerce 2.X functions
 
 
 
