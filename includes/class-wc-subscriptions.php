@@ -86,7 +86,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 			$email 			= $order->billing_email;
 			$order_amount 	= $amount * 100;
 
-			$paystack_url = 'https://api.paystack.co/transaction/charge_authorization';
+			$paystack_url 	= 'https://api.paystack.co/transaction/charge_authorization';
 
 			$headers = array(
 				'Content-Type'	=> 'application/json',

@@ -11,12 +11,28 @@ jQuery( function( $ ) {
 		init: function() {
 
 			// Toggle Custom Metadata settings.
-			$( '#woocommerce_paystack_custom_metadata' ).change( function() {
+			$( '.wc-paystack-metadata' ).change( function() {
 				if ( $( this ).is( ':checked' ) ) {
-					$( '#woocommerce_paystack_meta_order_id, #woocommerce_paystack_meta_name, #woocommerce_paystack_meta_email, #woocommerce_paystack_meta_phone, #woocommerce_paystack_meta_billing_address, #woocommerce_paystack_meta_shipping_address, #woocommerce_paystack_meta_products' ).closest( 'tr' ).show();
+					$( '.wc-paystack-meta-order-id, .wc-paystack-meta-name, .wc-paystack-meta-email, .wc-paystack-meta-phone, .wc-paystack-meta-billing-address, .wc-paystack-meta-shipping-address, .wc-paystack-meta-products' ).closest( 'tr' ).show();
 				} else {
-					$( '#woocommerce_paystack_meta_order_id, #woocommerce_paystack_meta_name, #woocommerce_paystack_meta_email, #woocommerce_paystack_meta_phone, #woocommerce_paystack_meta_billing_address, #woocommerce_paystack_meta_shipping_address, #woocommerce_paystack_meta_products' ).closest( 'tr' ).hide();
+					$( '.wc-paystack-meta-order-id, .wc-paystack-meta-name, .wc-paystack-meta-email, .wc-paystack-meta-phone, .wc-paystack-meta-billing-address, .wc-paystack-meta-shipping-address, .wc-paystack-meta-products' ).closest( 'tr' ).hide();
 				}
+			}).change();
+
+			// Toggle Bank filters settings.
+			$( '.wc-paystack-payment-channels' ).on( 'change', function () {
+
+				var channels = $(".wc-paystack-payment-channels").val();
+
+				if( $.inArray( 'card', channels ) != '-1' ) {
+					$( '.wc-paystack-cards-allowed' ).closest( 'tr' ).show();
+					$( '.wc-paystack-banks-allowed' ).closest( 'tr' ).show();
+				}
+				else{
+					$( '.wc-paystack-cards-allowed' ).closest( 'tr' ).hide();
+					$( '.wc-paystack-banks-allowed' ).closest( 'tr' ).hide();
+				}
+
 			}).change();
 
 		}

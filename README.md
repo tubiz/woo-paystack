@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.8
 
-**Stable tag:** 4.1.0
+**Stable tag:** 5.0.0
 
 **License:** GPLv2 or later
 
@@ -25,17 +25,18 @@ Paystack WooCommerce Payment Gateway allows you to accept online payments from l
 
 This is a Paystack payment gateway for WooCommerce.
 
-Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian merchants with the tools and services needed to accept online payments from local and international customers using MasterCard, Visa and Verve Cards.
+Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian merchants with the tools and services needed to accept online payments from local and international customers using MasterCard, Visa, Verve Cards and Bank Accounts.
 
 To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
 
-Paystack WooCommerce Payment Gateway allows you to accept payment on your Woocommerce store using MasterCard, Visa and Verve Cards.
+Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using MasterCard, Visa, Verve Cards and bank accounts.
 
 With this Paystack WooCommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
 
 * __MasterCard__
 * __Visa__
 * __Verve Card__
+* __Bank Account__
 
 
 ### Note
@@ -45,7 +46,7 @@ This plugin is meant to be used by merchants in Nigeria.
 
 ### Plugin Features
 
-*   __Accept payment__ via MasterCard, Visa and Verve Card.
+*   __Accept payment__ via MasterCard, Visa, Verve Card and Bank Accounts.
 * 	__Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
 * 	__Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
 
@@ -141,6 +142,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.0.0, August 25, 2017 ###
+*	New: Add support for Paystack custom filters
+*	New: Create additional Paystacks gateway (max of 5) using different custom filters. You can create a gateway that accepts only Verve cards, a gateway that accepts only bank account payments, a gateway that accepts only GTB issued Mastercard.
+
 ### 4.1.0, July 7, 2017 ###
 *	Fix: Deprecated WooCommerce 2.X functions
 
@@ -186,8 +191,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 4.1.0
-*	Fix: Deprecated WooCommerce 2.X functions
+### 5.0.0 ###
+*	New: Add support for Paystack custom filters
+*	New: Create additional Paystack gateways (max of 5) using different custom filters. You can create a gateway that accepts only Verve cards, a gateway that accepts only bank account payments, a gateway that accepts only GTB issued Mastercard.
 
 
 

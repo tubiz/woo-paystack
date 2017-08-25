@@ -89,6 +89,24 @@ jQuery( function( $ ) {
         return custom_fields;
     }
 
+    function wcPaystackCustomFilters() {
+
+        var custom_filters = new Object();
+
+        if( wc_paystack_params.banks_allowed ) {
+
+            custom_filters['banks'] = wc_paystack_params.banks_allowed;
+
+        }
+
+        if( wc_paystack_params.cards_allowed ) {
+
+            custom_filters['card_brands'] = wc_paystack_params.cards_allowed;
+        }
+
+        return custom_filters;
+    }
+
     function wcPaystackFormHandler() {
 
         if ( paystack_submit ) {
@@ -97,9 +115,19 @@ jQuery( function( $ ) {
         }
 
         var $form            = $( 'form#payment-form, form#order_review' ),
-            paystack_txnref  = $form.find( 'input.paystack_txnref' );
+            paystack_txnref  = $form.find( 'input.paystack_txnref' ),
+            bank             = "false",
+            card             = "false";
 
         paystack_txnref.val( '' );
+
+        if( wc_paystack_params.bank_channel ) {
+            bank = "true";
+        }
+
+        if( wc_paystack_params.card_channel ) {
+            card = "true";
+        }
 
         var paystack_callback = function( response ) {
             $form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
@@ -126,13 +154,18 @@ jQuery( function( $ ) {
             ref: wc_paystack_params.txnref,
             currency: wc_paystack_params.currency,
             callback: paystack_callback,
+            bank: bank,
+            card: card,
             metadata: {
-                custom_fields: wcPaystackCustomFields()
+                custom_fields: wcPaystackCustomFields(),
+                custom_filters: wcPaystackCustomFilters()
             },
             onClose: function() {
                 $( this.el ).unblock();
             }
         });
+
+        console.log( handler );
 
         handler.openIframe();
 
@@ -148,9 +181,19 @@ jQuery( function( $ ) {
         }
 
         var $form            = $( 'form#payment-form, form#order_review' ),
-            paystack_txnref  = $form.find( 'input.paystack_txnref' );
+            paystack_txnref  = $form.find( 'input.paystack_txnref' ),
+            bank             = "false",
+            card             = "false";
 
         paystack_txnref.val( '' );
+
+        if( wc_paystack_params.bank_channel ) {
+            bank = "true";
+        }
+
+        if( wc_paystack_params.card_channel ) {
+            card = "true";
+        }
 
         var paystack_callback = function( response ) {
 
@@ -181,10 +224,13 @@ jQuery( function( $ ) {
             amount: wc_paystack_params.amount,
             ref: wc_paystack_params.txnref,
             currency: wc_paystack_params.currency,
-            container: 'paystackWooCommerceEmbedContainer',
+            container: "paystackWooCommerceEmbedContainer",
             callback: paystack_callback,
+            bank: bank,
+            card: card,
             metadata: {
-                custom_fields: wcPaystackCustomFields()
+                custom_fields: wcPaystackCustomFields(),
+                custom_filters: wcPaystackCustomFilters()
             },
             onClose: function() {
                 $( this.el ).unblock();

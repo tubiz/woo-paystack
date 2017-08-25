@@ -255,6 +255,21 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'description' => 'Enter your Live Public Key here.',
 				'default'     => ''
 			),
+			'custom_gateways' => array(
+				'title'       => 'Additional Paystack Gateways',
+				'type'        => 'select',
+				'description' => 'Create additional custom Paystack based gateways. This allows you to create additional Paystack gateways using custom filters. You can create a gateway that accepts only verve cards, a gateway that accepts only bank payment, a gateway that accepts a specific bank issued cards.',
+				'default'     => '',
+				'desc_tip'    => true,
+				'options' => array(
+					''		=> 'Select One',
+					'1'  	=> '1 gateway',
+					'2'		=> '2 gateways',
+					'3' 	=> '3 gateways',
+					'4' 	=> '4 gateways',
+					'5' 	=> '5 gateways',
+				),
+			),
 			'saved_cards' 	  => array(
 				'title'       => 'Saved Cards',
 				'label'       => 'Enable Payment via Saved Cards',
@@ -267,6 +282,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Custom Metadata',
 				'label'       => 'Enable Custom Metadata',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-metadata',
 				'description' => 'If enabled, you will be able to send more information about the order to Paystack.',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -275,6 +291,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Order ID',
 				'label'       => 'Send Order ID',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-order-id',
 				'description' => 'If checked, the Order ID will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -283,6 +300,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Customer Name',
 				'label'       => 'Send Customer Name',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-name',
 				'description' => 'If checked, the customer full name will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -291,6 +309,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Customer Email',
 				'label'       => 'Send Customer Email',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-email',
 				'description' => 'If checked, the customer email address will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -299,6 +318,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Customer Phone',
 				'label'       => 'Send Customer Phone',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-phone',
 				'description' => 'If checked, the customer phone will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -307,6 +327,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Order Billing Address',
 				'label'       => 'Send Order Billing Address',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-billing-address',
 				'description' => 'If checked, the order billing address will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -315,6 +336,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Order Shipping Address',
 				'label'       => 'Send Order Shipping Address',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-shipping-address',
 				'description' => 'If checked, the order shipping address will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -323,6 +345,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'title'       => 'Product(s) Purchased',
 				'label'       => 'Send Product(s) Purchased',
 				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-meta-products',
 				'description' => 'If checked, the product(s) purchased will be sent to Paystack',
 				'default'     => 'no',
 				'desc_tip'    => true
@@ -363,6 +386,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			return;
 		}
 
+		if ( $this->enabled === 'no' ) {
+			return;
+		}
+
+		$order_key 		= urldecode( $_GET['key'] );
+		$order_id  		= absint( get_query_var( 'order-pay' ) );
+
+		$order  		= wc_get_order( $order_id );
+
+		if( $this->id !== $order->get_payment_method() ) {
+			return;
+		}
+
 		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
 
 		wp_enqueue_script( 'jquery' );
@@ -376,11 +412,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		);
 
 		if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
-
-			$order_key 		= urldecode( $_GET['key'] );
-			$order_id  		= absint( get_query_var( 'order-pay' ) );
-
-			$order    		= wc_get_order( $order_id );
 
 			$email  		= method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
@@ -682,7 +713,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		if( 'embed' == $this->payment_page ) {
 
-			echo '<p style="text-align: center; font-weight: bold;">Thank you for your order, please enter your card details below to pay with your debit/credit card using Paystack.</p>';
+			echo '<p style="text-align: center; font-weight: bold;">Thank you for your order, please make payment below using Paystack.</p>';
 
 			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
 
@@ -692,7 +723,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		} else {
 
-			echo '<p>Thank you for your order, please click the button below to pay with debit/credit card using Paystack.</p>';
+			echo '<p>Thank you for your order, please click the button below to pay with Paystack.</p>';
 
 			echo '<div id="paystack_form"><form id="order_review" method="post" action="'. WC()->api_request_url( 'Tbz_WC_Paystack_Gateway' ) .'"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
 				';

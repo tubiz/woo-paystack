@@ -3,7 +3,7 @@
 	Plugin Name:	Paystack WooCommerce Payment Gateway
 	Plugin URI: 	https://paystack.com
 	Description: 	WooCommerce payment gateway for Paystack
-	Version: 		4.1.0
+	Version: 		5.0.0
 	Author: 		Tunbosun Ayinla
 	Author URI: 	https://bosun.me
 	License:        GPL-2.0+
@@ -16,7 +16,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 
-define( 'WC_PAYSTACK_VERSION', '4.1.0' );
+define( 'WC_PAYSTACK_VERSION', '5.0.0' );
 
 function tbz_wc_paystack_init() {
 
@@ -25,20 +25,35 @@ function tbz_wc_paystack_init() {
 	}
 
 	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
+
 		require_once dirname( __FILE__ ) . '/includes/class-paystack.php';
+
+		require_once dirname( __FILE__ ) . '/includes/class-paystack-custom-gateway.php';
+
+		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-gateway-one.php';
+		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-gateway-two.php';
+		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-gateway-three.php';
+		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-gateway-four.php';
+		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-gateway-five.php';
+
 	} else{
+
 		require_once dirname( __FILE__ ) . '/includes/class-paystack-deprecated.php';
+
 	}
 
-	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
+	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {
+
+		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
+
 	}
 
 	require_once dirname( __FILE__ ) . '/includes/polyfill.php';
 
-	add_filter( 'woocommerce_payment_gateways', 'tbz_wc_add_paystack_gateway' );
+	add_filter( 'woocommerce_payment_gateways', 'tbz_wc_add_paystack_gateway', 99 );
 
 }
-add_action( 'plugins_loaded', 'tbz_wc_paystack_init', 0 );
+add_action( 'plugins_loaded', 'tbz_wc_paystack_init', 99 );
 
 
 /**
@@ -67,22 +82,59 @@ function tbz_wc_add_paystack_gateway( $methods ) {
 		$methods[] = 'Tbz_WC_Paystack_Gateway';
 	}
 
+	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
+
+		$settings 		 = get_option( 'woocommerce_paystack_settings', '' );
+		$custom_gateways = $settings['custom_gateways'];
+
+		switch ( $custom_gateways ) {
+			case '5':
+				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Three';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Four';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Five';
+			break;
+			case '4':
+				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Three';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Four';
+			break;
+			case '3':
+				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Three';
+			break;
+			case '2':
+				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
+				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
+			break;
+			case '1':
+				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
+			break;
+
+			default:
+			break;
+		}
+
+	}
+
 	return $methods;
 
 }
 
 
 /**
-* Display the testmode notice
+* Display the test mode notice
 **/
 function tbz_wc_paystack_testmode_notice(){
 
 	$paystack_settings = get_option( 'woocommerce_paystack_settings' );
 
-	$enabled 	= $paystack_settings['testmode'];
-	$test_mode 	= $paystack_settings['enabled'];
+	$test_mode 	= $paystack_settings['testmode'];
 
-	if ( ( 'yes' == $test_mode ) && ( 'yes' == $enabled ) ) {
+	if ( 'yes' == $test_mode ) {
     ?>
 	    <div class="update-nag">
 	        Paystack testmode is still enabled, Click <a href="<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=wc-settings&tab=checkout&section=paystack">here</a> to disable it when you want to start accepting live payment on your site.
