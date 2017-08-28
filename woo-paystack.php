@@ -15,6 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
+define( 'WC_PAYSTACK_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
 define( 'WC_PAYSTACK_VERSION', '5.0.0' );
 
@@ -95,27 +96,27 @@ function tbz_wc_add_paystack_gateway( $methods ) {
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Four';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Five';
 			break;
-			case '4':
+				case '4':
 				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Three';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Four';
 			break;
-			case '3':
+				case '3':
 				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Three';
 			break;
-			case '2':
+				case '2':
 				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
 				$methods[] = 'Tbz_WC_Paystack_Gateway_Two';
-			break;
+				break;
 			case '1':
 				$methods[] = 'Tbz_WC_Paystack_Gateway_One';
-			break;
+				break;
 
 			default:
-			break;
+				break;
 		}
 
 	}

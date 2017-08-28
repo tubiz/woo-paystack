@@ -21,7 +21,7 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
 				'type' 			=> 'text',
 				'description' 	=> 'This controls the payment method title which the user sees during checkout.',
     			'desc_tip'      => true,
-				'default' 		=> ''
+				'default' 		=> 'Paystack'
 			),
 			'description' => array(
 				'title' 		=> 'Description',
@@ -79,6 +79,19 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
 				'options'     	=> $this->banks(),
 				'custom_attributes' => array(
 					'data-placeholder' 	=> 'Select banks',
+				),
+			),
+			'payment_icons' => array(
+				'title'     	=> 'Payment Icons',
+				'type'    		=> 'multiselect',
+				'class'  		=> 'wc-enhanced-select wc-paystack-payment-icons',
+				'description' 	=> 'The payment icons to be displayed on the checkout page.',
+				'default'     	=> '',
+				'desc_tip'    	=> true,
+				'select_buttons'=> true,
+				'options'     	=> $this->payment_icons(),
+				'custom_attributes' => array(
+					'data-placeholder' 	=> 'Select payment icons',
 				),
 			),
 			'custom_metadata' 	  => array(
@@ -195,7 +208,7 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
 
     	return array (
 			'card' 			=> 'Cards',
-			'bank'   		=> 'Banks'
+			'bank'   		=> 'Banks',
     	);
 
     }
@@ -209,7 +222,7 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
     	return array (
 			'visa'   		=> 'Visa',
 			'verve' 		=> 'Verve',
-			'mastercard' 	=> 'Mastercard'
+			'mastercard' 	=> 'Mastercard',
     	);
 
     }
@@ -231,17 +244,61 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
 			'214' 	=> 'First City Monument Bank',
 			'058' 	=> 'Guaranty Trust Bank',
 			'030' 	=> 'Heritage Bank',
+			'301'	=> 'Jaiz Bank',
 			'082' 	=> 'Keystone Bank',
-			'014' 	=> 'MainStreet Bank',
+			'526'	=> 'Parallex Bank',
+			'101'	=> 'Providus Bank',
 			'076' 	=> 'Skye Bank',
 			'221' 	=> 'Stanbic IBTC Bank',
 			'068' 	=> 'Standard Chartered Bank',
 			'232' 	=> 'Sterling Bank',
+			'100'	=> 'Suntrust Bank',
 			'032' 	=> 'Union Bank of Nigeria',
 			'033' 	=> 'United Bank For Africa',
 			'215' 	=> 'Unity Bank',
 			'035' 	=> 'Wema Bank',
-			'057' 	=> 'Zenith Bank'
+			'057' 	=> 'Zenith Bank',
+    	);
+
+    }
+
+
+    /**
+     * Payment Icons
+    */
+    public function payment_icons() {
+
+    	return array(
+    		'verve'			=> 'Verve ',
+    		'visa'			=> 'Visa',
+    		'mastercard'	=> 'Mastercard',
+    		'paystackwhite'	=> 'Secured by Paystack White',
+    		'paystackblue'	=> 'Secured by Paystack Blue',
+    		'paystack-wc'	=> 'Paystack',
+			'access'   		=> 'Access Bank',
+			'citibank' 		=> 'Citibank Nigeria',
+			'diamond' 		=> 'Diamond Bank',
+			'ecobank' 		=> 'Ecobank Nigeria',
+			'enterprise' 	=> 'Enterprise Bank',
+			'fidelity' 		=> 'Fidelity Bank',
+			'firstbank' 	=> 'First Bank of Nigeria',
+			'fcmb' 			=> 'First City Monument Bank',
+			'gtbank' 		=> 'Guaranty Trust Bank',
+			'heritage' 		=> 'Heritage Bank',
+			'jaiz'			=> 'Jaiz Bank',
+			'keystone' 		=> 'Keystone Bank',
+			'parallex'		=> 'Parallex Bank',
+			'providus'		=> 'Providus Bank',
+			'skye' 			=> 'Skye Bank',
+			'stanbic' 		=> 'Stanbic IBTC Bank',
+			'standard' 		=> 'Standard Chartered Bank',
+			'sterling' 		=> 'Sterling Bank',
+			'suntrust'		=> 'Suntrust Bank',
+			'union' 		=> 'Union Bank of Nigeria',
+			'uba' 			=> 'United Bank For Africa',
+			'unity' 		=> 'Unity Bank',
+			'wema' 			=> 'Wema Bank',
+			'zenith' 		=> 'Zenith Bank',
     	);
 
     }

@@ -32,7 +32,7 @@ class Tbz_WC_Paystack_Gateway_Three extends Tbz_WC_Paystack_Custom_Gateway {
 		$this->paystack_settings 	= get_option( 'woocommerce_paystack_settings', '' );
 
 		// Get setting values
-		$this->title 				= $this->get_option( 'title' );
+		$this->title 				= $gateway_title;
 		$this->description 			= $this->get_option( 'description' );
 		$this->enabled          	= $this->get_option( 'enabled' );
 
@@ -52,6 +52,8 @@ class Tbz_WC_Paystack_Gateway_Three extends Tbz_WC_Paystack_Custom_Gateway {
 		$this->live_secret_key  	= $this->paystack_settings[ 'live_secret_key' ];
 
 		$this->saved_cards         	= $this->paystack_settings[ 'saved_cards' ] === 'yes' ? true : false;
+
+		$this->payment_icons 		= $this->get_option( 'payment_icons' );
 
 		$this->custom_metadata      = $this->get_option( 'custom_metadata' ) === 'yes' ? true : false;
 
@@ -81,6 +83,26 @@ class Tbz_WC_Paystack_Gateway_Three extends Tbz_WC_Paystack_Custom_Gateway {
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'add_gateway_to_checkout' ) );
 
 	}
+
+
+	/**
+	 * Display the selected payment icon
+	 */
+	public function get_icon() {
+		$icon_html = '<img src="' . WC_HTTPS::force_https_url( WC_PAYSTACK_URL . '/assets/images/paystack.png' ) . '" alt="paystack" style="height: 40px; margin-right: 0.4em;margin-bottom: 0.6em;" />';
+		$icon      = $this->payment_icons;
+
+		if( is_array( $icon ) ) {
+
+			foreach ( $icon as $i ) {
+				$icon_html .= '<img src="' . WC_HTTPS::force_https_url( WC_PAYSTACK_URL . '/assets/images/'. $i .'.png' ) . '" alt="'. $i .'" style="height: 40px; margin-right: 0.4em;margin-bottom: 0.6em;" />';
+			}
+
+		}
+
+		return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
+	}
+
 
 	/**
 	 * Outputs scripts used for paystack payment
@@ -244,6 +266,7 @@ class Tbz_WC_Paystack_Gateway_Three extends Tbz_WC_Paystack_Custom_Gateway {
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
 
 	}
+
 
     /**
      * Add Gateway to checkout page
