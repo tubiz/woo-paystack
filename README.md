@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.8
 
-**Stable tag:** 5.0.0
+**Stable tag:** 5.0.1
 
 **License:** GPLv2 or later
 
@@ -142,6 +142,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.0.1, September 14, 2017 ###
+*	Fix: Fatal error on the checkout page if WooCommerce 2.6.14 and below is installed
+
 ### 5.0.0, August 29, 2017 ###
 *	New: Add support for Paystack custom filters
 *	New: Create additional Paystack gateways (max of 5) using different custom filters. You can create a gateway that accepts only Verve cards, a gateway that accepts only bank account payments, a gateway that accepts only GTB issued Mastercard.
@@ -191,9 +194,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.0.0 ###
-Version 5.0.0 add full support for Paystack custom filters and creating additional Paystack gateways (maximum of 5). You can create a gateway that accepts only Verve cards, a gateway that accepts only bank account payments, a gateway that accepts only Guaranty Trust Bank (GTB) issued Mastercard, a gateway that accepts only Verve cards. All this are possible using Paystack custom filters. You can also set the payment icons to be displayed on the checkout page for these additional gateways. You can read more about this version [here](https://bosun.me/paystack-woocommerce-payment-gateway-v5-0-0) before upgrading.
-
+### 5.0.1 ###
+*	This fix a fatal error on the checkout page if WooCommerce 2.6.14 and below is installed
 
 
 ## Screenshots ##

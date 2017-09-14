@@ -395,7 +395,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		$order  		= wc_get_order( $order_id );
 
-		if( $this->id !== $order->get_payment_method() ) {
+		$payment_method = method_exists( $order, 'get_payment_method' ) ? $order->get_payment_method() : $order->payment_method;
+
+		if( $this->id !== $payment_method ) {
 			return;
 		}
 
