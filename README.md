@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.8
 
-**Stable tag:** 5.0.1
+**Stable tag:** 5.0.2
 
 **License:** GPLv2 or later
 
@@ -142,6 +142,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.0.2, September 15, 2017 ###
+*	Fix: Illegal string offset warnings when plugin is newly installed
+
 ### 5.0.1, September 14, 2017 ###
 *	Fix: Fatal error on the checkout page if WooCommerce 2.6.14 and below is installed
 
@@ -194,8 +197,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.0.1 ###
-*	This fix a fatal error on the checkout page if WooCommerce 2.6.14 and below is installed
+### 5.0.2 ###
+*	This fix an illegal string offset warnings when the plugin is newly installed
 
 
 ## Screenshots ##

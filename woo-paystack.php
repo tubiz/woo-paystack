@@ -3,7 +3,7 @@
 	Plugin Name:	Paystack WooCommerce Payment Gateway
 	Plugin URI: 	https://paystack.com
 	Description: 	WooCommerce payment gateway for Paystack
-	Version: 		5.0.1
+	Version: 		5.0.2
 	Author: 		Tunbosun Ayinla
 	Author URI: 	https://bosun.me
 	License:        GPL-2.0+
@@ -86,7 +86,7 @@ function tbz_wc_add_paystack_gateway( $methods ) {
 	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
 
 		$settings 		 = get_option( 'woocommerce_paystack_settings', '' );
-		$custom_gateways = $settings['custom_gateways'];
+		$custom_gateways = isset( $settings['custom_gateways'] ) ? $settings['custom_gateways'] : '';
 
 		switch ( $custom_gateways ) {
 			case '5':
@@ -133,7 +133,7 @@ function tbz_wc_paystack_testmode_notice(){
 
 	$paystack_settings = get_option( 'woocommerce_paystack_settings' );
 
-	$test_mode 	= $paystack_settings['testmode'];
+	$test_mode 	= isset( $paystack_settings['testmode'] ) ? $paystack_settings['testmode'] : '';
 
 	if ( 'yes' == $test_mode ) {
     ?>
