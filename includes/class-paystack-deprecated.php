@@ -110,7 +110,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway {
 
 		// Check required fields
 		if ( ! ( $this->public_key && $this->secret_key ) ) {
-			echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paystack' ) ) . '</p></div>';
+			echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) . '</p></div>';
 			return;
 		}
 

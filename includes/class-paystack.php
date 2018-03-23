@@ -90,9 +90,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function is_valid_for_use() {
 
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'GBP' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'GBP', 'GHS' ) ) ) ) {
 
-			$this->msg = 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), USD (&#36;) or GBP (&#163;) <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
+			$this->msg = 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;) or GBP (&#163;) <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
 			return false;
 
@@ -126,7 +126,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		// Check required fields
 		if ( ! ( $this->public_key && $this->secret_key ) ) {
-			echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=wc_gateway_paystack' ) ) . '</p></div>';
+			echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) . '</p></div>';
 			return;
 		}
 
@@ -188,7 +188,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function init_form_fields() {
 
-		$this->form_fields = array(
+		$form_fields = array(
 			'enabled' => array(
 				'title'       => 'Enable/Disable',
 				'label'       => 'Enable Paystack',
@@ -351,6 +351,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true
 			),
 		);
+
+		if ( 'GHS' == get_woocommerce_currency() ) {
+			unset( $form_fields['custom_gateways'] );
+		}
+
+		$this->form_fields = $form_fields;
 
 	}
 
@@ -599,11 +605,14 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		if ( $token && $order_id ) {
 
-			$order        	= wc_get_order( $order_id );
-			$email 			= $order->billing_email;
-			$order_amount 	= $order->order_total * 100;
+			$order          = wc_get_order( $order_id );
 
-			$paystack_url 	= 'https://api.paystack.co/transaction/charge_authorization';
+			$email  		= method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+
+			$order_amount   = method_exists( $order, 'get_total' ) ? $order->get_total() : $order->order_total;
+			$order_amount   = $order_amount * 100;
+
+			$paystack_url   = 'https://api.paystack.co/transaction/charge_authorization';
 
 			$headers = array(
 				'Content-Type'	=> 'application/json',

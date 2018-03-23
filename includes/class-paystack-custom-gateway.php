@@ -269,7 +269,7 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
     public function payment_icons() {
 
     	return array(
-    		'verve'			=> 'Verve ',
+    		'verve'			=> 'Verve',
     		'visa'			=> 'Visa',
     		'mastercard'	=> 'Mastercard',
     		'paystackwhite'	=> 'Secured by Paystack White',

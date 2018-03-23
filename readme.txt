@@ -1,10 +1,10 @@
 === Paystack WooCommerce Payment Gateway ===
 Contributors: tubiz
 Donate link: https://bosun.me/donate
-Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, nigeria, mastercard, visa
+Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 5.0.2
+Stable tag: 5.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -16,7 +16,7 @@ Paystack WooCommerce Payment Gateway allows you to accept online payments from l
 
 This is a Paystack payment gateway for WooCommerce.
 
-Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian merchants with the tools and services needed to accept online payments from local and international customers using MasterCard, Visa, Verve Cards and Bank Accounts.
+Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts.
 
 To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
 
@@ -31,11 +31,11 @@ With this Paystack WooCommerce Payment Gateway plugin, you will be able to accep
 
 = Note =
 
-This plugin is meant to be used by merchants in Nigeria.
+This plugin is meant to be used by merchants in Nigeria and Ghana.
 
 = Plugin Features =
 
-*   __Accept payment__ via MasterCard, Visa, Verve Card and Bank Accounts.
+*   __Accept payment__ via Mastercard, Visa, Verve Card and Bank Accounts.
 * 	__Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
 * 	__Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
 
@@ -121,6 +121,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.1.0, March 23, 2018 =
+*	New: Add support for GHS (Ghanaian cedi) currency
+* 	Fix: Deprecated WooCommerce 2.X functions
+
 = 5.0.2, September 15, 2017 =
 *	Fix: Illegal string offset warnings when plugin is newly installed
 
@@ -170,8 +174,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.0.2 =
-*	This fix an illegal string offset warnings when the plugin is newly installed
+= 5.1.0 =
+*	Add support for GHS (Ghanaian cedi) currency for merchants in Ghana
 
 
 == Screenshots ==
