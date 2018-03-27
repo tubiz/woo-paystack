@@ -142,7 +142,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
-### 5.1.0, March 23, 2018 ###
+### 5.1.0, March 27, 2018 ###
 *	New: Add support for GHS (Ghanaian cedi) currency
 * 	Fix: Deprecated WooCommerce 2.X functions
 
