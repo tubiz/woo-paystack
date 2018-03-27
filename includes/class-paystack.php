@@ -605,12 +605,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		if ( $token && $order_id ) {
 
-			$order          = wc_get_order( $order_id );
+			$order            = wc_get_order( $order_id );
 
-			$email  		= method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+			$email            = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
-			$order_amount   = method_exists( $order, 'get_total' ) ? $order->get_total() : $order->order_total;
-			$order_amount   = $order_amount * 100;
+			$order_amount     = method_exists( $order, 'get_total' ) ? $order->get_total() : $order->order_total;
+			$order_amount     = $order_amount * 100;
 
 			$paystack_url   = 'https://api.paystack.co/transaction/charge_authorization';
 
@@ -639,7 +639,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				if ( 'success' == $paystack_response->data->status ) {
 
-			        $order 				= wc_get_order( $order_id );
+			        $order              = wc_get_order( $order_id );
 
 			        if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 
@@ -649,15 +649,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			        }
 
-	        		$order_total		= $order->get_total();
+	        		$order_total        = $order->get_total();
 
-					$order_currency 	= method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
+					$order_currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
-					$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
+					$currency_symbol    = get_woocommerce_currency_symbol( $order_currency );
 
-	        		$amount_paid		= $paystack_response->data->amount / 100;
+	        		$amount_paid        = $paystack_response->data->amount / 100;
 
-	        		$paystack_ref 		= $paystack_response->data->reference;
+	        		$paystack_ref       = $paystack_response->data->reference;
+
+					$payment_currency   = $paystack_response->data->currency;
+
+        			$gateway_symbol     = get_woocommerce_currency_symbol( $payment_currency );
 
 					// check if the amount paid is equal to the order amount.
 					if ( $amount_paid < $order_total ) {
@@ -679,15 +683,38 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 					} else {
 
-						$order->payment_complete( $paystack_ref );
+						if( $payment_currency !== $order_currency ) {
 
-						$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
+							$order->update_status( 'on-hold', '' );
+
+							update_post_meta( $order_id, '_transaction_id', $paystack_ref );
+
+							$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+							$notice_type = 'notice';
+
+							// Add Customer Order Note
+		                    $order->add_order_note( $notice, 1 );
+
+			                // Add Admin Order Note
+		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Paystack Transaction Reference:</strong> ' . $paystack_ref );
+
+							function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
+
+							wc_add_notice( $notice, $notice_type );
+
+						} else {
+
+							$order->payment_complete( $paystack_ref );
+
+							$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
+
+						}
 
 					}
 
 					$this->save_subscription_payment_token( $order_id, $paystack_response );
 
-					WC()->cart->empty_cart();
+					wc_empty_cart();
 
 				} else {
 
@@ -792,11 +819,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			        }
 
-	        		$order_total	= $order->get_total();
+	        		$order_total        = $order->get_total();
 
-	        		$amount_paid	= $paystack_response->data->amount / 100;
+					$order_currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
-	        		$paystack_ref 	= $paystack_response->data->reference;
+					$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
+
+	        		$amount_paid        = $paystack_response->data->amount / 100;
+
+	        		$paystack_ref       = $paystack_response->data->reference;
+
+					$payment_currency   = $paystack_response->data->currency;
+
+        			$gateway_symbol     = get_woocommerce_currency_symbol( $payment_currency );
 
 					// check if the amount paid is equal to the order amount.
 					if ( $amount_paid < $order_total ) {
@@ -814,15 +849,38 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	                    // Add Admin Order Note
 	                    $order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>&#8358;'.$amount_paid.'</strong> while the total order amount is <strong>&#8358;'.$order_total.'</strong><br />Paystack Transaction Reference: '.$paystack_ref );
 
-						$order->reduce_order_stock();
+						function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
 
 						wc_add_notice( $notice, $notice_type );
 
 					} else {
 
-						$order->payment_complete( $paystack_ref );
+						if( $payment_currency !== $order_currency ) {
 
-						$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
+							$order->update_status( 'on-hold', '' );
+
+							update_post_meta( $order_id, '_transaction_id', $paystack_ref );
+
+							$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+							$notice_type = 'notice';
+
+							// Add Customer Order Note
+		                    $order->add_order_note( $notice, 1 );
+
+			                // Add Admin Order Note
+		                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Paystack Transaction Reference:</strong> ' . $paystack_ref );
+
+							function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
+
+							wc_add_notice( $notice, $notice_type );
+
+						} else {
+
+							$order->payment_complete( $paystack_ref );
+
+							$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
+
+						}
 
 					}
 
@@ -894,15 +952,19 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				exit;
 	        }
 
-			$order_currency 	= method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
+			$order_currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
-			$currency_symbol	= get_woocommerce_currency_symbol( $order_currency );
+			$currency_symbol    = get_woocommerce_currency_symbol( $order_currency );
 
-    		$order_total		= $order->get_total();
+    		$order_total        = $order->get_total();
 
-    		$amount_paid		= $event->data->amount / 100;
+    		$amount_paid        = $event->data->amount / 100;
 
-    		$paystack_ref 		= $event->data->reference;
+    		$paystack_ref       = $event->data->reference;
+
+			$payment_currency   = $event->data->currency;
+
+        	$gateway_symbol     = get_woocommerce_currency_symbol( $payment_currency );
 
 			// check if the amount paid is equal to the order amount.
 			if ( $amount_paid < $order_total ) {
@@ -920,7 +982,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
                 // Add Admin Order Note
                 $order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Amount paid is less than the total order amount.<br />Amount Paid was <strong>'. $currency_symbol . $amount_paid . '</strong> while the total order amount is <strong>'. $currency_symbol . $order_total . '</strong><br />Paystack Transaction Reference: '.$paystack_ref );
 
-				$order->reduce_order_stock();
+				function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
 
 				wc_add_notice( $notice, $notice_type );
 
@@ -928,11 +990,34 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			} else {
 
-				$order->payment_complete( $paystack_ref );
+				if( $payment_currency !== $order_currency ) {
 
-				$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
+					$order->update_status( 'on-hold', '' );
 
-				wc_empty_cart();
+					update_post_meta( $order_id, '_transaction_id', $paystack_ref );
+
+					$notice = 'Thank you for shopping with us.<br />Your payment was successful, but the payment currency is different from the order currency.<br />Your order is currently on-hold.<br />Kindly contact us for more information regarding your order and payment status.';
+					$notice_type = 'notice';
+
+					// Add Customer Order Note
+                    $order->add_order_note( $notice, 1 );
+
+	                // Add Admin Order Note
+                	$order->add_order_note( '<strong>Look into this order</strong><br />This order is currently on hold.<br />Reason: Order currency is different from the payment currency.<br /> Order Currency is <strong>'. $order_currency . ' ('. $currency_symbol . ')</strong> while the payment currency is <strong>'. $payment_currency . ' ('. $gateway_symbol . ')</strong><br /><strong>Paystack Transaction Reference:</strong> ' . $paystack_ref );
+
+					function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
+
+					wc_add_notice( $notice, $notice_type );
+
+				} else {
+
+					$order->payment_complete( $paystack_ref );
+
+					$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
+
+					wc_empty_cart();
+
+				}
 
 			}
 
