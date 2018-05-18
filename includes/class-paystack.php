@@ -18,6 +18,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 			'products',
 			'tokenization',
 			'subscriptions',
+			'multiple_subscriptions',
 			'subscription_cancellation',
 			'subscription_suspension',
 			'subscription_reactivation',
@@ -1097,7 +1098,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			foreach ( $subscriptions as $subscription ) {
 
-				update_post_meta( $subscription->id, '_paystack_token', $auth_code );
+				$subscription_id = $subscription->get_id();
+
+				update_post_meta( $subscription_id, '_paystack_token', $auth_code );
 
 			}
 

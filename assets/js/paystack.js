@@ -165,8 +165,6 @@ jQuery( function( $ ) {
             }
         });
 
-        console.log( handler );
-
         handler.openIframe();
 
         return false;

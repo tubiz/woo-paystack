@@ -42,7 +42,7 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 			$order->payment_complete();
 
-			$order->add_order_note( 'This subscription has a free trial reason for the 0 amount' );
+			$order->add_order_note( 'This subscription has a free trial, reason for the 0 amount' );
 
 			return array(
 				'result'   => 'success',
@@ -79,14 +79,17 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 	 */
 	public function process_subscription_payment( $order = '', $amount = 0 ) {
 
-		$auth_code =  get_post_meta( $order->id, '_paystack_token', true );
+		$order_id  = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
+
+		$auth_code = get_post_meta( $order_id, '_paystack_token', true );
 
 		if ( $auth_code ) {
 
-			$email 			= $order->billing_email;
-			$order_amount 	= $amount * 100;
+			$email          = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
-			$paystack_url 	= 'https://api.paystack.co/transaction/charge_authorization';
+			$order_amount   = $amount * 100;
+
+			$paystack_url   = 'https://api.paystack.co/transaction/charge_authorization';
 
 			$headers = array(
 				'Content-Type'	=> 'application/json',

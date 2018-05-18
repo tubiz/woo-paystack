@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.9
 
-**Stable tag:** 5.1.0
+**Stable tag:** 5.2.0
 
 **License:** GPLv2 or later
 
@@ -142,58 +142,57 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
-### 5.1.0, March 27, 2018 ###
+### 5.2.0 - May 18, 2018 ###
+*	New: Add support for multiple subscriptions purchase using WooCommerce Subscriptions plugin
+*	Fix: Deprecated functions in the Tbz_WC_Gateway_Paystack_Subscription class
+
+### 5.1.0 - March 27, 2018 ###
 *	New: Add support for GHS (Ghanaian cedi) currency
 * 	Fix: Deprecated WooCommerce 2.X functions
 
-### 5.0.2, September 15, 2017 ###
+### 5.0.2 - September 15, 2017 ###
 *	Fix: Illegal string offset warnings when plugin is newly installed
 
-### 5.0.1, September 14, 2017 ###
+### 5.0.1 - September 14, 2017 ###
 *	Fix: Fatal error on the checkout page if WooCommerce 2.6.14 and below is installed
 
-### 5.0.0, August 29, 2017 ###
+### 5.0.0 - August 29, 2017 ###
 *	New: Add support for Paystack custom filters
 *	New: Create additional Paystack gateways (max of 5) using different custom filters. You can create a gateway that accepts only Verve cards, a gateway that accepts only bank account payments, a gateway that accepts only GTB issued Mastercard.
 
-### 4.1.0, July 7, 2017 ###
+### 4.1.0 - July 7, 2017 ###
 *	Fix: Deprecated WooCommerce 2.X functions
 
-### 4.0.1, April 10, 2017 ###
+### 4.0.1 - April 10, 2017 ###
 * 	Fix: Fatal error if WooCommerce 2.6.14 and below is installed
 
-### 4.0.0, April 10, 2017 ###
+### 4.0.0 - April 10, 2017 ###
 * 	New: Add support for Paystack Inline Embed.
 *  	New: Add support for sending additional order details to Paystack
 
-### 3.1.1, February 13, 2017 ###
+### 3.1.1 - February 13, 2017 ###
 * 	New: Changed Paystack payment methods icon.
 
-### 3.1.0, January 10, 2017 ###
+### 3.1.0 - January 10, 2017 ###
 * 	New: Add support for USD and GBP currency. Note this has to be enabled by Paystack for your account before it can be used on your site.
 
-### 3.0.0, November 11, 2016
+### 3.0.0 - November 11, 2016
 * 	New: Add support for recurring payment using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin.
 
-
-### 2.1.0, October 15, 2016
+### 2.1.0 - October 15, 2016
 *	New: Add support for confirming payment using the webhook url
 
-
-### 2.0.1, July 5, 2016
+### 2.0.1 - July 5, 2016
 *	Fix: Paystack payment option and settings not available if Paystack WooCommerce Payment Gateway version 2.0.0 is installed and WooCommerce version 2.5.5 and below is installed
 
-
-### 2.0.0, June 28, 2016
+### 2.0.0 - June 28, 2016
 * 	New: Saved cards - allow store customers to save their card details and pay again using the same card. Card details are saved on Paystack servers and not on your store.
 *	Fix: Change payment icon
 
-
-### 1.1.0, April 22, 2016
+### 1.1.0 - April 22, 2016
 *   Fix: Fatal error if the WooCommerce plugin is deactivated while the Paystack plugin is active
 
-
-### 1.0.0, February 3, 2016
+### 1.0.0 - February 3, 2016
 *   First release
 
 
@@ -201,8 +200,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.1.0 ###
-*	Add support for GHS (Ghanaian cedi) currency for merchants in Ghana
+### 5.2.0 ###
+*	Add support for multiple subscriptions purchase using WooCommerce Subscriptions plugin
 
 
 ## Screenshots ##
