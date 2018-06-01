@@ -4,7 +4,7 @@ Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 Requires at least: 4.4
 Tested up to: 4.9
-Stable tag: 5.2.0
+Stable tag: 5.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -121,6 +121,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.2.1 - June 1, 2018 =
+*	Misc: Add support for WooCommerce 3.4
+
 = 5.2.0 - May 18, 2018 =
 *	New: Add support for multiple subscriptions purchase using WooCommerce Subscriptions plugin
 *	Fix: Deprecated functions in the Tbz_WC_Gateway_Paystack_Subscription class
@@ -178,8 +181,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.2.0 =
-*	Add support for multiple subscriptions purchase using WooCommerce Subscriptions plugin
+= 5.2.1 =
+*	Add support for WooCommerce 3.4
 
 
 == Screenshots ==
