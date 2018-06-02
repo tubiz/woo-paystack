@@ -3,7 +3,7 @@
 	Plugin Name:            Paystack WooCommerce Payment Gateway
 	Plugin URI:             https://paystack.com
 	Description:            WooCommerce payment gateway for Paystack
-	Version:                5.2.1
+	Version:                5.3.0
 	Author:                 Tunbosun Ayinla
 	Author URI:             https://bosun.me
 	License:                GPL-2.0+
@@ -19,7 +19,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 define( 'WC_PAYSTACK_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'WC_PAYSTACK_VERSION', '5.2.1' );
+define( 'WC_PAYSTACK_VERSION', '5.3.0' );
 
 function tbz_wc_paystack_init() {
 
@@ -30,6 +30,8 @@ function tbz_wc_paystack_init() {
 	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
 
 		require_once dirname( __FILE__ ) . '/includes/class-paystack.php';
+
+		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
 
 		require_once dirname( __FILE__ ) . '/includes/class-paystack-custom-gateway.php';
 
@@ -42,12 +44,6 @@ function tbz_wc_paystack_init() {
 	} else{
 
 		require_once dirname( __FILE__ ) . '/includes/class-paystack-deprecated.php';
-
-	}
-
-	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {
-
-		require_once dirname( __FILE__ ) . '/includes/class-wc-subscriptions.php';
 
 	}
 

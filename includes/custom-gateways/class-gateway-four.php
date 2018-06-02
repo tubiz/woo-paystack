@@ -13,13 +13,15 @@ class Tbz_WC_Paystack_Gateway_Four extends Tbz_WC_Paystack_Custom_Gateway {
         }
 
 		$this->method_title 	    = 'Paystack - ' . $gateway_title;
+		$this->method_description   = sprintf( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve and Bank Account. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 
-		$this->has_fields 	    	= true;
+		$this->has_fields           = true;
 
-		$this->supports           	= array(
+		$this->supports             = array(
 			'products',
 			'tokenization',
 			'subscriptions',
+			'multiple_subscriptions',
 			'subscription_cancellation',
 			'subscription_suspension',
 			'subscription_reactivation',
@@ -81,6 +83,12 @@ class Tbz_WC_Paystack_Gateway_Four extends Tbz_WC_Paystack_Custom_Gateway {
 		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
 
 		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'add_gateway_to_checkout' ) );
+
+		if ( class_exists( 'WC_Subscriptions_Order' ) ) {
+
+			add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
+
+		}
 
 	}
 

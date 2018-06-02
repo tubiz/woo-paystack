@@ -11,10 +11,11 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function __construct() {
 		$this->id		   			= 'paystack';
-		$this->method_title 	    = 'Paystack';
-		$this->has_fields 	    	= true;
+		$this->method_title         = 'Paystack';
+		$this->method_description   = sprintf( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
+		$this->has_fields           = true;
 
-		$this->supports           	= array(
+		$this->supports             = array(
 			'products',
 			'tokenization',
 			'subscriptions',
@@ -163,7 +164,13 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
     	?>
 
-    	<h3>Paystack</h3>
+    	<h2>Paystack
+		<?php
+			if ( function_exists( 'wc_back_link' ) ) {
+				wc_back_link( 'Return to payments', admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );
+			}
+		?>
+		</h2>
 
         <h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer" target="_blank" rel="noopener noreferrer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
 
@@ -556,9 +563,9 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	 */
 	public function process_payment( $order_id ) {
 
-		if ( isset( $_POST['wc-paystack-payment-token'] ) && 'new' !== $_POST['wc-paystack-payment-token'] ) {
+		if ( isset( $_POST['wc-' . $this->id . '-payment-token'] ) && 'new' !== $_POST['wc-' . $this->id . '-payment-token'] ) {
 
-			$token_id = wc_clean( $_POST['wc-paystack-payment-token'] );
+			$token_id = wc_clean( $_POST['wc-'. $this->id .'-payment-token'] );
 			$token    = WC_Payment_Tokens::get( $token_id );
 
 			if ( $token->get_user_id() !== get_current_user_id() ) {
@@ -569,19 +576,23 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			} else {
 
-				$this->process_token_payment( $token->get_token(), $order_id );
+				$status = $this->process_token_payment( $token->get_token(), $order_id );
 
-				$order = wc_get_order( $order_id );
+				if( $status ) {
 
-				return array(
-					'result'   => 'success',
-					'redirect' => $this->get_return_url( $order )
-				);
+					$order = wc_get_order( $order_id );
+
+					return array(
+						'result'   => 'success',
+						'redirect' => $this->get_return_url( $order )
+					);
+
+				}
 
 			}
 		} else {
 
-			if ( is_user_logged_in() && isset( $_POST['wc-paystack-new-payment-method'] ) && true === (bool) $_POST['wc-paystack-new-payment-method'] && $this->saved_cards ) {
+			if ( is_user_logged_in() && isset( $_POST['wc-'. $this->id .'-new-payment-method'] ) && true === (bool) $_POST['wc-'. $this->id .'-new-payment-method'] && $this->saved_cards ) {
 
 				update_post_meta( $order_id, '_wc_paystack_save_card', true );
 
@@ -717,13 +728,25 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 					wc_empty_cart();
 
+					return true;
+
 				} else {
 
-			        $order = wc_get_order( $order_id );
+					$order_notice  = 'Payment was declined by Paystack.';
+					$failed_notice = 'Payment Failed. Try again.';
 
-					$order->update_status( 'failed', 'Payment was declined by Paystack.' );
+					if( isset( $paystack_response->data->gateway_response ) && ! empty ( $paystack_response->data->gateway_response ) ) {
 
-					wc_add_notice( 'Payment Failed. Try again.', 'error' );
+						$order_notice  = 'Payment was declined by Paystack. Reason: ' . $paystack_response->data->gateway_response . '.';
+						$failed_notice = 'Payment Failed. Reason: ' . $paystack_response->data->gateway_response . '.';
+
+					}
+
+					$order->update_status( 'failed', $order_notice );
+
+					wc_add_notice( $failed_notice, 'error' );
+
+					return false;
 
 				}
 
@@ -1041,17 +1064,21 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		$save_card = get_post_meta( $order_id, '_wc_paystack_save_card', true );
 
-		if ( $user_id && $this->saved_cards && $save_card && $paystack_response->data->authorization->reusable ) {
+		if ( $user_id && $this->saved_cards && $save_card && $paystack_response->data->authorization->reusable && 'card' == $paystack_response->data->authorization->channel ) {
 
-			$last4 		= $paystack_response->data->authorization->last4;
-			$exp_year 	= $paystack_response->data->authorization->exp_year;
-			$brand 		= $paystack_response->data->authorization->card_type;
-			$exp_month 	= $paystack_response->data->authorization->exp_month;
-			$auth_code 	= $paystack_response->data->authorization->authorization_code;
+			$order      = wc_get_order( $order_id );
+
+			$gateway_id = $order->get_payment_method();
+
+			$last4      = $paystack_response->data->authorization->last4;
+			$exp_year   = $paystack_response->data->authorization->exp_year;
+			$brand      = $paystack_response->data->authorization->card_type;
+			$exp_month  = $paystack_response->data->authorization->exp_month;
+			$auth_code  = $paystack_response->data->authorization->authorization_code;
 
 			$token = new WC_Payment_Token_CC();
 			$token->set_token( $auth_code );
-			$token->set_gateway_id( 'paystack' );
+			$token->set_gateway_id( $gateway_id );
 			$token->set_card_type( strtolower( $brand ) );
 			$token->set_last4( $last4 );
 			$token->set_expiry_month( $exp_month  );
@@ -1077,7 +1104,7 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 		}
 
-		if ( $this->order_contains_subscription( $order_id ) && $paystack_response->data->authorization->reusable ) {
+		if ( $this->order_contains_subscription( $order_id ) && $paystack_response->data->authorization->reusable && 'card' == $paystack_response->data->authorization->channel ) {
 
 			$auth_code 	= $paystack_response->data->authorization->authorization_code;
 

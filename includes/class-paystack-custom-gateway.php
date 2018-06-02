@@ -1,6 +1,6 @@
 <?php
 
-class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
+class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Gateway_Paystack_Subscription {
 
 	/**
 	 * Initialise Gateway Settings Form Fields
@@ -178,7 +178,13 @@ class Tbz_WC_Paystack_Custom_Gateway extends Tbz_WC_Paystack_Gateway {
 
     	?>
 
-    	<h3>Paystack - <?php echo $this->title; ?></h3>
+    	<h2>Paystack - <?php echo $this->title; ?>
+		<?php
+			if ( function_exists( 'wc_back_link' ) ) {
+				wc_back_link( 'Return to payments', admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );
+			}
+		?>
+    	</h2>
 
         <h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer" target="_blank" rel="noopener noreferrer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
 

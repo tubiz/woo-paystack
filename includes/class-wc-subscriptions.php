@@ -128,7 +128,13 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 				} else {
 
-					return new WP_Error( 'paystack_error', 'Paystack payment failed.' );
+					$gateway_response = 'Paystack payment failed.';
+
+					if( isset( $paystack_response->data->gateway_response ) && ! empty ( $paystack_response->data->gateway_response ) ) {
+						$gateway_response = 'Paystack payment failed. Reason: ' . $paystack_response->data->gateway_response;
+					}
+
+					return new WP_Error( 'paystack_error', $gateway_response );
 
 				}
 

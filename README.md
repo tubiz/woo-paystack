@@ -10,7 +10,7 @@
 
 **Tested up to:** 4.9
 
-**Stable tag:** 5.2.1
+**Stable tag:** 5.3.0
 
 **License:** GPLv2 or later
 
@@ -142,6 +142,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.3.0 - June 2, 2018 =
+*	Fix: Saved cards feature not working in the custom gateways
+*	Fix: Custom gateways not processing automatic renewal payments via WooCommerce Subscriptions plugin
+
 ### 5.2.1 - June 1, 2018 =
 *	Misc: Add support for WooCommerce 3.4
 
@@ -203,8 +207,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.2.1 ###
-*	Add support for WooCommerce 3.4
+### 5.3.0 ###
+*	Fixes: Custom gateways not processing automatic renewal payments via WooCommerce Subscriptions plugin. Saved cards feature not working in the custom gateways.
 
 
 ## Screenshots ##
