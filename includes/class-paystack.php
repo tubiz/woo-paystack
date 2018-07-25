@@ -440,11 +440,13 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
-				$paystack_params['email'] 				= $email;
-				$paystack_params['amount']  			= $amount;
-				$paystack_params['txnref']  			= $txnref;
-				$paystack_params['pay_page']  			= $this->payment_page;
-				$paystack_params['currency']  			= get_woocommerce_currency();
+				$paystack_params['email']           = $email;
+				$paystack_params['amount']          = $amount;
+				$paystack_params['txnref']          = $txnref;
+				$paystack_params['pay_page']		= $this->payment_page;
+				$paystack_params['currency']		= get_woocommerce_currency();
+				$paystack_params['bank_channel']	= 'true';
+				$paystack_params['card_channel']	= 'true';
 
 			}
 
