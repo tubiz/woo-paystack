@@ -142,6 +142,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.3.1 - July 26, 2018 ###
+*	Fix: The bank payment channel not showing in the default gateway
+
 ### 5.3.0 - June 2, 2018 =
 *	Fix: Saved cards feature not working in the custom gateways
 *	Fix: Custom gateways not processing automatic renewal payments via WooCommerce Subscriptions plugin
@@ -207,8 +210,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.3.0 ###
-*	Fixes: Custom gateways not processing automatic renewal payments via WooCommerce Subscriptions plugin. Saved cards feature not working in the custom gateways.
+### 5.3.1 ###
+*	Fix: The bank payment channel not showing in the default gateway
 
 
 ## Screenshots ##
