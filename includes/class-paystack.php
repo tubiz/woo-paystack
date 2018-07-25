@@ -733,12 +733,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 				} else {
 
 					$order_notice  = 'Payment was declined by Paystack.';
-					$failed_notice = 'Payment Failed. Try again.';
+					$failed_notice = 'Payment failed using the saved card. Kindly use another payment option.';
 
-					if( isset( $paystack_response->data->gateway_response ) && ! empty ( $paystack_response->data->gateway_response ) ) {
+					if ( isset( $paystack_response->data->gateway_response ) && ! empty ( $paystack_response->data->gateway_response ) ) {
 
 						$order_notice  = 'Payment was declined by Paystack. Reason: ' . $paystack_response->data->gateway_response . '.';
-						$failed_notice = 'Payment Failed. Reason: ' . $paystack_response->data->gateway_response . '.';
+						$failed_notice = 'Payment failed using the saved card. Reason: ' . $paystack_response->data->gateway_response . '. Kindly use another payment option.';
 
 					}
 
