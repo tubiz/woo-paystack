@@ -199,7 +199,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 == Upgrade Notice ==
 
 = 5.4.0 =
-*	Version 5.4.0 adds support for Paystack split payments. The Paystack fee and Paystack payout amount are now displayed on the order details page. Full changelog [here](https://wordpress.org/plugins/woo-paystack/#developers).
+*	Version 5.4.0 adds support for Paystack split payments. The Paystack fee and Paystack payout amount are now displayed on the order details page. Full changelog https://wordpress.org/plugins/woo-paystack/#developers.
 
 
 == Screenshots ==
