@@ -14,9 +14,33 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 		if ( class_exists( 'WC_Subscriptions_Order' ) ) {
 
+			add_action( 'wcs_renewal_order_created', array( $this, 'delete_renewal_meta' ), 10 );
 			add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
 
 		}
+	}
+
+
+	/**
+	 * Don't transfer Paystack fee/ID meta to renewal orders.
+	 *
+	 * @param WC_Order $renewal_order The order created for the customer to resubscribe to the old expired/cancelled subscription
+	 *
+	 * @return WC_Order Renewal order
+	 */
+	public function delete_renewal_meta( $renewal_order ) {
+
+		if ( $this->is_wc_lt( '3.0' ) ) {
+			$order_id = $renewal_order->id;
+		} else {
+			$order_id = $renewal_order->get_id();
+		}
+
+		delete_post_meta( $order_id, '_paystack_fee' );
+		delete_post_meta( $order_id, '_paystack_net' );
+		delete_post_meta( $order_id, '_paystack_currency' );
+
+		return $renewal_order;
 	}
 
 
@@ -116,7 +140,24 @@ class Tbz_WC_Gateway_Paystack_Subscription extends Tbz_WC_Paystack_Gateway {
 
 				if ( 'success' == $paystack_response->data->status ) {
 
-	        		$paystack_ref 	= $paystack_response->data->reference;
+					$paystack_ref = $paystack_response->data->reference;
+
+					$payment_currency = $paystack_response->data->currency;
+
+					$paystack_fee = $paystack_response->data->fees / 100;
+
+					$paystack_net = $paystack_response->data->amount - $paystack_response->data->fees;
+					$paystack_net = $paystack_net / 100;
+
+					if ( $this->is_wc_lt( '3.0' ) ) {
+						update_post_meta( $order_id, '_paystack_fee', $paystack_fee );
+						update_post_meta( $order_id, '_paystack_net', $paystack_net );
+						update_post_meta( $order_id, '_paystack_currency', $payment_currency );
+					} else {
+						$order->update_meta_data( '_paystack_fee', $paystack_fee );
+						$order->update_meta_data( '_paystack_net', $paystack_net );
+						$order->update_meta_data( '_paystack_currency', $payment_currency );
+					}
 
 					$order->payment_complete( $paystack_ref );
 

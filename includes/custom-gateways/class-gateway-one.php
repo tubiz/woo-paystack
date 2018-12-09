@@ -55,6 +55,11 @@ class Tbz_WC_Paystack_Gateway_One extends Tbz_WC_Paystack_Custom_Gateway {
 
 		$this->saved_cards         	= $this->paystack_settings[ 'saved_cards' ] === 'yes' ? true : false;
 
+		$this->split_payment        = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
+		$this->subaccount_code      = $this->get_option( 'subaccount_code' );
+		$this->charges_account      = $this->get_option( 'split_payment_charge_account' );
+		$this->transaction_charges  = $this->get_option( 'split_payment_transaction_charge' );
+
 		$this->payment_icons 		= $this->get_option( 'payment_icons' );
 
 		$this->custom_metadata      = $this->get_option( 'custom_metadata' ) === 'yes' ? true : false;
@@ -166,6 +171,14 @@ class Tbz_WC_Paystack_Gateway_One extends Tbz_WC_Paystack_Custom_Gateway {
 				$paystack_params['txnref']  			= $txnref;
 				$paystack_params['pay_page']  			= $this->payment_page;
 				$paystack_params['currency']  			= get_woocommerce_currency();
+
+			}
+
+			if ( $this->split_payment ) {
+
+				$paystack_params['subaccount_code']     = $this->subaccount_code;
+				$paystack_params['charges_account']     = $this->charges_account;
+				$paystack_params['transaction_charges'] = $this->transaction_charges * 100;
 
 			}
 

@@ -4,13 +4,13 @@
 
 **Donate link:** https://bosun.me/donate
 
-**Tags:** paystack, woocommerce, payment gateway, interswitch, tubiz plugins, verve, ghana, nigeria, mastercard, visa
+**Tags:** paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 
-**Requires at least:** 4.4
+**Requires at least:** 4.7
 
-**Tested up to:** 4.9
+**Tested up to:** 5.0
 
-**Stable tag:** 5.3.0
+**Stable tag:** 5.4.0
 
 **License:** GPLv2 or later
 
@@ -25,18 +25,20 @@ Paystack WooCommerce Payment Gateway allows you to accept online payments from l
 
 This is a Paystack payment gateway for WooCommerce.
 
-Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts.
+Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR.
 
 To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
 
-Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using MasterCard, Visa, Verve Cards and bank accounts.
+Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using Mastercard, Visa, Verve, bank accounts, GTB 737 & Visa QR.
 
 With this Paystack WooCommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
 
-* __MasterCard__
+* __Mastercard__
 * __Visa__
-* __Verve Card__
+* __Verve__
 * __Bank Account__
+* __GTB 737__
+* __Visa QR__
 
 
 ### Note
@@ -46,9 +48,9 @@ This plugin is meant to be used by merchants in Nigeria and Ghana.
 
 ### Plugin Features
 
-*   __Accept payment__ via Mastercard, Visa, Verve Card and Bank Accounts.
-* 	__Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
-* 	__Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
+*   __Accept payment__ via Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR
+*   __Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
+*   __Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
 
 
 ### WooCommerce Subscriptions Integration
@@ -57,18 +59,18 @@ This plugin is meant to be used by merchants in Nigeria and Ghana.
 
 *	No subscription plans is created on Paystack. The [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin handles all the subscription functionality.
 
-*	If a customer pays for a subscription using a MasterCard or Visa card, their subscription will renew automatically throughout the duration of the subscription. If an automatic renewal fail their subscription will be put on-hold and they will have to login to their account to renew the subscription.
+*	If a customer pays for a subscription using a Mastercard or Visa card, their subscription will renew automatically throughout the duration of the subscription. If an automatic renewal fail their subscription will be put on-hold and they will have to login to their account to renew the subscription.
 
-*	For customers paying with a Verve Card, their subscription can't be renewed automatically, once a payment is due their subscription will be on-hold. The customer will have to login to his account to manually renew his subscription.
+*	For customers paying with a Verve card, their subscription can't be renewed automatically, once a payment is due their subscription will be on-hold. The customer will have to login to his account to manually renew his subscription.
 
-*	If a subscription has a free trial and no signup-fee, automatical renewal is not possible for the first payment because the initial order total will be 0, after the free trial the subscription will be put on-hold. The customer will have to login to his account to renew his subscription. If a MasterCard or Visa card is used to renew the subscription subsequent renewals will be automatic throughout the duration of the subscription, if a Verve card is used automatic renewal isn't possible.
+*	If a subscription has a free trial and no signup-fee, automatic renewal is not possible for the first payment because the initial order total will be 0, after the free trial the subscription will be put on-hold. The customer will have to login to his account to renew his subscription. If a Mastercard or Visa card is used to renew the subscription subsequent renewals will be automatic throughout the duration of the subscription, if a Verve card is used automatic renewal isn't possible.
 
 
 ### Suggestions / Feature Request
 
 If you have suggestions or a new feature request, feel free to get in touch with me via the contact form on my website [here](http://bosun.me/get-in-touch/)
 
-You can also follow me on Twitter! **[@tubiz](http://twitter.com/tubiz)**
+You can also follow me on Twitter! **[@tubiz](https://twitter.com/tubiz)**
 
 
 
@@ -78,8 +80,8 @@ You can also follow me on Twitter! **[@tubiz](http://twitter.com/tubiz)**
 ### Automatic Installation
 * 	Login to your WordPress Admin area
 * 	Go to "Plugins > Add New" from the left hand menu
-* 	In the search box type __Paystack Woocommerce Payment Gateway__
-*	From the search result you will see __Paystack Woocommerce Payment Gateway__ click on __Install Now__ to install the plugin
+* 	In the search box type __Paystack WooCommerce Payment Gateway__
+*	From the search result you will see __Paystack WooCommerce Payment Gateway__ click on __Install Now__ to install the plugin
 *	A popup window will ask you to confirm your wish to install the Plugin.
 *	After installation, activate the plugin.
 * 	Open the settings page for WooCommerce and click the "Checkout" tab.
@@ -141,6 +143,14 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 
 ## Changelog
+
+### 5.4.0 - December 9, 2018 ###
+*   New: Add support for Paystack split payments
+*   New: Display Paystack fee and Paystack payout amount on the order details page
+*   Misc: Add support for WooCommerce 3.5
+*   Misc: Renamed Skye Bank Plc to Polaris Bank Limited
+*   Misc: Add new banks (ALAT by WEMA, ASO Savings and Loans, MainStreet Bank & Ekondo Microfinance Bank) to Allowed Banks Card list
+*   Misc: Add new banks logos (ALAT by WEMA, ASO Savings and Loans, MainStreet Bank & Ekondo Microfinance Bank) to Payment Icons list
 
 ### 5.3.1 - July 26, 2018 ###
 *	Fix: The bank payment channel not showing in the default gateway
@@ -210,8 +220,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.3.1 ###
-*	Fix: The bank payment channel not showing in the default gateway
+### 5.4.0 ###
+*	Version 5.4.0 adds support for Paystack split payments. The Paystack fee and Paystack payout amount are now displayed on the order details page. Full changelog [here](https://wordpress.org/plugins/woo-paystack/#developers).
+
 
 
 ## Screenshots ##
