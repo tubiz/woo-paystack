@@ -503,7 +503,12 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 				$paystack_params['subaccount_code']     = $this->subaccount_code;
 				$paystack_params['charges_account']     = $this->charges_account;
-				$paystack_params['transaction_charges'] = $this->transaction_charges * 100;
+
+				if ( empty( $this->transaction_charges ) ) {
+					$paystack_params['transaction_charges'] = '';
+				} else {
+					$paystack_params['transaction_charges'] = $this->transaction_charges * 100;
+				}
 
 			}
 

@@ -4,7 +4,7 @@ Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 Requires at least: 4.7
 Tested up to: 5.0
-Stable tag: 5.4.0
+Stable tag: 5.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,6 +123,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.4.1 - February 1, 2019 =
+*   Fix: Split payment not working properly when the split payment transaction charge setting field is empty
+
 = 5.4.0 - December 9, 2018 =
 *   New: Add support for Paystack split payments
 *   New: Display Paystack fee and Paystack payout amount on the order details page
@@ -198,8 +201,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.4.0 =
-*	Version 5.4.0 adds support for Paystack split payments. The Paystack fee and Paystack payout amount are now displayed on the order details page. Full changelog https://wordpress.org/plugins/woo-paystack/#developers.
+= 5.4.1 =
+*   Fix: Split payment not working properly when the split payment transaction charge setting field is empty
 
 
 == Screenshots ==

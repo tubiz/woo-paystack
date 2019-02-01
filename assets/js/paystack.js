@@ -141,8 +141,10 @@ jQuery( function( $ ) {
 		}
 
 		if ( wc_paystack_params.transaction_charges ) {
-			transaction_charges = wc_paystack_params.transaction_charges;
+			transaction_charges = Number( wc_paystack_params.transaction_charges );
 		}
+
+		var amount = Number( wc_paystack_params.amount );
 
 		var paystack_callback = function( response ) {
 			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
@@ -165,7 +167,7 @@ jQuery( function( $ ) {
 		var handler = PaystackPop.setup( {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
-			amount: wc_paystack_params.amount,
+			amount: amount,
 			ref: wc_paystack_params.txnref,
 			currency: wc_paystack_params.currency,
 			callback: paystack_callback,
@@ -223,8 +225,10 @@ jQuery( function( $ ) {
 		}
 
 		if ( wc_paystack_params.transaction_charges ) {
-			transaction_charges = wc_paystack_params.transaction_charges;
+			transaction_charges = Number( wc_paystack_params.transaction_charges );
 		}
+
+		var amount = Number( wc_paystack_params.amount );
 
 		var paystack_callback = function( response ) {
 
@@ -252,7 +256,7 @@ jQuery( function( $ ) {
 		var handler = PaystackPop.setup( {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
-			amount: wc_paystack_params.amount,
+			amount: amount,
 			ref: wc_paystack_params.txnref,
 			currency: wc_paystack_params.currency,
 			container: "paystackWooCommerceEmbedContainer",
