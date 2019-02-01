@@ -10,7 +10,7 @@
 
 **Tested up to:** 5.0
 
-**Stable tag:** 5.4.0
+**Stable tag:** 5.4.1
 
 **License:** GPLv2 or later
 
