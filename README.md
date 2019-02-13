@@ -10,7 +10,7 @@
 
 **Tested up to:** 5.0
 
-**Stable tag:** 5.4.1
+**Stable tag:** 5.4.2
 
 **License:** GPLv2 or later
 
@@ -144,6 +144,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.4.2 - February 13, 2019 =
+*   Misc: Remove Paystack fee and Paystack payout amount on the order details page
+
 ### 5.4.1 - February 1, 2019 ###
 *   Fix: Split payment not working properly when the split payment transaction charge setting field is empty
 
@@ -223,9 +226,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.4.1 ###
-*   Fix: Split payment not working properly when the split payment transaction charge setting field is empty
-
+### 5.4.2 ###
+*   Misc: Remove Paystack fee and Paystack payout amount on the order details page
 
 ## Screenshots ##
 

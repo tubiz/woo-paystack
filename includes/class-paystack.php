@@ -76,9 +76,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 		add_action( 'admin_notices', array( $this, 'admin_notices' ) );
 		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
 
-		add_action( 'woocommerce_admin_order_totals_after_total', array( $this, 'display_paystack_fee' ) );
-		add_action( 'woocommerce_admin_order_totals_after_total', array( $this, 'display_order_payout' ), 20 );
-
 		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
 
 		// Payment listener/API hook
@@ -620,87 +617,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 	}
 
-
-	/**
-	 * Displays the Paystack fee
-	 *
-	 * @since 5.4.0
-	 *
-	 * @param int $order_id
-	 */
-	public function display_paystack_fee( $order_id ) {
-
-		$order = wc_get_order( $order_id );
-
-		if ( $this->is_wc_lt( '3.0' ) ) {
-			$fee      = get_post_meta( $order_id, '_paystack_fee', true );
-			$currency = get_post_meta( $order_id, '_paystack_currency', true );
-		} else {
-			$fee      = $order->get_meta( '_paystack_fee', true );
-			$currency = $order->get_meta( '_paystack_currency', true );
-		}
-
-		if ( ! $fee || ! $currency ) {
-			return;
-		}
-
-		?>
-
-		<tr>
-			<td class="label paystack-fee">
-				<?php echo wc_help_tip( 'This represents the fee Paystack collects for the transaction.' ); ?>
-				<?php esc_html_e( 'Paystack Fee:' ); ?>
-			</td>
-			<td width="1%"></td>
-			<td class="total">
-				-&nbsp;<?php echo wc_price( $fee, array( 'currency' => $currency ) ); ?>
-			</td>
-		</tr>
-
-		<?php
-	}
-
-
-	/**
-	 * Displays the net total of the transaction without the charges of Paystack.
-	 *
-	 * @since 5.4.0
-	 *
-	 * @param int $order_id
-	 */
-	public function display_order_payout( $order_id ) {
-
-		$order = wc_get_order( $order_id );
-
-		if ( $this->is_wc_lt( '3.0' ) ) {
-			$net      = get_post_meta( $order_id, '_paystack_net', true );
-			$currency = get_post_meta( $order_id, '_paystack_currency', true );
-		} else {
-			$net      = $order->get_meta( '_paystack_net', true );
-			$currency = $order->get_meta( '_paystack_currency', true );
-		}
-
-		if ( ! $net || ! $currency ) {
-			return;
-		}
-
-		?>
-
-		<tr>
-			<td class="label paystack-payout">
-				<?php echo wc_help_tip( 'This represents the net total that will be credited to your bank account for this order.' ); ?>
-				<?php esc_html_e( 'Paystack Payout:' ); ?>
-			</td>
-			<td width="1%"></td>
-			<td class="total">
-				<?php echo wc_price( $net, array( 'currency' => $currency ) ); ?>
-			</td>
-		</tr>
-
-		<?php
-	}
-
-
 	/**
 	 * Process the payment
 	 */
@@ -815,21 +731,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 	        		$paystack_ref       = $paystack_response->data->reference;
 
 					$payment_currency   = $paystack_response->data->currency;
-
-					$paystack_fee       = $paystack_response->data->fees / 100;
-
-					$paystack_net       = $paystack_response->data->amount - $paystack_response->data->fees;
-					$paystack_net       = $paystack_net / 100;
-
-					if ( $this->is_wc_lt( '3.0' ) ) {
-						update_post_meta( $order_id, '_paystack_fee', $paystack_fee );
-						update_post_meta( $order_id, '_paystack_net', $paystack_net );
-						update_post_meta( $order_id, '_paystack_currency', $payment_currency );
-					} else {
-						$order->update_meta_data( '_paystack_fee', $paystack_fee );
-						$order->update_meta_data( '_paystack_net', $paystack_net );
-						$order->update_meta_data( '_paystack_currency', $payment_currency );
-					}
 
         			$gateway_symbol     = get_woocommerce_currency_symbol( $payment_currency );
 
@@ -1013,21 +914,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
 
 					$payment_currency   = $paystack_response->data->currency;
 
-					$paystack_fee       = $paystack_response->data->fees / 100;
-
-					$paystack_net       = $paystack_response->data->amount - $paystack_response->data->fees;
-					$paystack_net       = $paystack_net / 100;
-
-					if ( $this->is_wc_lt( '3.0' ) ) {
-						update_post_meta( $order_id, '_paystack_fee', $paystack_fee );
-						update_post_meta( $order_id, '_paystack_net', $paystack_net );
-						update_post_meta( $order_id, '_paystack_currency', $payment_currency );
-					} else {
-						$order->update_meta_data( '_paystack_fee', $paystack_fee );
-						$order->update_meta_data( '_paystack_net', $paystack_net );
-						$order->update_meta_data( '_paystack_currency', $payment_currency );
-					}
-
         			$gateway_symbol     = get_woocommerce_currency_symbol( $payment_currency );
 
 					// check if the amount paid is equal to the order amount.
@@ -1160,21 +1046,6 @@ class Tbz_WC_Paystack_Gateway extends WC_Payment_Gateway_CC {
     		$paystack_ref       = $event->data->reference;
 
 			$payment_currency   = $event->data->currency;
-
-		    $paystack_fee       = $event->data->fees / 100;
-
-		    $paystack_net       = $event->data->amount - $event->data->fees;
-		    $paystack_net       = $paystack_net / 100;
-
-		    if ( $this->is_wc_lt( '3.0' ) ) {
-			    update_post_meta( $order_id, '_paystack_fee', $paystack_fee );
-			    update_post_meta( $order_id, '_paystack_net', $paystack_net );
-			    update_post_meta( $order_id, '_paystack_currency', $payment_currency );
-		    } else {
-			    $order->update_meta_data( '_paystack_fee', $paystack_fee );
-			    $order->update_meta_data( '_paystack_net', $paystack_net );
-			    $order->update_meta_data( '_paystack_currency', $payment_currency );
-		    }
 
         	$gateway_symbol     = get_woocommerce_currency_symbol( $payment_currency );
 
