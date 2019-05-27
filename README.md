@@ -8,9 +8,9 @@
 
 **Requires at least:** 4.7
 
-**Tested up to:** 5.0
+**Tested up to:** 5.2
 
-**Stable tag:** 5.4.2
+**Stable tag:** 5.5.0
 
 **License:** GPLv2 or later
 
@@ -144,6 +144,11 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Changelog
 
+### 5.5.0 - May 27, 2019 =
+*   Misc: Renamed Diamond Bank to Access Bank (Diamond)
+*   Tweak: Significant cleanup of code formatting and adherence of WordPress coding standards
+*   New: Support for translation
+
 ### 5.4.2 - February 13, 2019 =
 *   Misc: Remove Paystack fee and Paystack payout amount on the order details page
 
@@ -226,8 +231,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 ## Upgrade Notice
 
-### 5.4.2 ###
-*   Misc: Remove Paystack fee and Paystack payout amount on the order details page
+### 5.5.0 ###
+*   Renamed Diamond Bank to Access Bank (Diamond), support for translation
 
 ## Screenshots ##
 
