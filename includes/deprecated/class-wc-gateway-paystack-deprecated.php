@@ -57,7 +57,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
 
 		// Payment listener/API hook
-		add_action( 'woocommerce_api_wc_gateway_paystack', array( $this, 'verify_paystack_transaction' ) );
+		add_action( 'woocommerce_api_wc_gateway_paystack_deprecated', array( $this, 'verify_paystack_transaction' ) );
 
 		add_action( 'woocommerce_api_tbz_wc_paystack_webhook', array( $this, 'process_webhooks' ) );
 
