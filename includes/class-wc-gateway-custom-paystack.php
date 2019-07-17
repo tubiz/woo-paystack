@@ -9,7 +9,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	 * Initialise Gateway Settings Form Fields.
 	 */
 	public function init_form_fields() {
-
+ 
 		$this->form_fields = array(
 			'enabled'                          => array(
 				'title'       => __( 'Enable/Disable', 'woo-paystack' ),
