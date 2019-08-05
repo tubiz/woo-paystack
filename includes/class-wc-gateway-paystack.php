@@ -164,6 +164,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$this->supports = array(
 			'products',
+			'refunds',
 			'tokenization',
 			'subscriptions',
 			'multiple_subscriptions',
@@ -1337,6 +1338,109 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			}
 		}
 
+	}
+
+	/**
+	 * Process a refund request from the Order details screen.
+	 *
+	 * @param int    $order_id WC Order ID.
+	 * @param null   $amount   WC Order Amount.
+	 * @param string $reason   Refund Reason
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+
+		if ( ! ( $this->public_key && $this->secret_key ) ) {
+			return false;
+		}
+
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return false;
+		}
+
+		if ( $this->is_wc_lt( '3.0' ) ) {
+			$order_currency = get_post_meta( $order_id, '_order_currency', true );
+			$transaction_id = get_post_meta( $order_id, '_transaction_id', true );
+		} else {
+			$order_currency = $order->get_currency();
+			$transaction_id = $order->get_transaction_id();
+		}
+
+		$verify_url = 'https://api.paystack.co/transaction/verify/' . $transaction_id;
+
+		$headers = array(
+			'Authorization' => 'Bearer ' . $this->secret_key,
+		);
+
+		$args = array(
+			'headers' => $headers,
+			'timeout' => 60,
+		);
+
+		$request = wp_remote_get( $verify_url, $args );
+
+		if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+
+			$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
+
+			if ( 'success' == $paystack_response->data->status ) {
+
+				$merchant_note = sprintf( __( 'Refund for Order ID: #%1$s on %2$s', 'woo-paystack' ), $order_id, get_site_url() );
+
+				$body = array(
+					'transaction'   => $transaction_id,
+					'amount'        => $amount * 100,
+					'currency'      => $order_currency,
+					'customer_note' => $reason,
+					'merchant_note' => $merchant_note,
+				);
+
+				$args['body'] = $body;
+				$refund_url   = 'https://api.paystack.co/refund';
+
+				$refund_request = wp_remote_post( $refund_url, $args );
+
+				if ( ! is_wp_error( $refund_request ) && 200 === wp_remote_retrieve_response_code( $refund_request ) ) {
+
+					$refund_response = json_decode( wp_remote_retrieve_body( $refund_request ) );
+
+					if ( $refund_response->status ) {
+						$amount         = wc_price( $amount, array( 'currency' => $order_currency ) );
+						$refund_id      = $refund_response->data->id;
+						$refund_message = sprintf( __( 'Refunded %1$s. Refund ID: %2$s. Reason: %3$s', 'woo-paystack' ), $amount, $refund_id, $reason );
+						$order->add_order_note( $refund_message );
+
+						return true;
+					}
+
+				} else {
+
+					$refund_response = json_decode( wp_remote_retrieve_body( $refund_request ) );
+					if ( isset( $refund_response->message ) ) {
+						return new WP_Error( 'error', $refund_response->message );
+					} else {
+						return new WP_Error( 'error', __( 'Can&#39;t process refund at the moment. Try again later.', 'woo-paystack' ) );
+					}
+				}
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * Checks if WC version is less than passed in version.
+	 *
+	 * @param string $version Version to check against.
+	 *
+	 * @return bool
+	 */
+	public static function is_wc_lt( $version ) {
+		return version_compare( WC_VERSION, $version, '<' );
 	}
 
 }
