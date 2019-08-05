@@ -872,6 +872,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					}
 
+					// Log successful transaction to Paystack plugin metrics tracker.
+					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+					$paystack_logger->log_transaction( $paystack_response->data->reference );
+
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 					$currency_symbol  = get_woocommerce_currency_symbol( $order_currency );
