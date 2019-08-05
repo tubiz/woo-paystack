@@ -20,11 +20,13 @@ jQuery( function( $ ) {
 
 	function wcPaystackCustomFields() {
 
-		var custom_fields = [{
-			"display_name":"Plugin",
-			"variable_name":"plugin",
-			"value":"woo-paystack"
-		  }];
+		var custom_fields = [
+			{
+				"display_name": "Plugin",
+				"variable_name": "plugin",
+				"value": "woo-paystack"
+			}
+		];
 
 		if ( wc_paystack_params.meta_order_id ) {
 

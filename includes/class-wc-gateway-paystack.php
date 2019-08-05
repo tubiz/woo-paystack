@@ -3,7 +3,7 @@
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
-include_once plugin_dir_path(__FILE__) . 'class-paystack-plugin-tracker.php';
+
 class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 	/**
@@ -1029,13 +1029,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
 				if ( 'success' == $paystack_response->data->status ) {
-					//---------------------------------------------------------------------------------------
-					/*
-						Log succesful transaction to Paystack plugin metrics tracker
-					*/
-					$pstk_logger = new WC__paystack_plugin_tracker('woo-paystack', $this->public_key);
-					$pstk_logger->log_transaction_success($paystack_response->data->reference);
-					//---------------------------------------------------------------------------------------
 
 					$order_details = explode( '_', $paystack_response->data->reference );
 					$order_id      = (int) $order_details[0];
@@ -1048,6 +1041,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						exit;
 
 					}
+
+					// Log successful transaction to Paystack plugin metrics tracker.
+					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+					$paystack_logger->log_transaction( $paystack_response->data->reference );
 
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
@@ -1158,6 +1155,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			http_response_code( 200 );
 
+			sleep( 6 );
+
 			$order_details = explode( '_', $event->data->reference );
 
 			$order_id = (int) $order_details[0];
@@ -1173,6 +1172,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
 			}
+
+			// Log successful transaction to Paystack plugin metrics tracker.
+			$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+			$paystack_logger->log_transaction( $event->data->reference );
 
 			$order_currency = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 

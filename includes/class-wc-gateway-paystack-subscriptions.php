@@ -140,6 +140,10 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 					$order->add_order_note( $message );
 
+					// Log successful transaction to Paystack plugin metrics tracker.
+					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+					$paystack_logger->log_transaction( $paystack_ref );
+
 					return true;
 
 				} else {
