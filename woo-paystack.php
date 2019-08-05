@@ -104,7 +104,7 @@ function tbz_wc_add_paystack_gateway( $methods ) {
 
 	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
 
-		if ( 'GHS' !== get_woocommerce_currency() ) {
+		if ( 'NGN' === get_woocommerce_currency() ) {
 
 			$settings        = get_option( 'woocommerce_paystack_settings', '' );
 			$custom_gateways = isset( $settings['custom_gateways'] ) ? $settings['custom_gateways'] : '';
