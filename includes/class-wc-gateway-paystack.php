@@ -842,9 +842,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'Authorization' => 'Bearer ' . $this->secret_key,
 			);
 
+			$metadata['custom_fields']= $this->get_custom_fields( $order_id );
+
 			$body = array(
 				'email'              => $email,
 				'amount'             => $order_amount,
+				'metadata'           => $metadata,
 				'authorization_code' => $token,
 			);
 
@@ -1342,6 +1345,134 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			}
 		}
 
+	}
+
+	/**
+	 * Get custom fields to pass to Paystack.
+	 *
+	 * @param int $order_id WC Order ID
+	 *
+	 * @return array
+	 */
+	public function get_custom_fields( $order_id ) {
+
+		$order = wc_get_order( $order_id );
+
+		$custom_fields = array();
+
+		$custom_fields[] = array(
+			'display_name'  => 'Plugin',
+			'variable_name' => 'plugin',
+			'value'         => 'woo-paystack',
+		);
+
+		if ( $this->meta_order_id ) {
+
+			$custom_fields[] = array(
+				'display_name'  => 'Order ID',
+				'variable_name' => 'order_id',
+				'value'         => $order_id,
+			);
+
+		}
+
+		if ( $this->meta_name ) {
+
+			$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+			$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Customer Name',
+				'variable_name' => 'customer_name',
+				'value'         => $first_name . ' ' . $last_name,
+			);
+
+		}
+
+		if ( $this->meta_email ) {
+
+			$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Customer Email',
+				'variable_name' => 'customer_email',
+				'value'         => $email,
+			);
+
+		}
+
+		if ( $this->meta_phone ) {
+
+			$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Customer Phone',
+				'variable_name' => 'customer_phone',
+				'value'         => $billing_phone,
+			);
+
+		}
+
+		if ( $this->meta_products ) {
+
+			$line_items = $order->get_items();
+
+			$products = '';
+
+			foreach ( $line_items as $item_id => $item ) {
+				$name     = $item['name'];
+				$quantity = $item['qty'];
+				$products .= $name . ' (Qty: ' . $quantity . ')';
+				$products .= ' | ';
+			}
+
+			$products = rtrim( $products, ' | ' );
+
+			$custom_fields[] = array(
+				'display_name'  => 'Products',
+				'variable_name' => 'products',
+				'value'         => $products,
+			);
+
+		}
+
+		if ( $this->meta_billing_address ) {
+
+			$billing_address = $order->get_formatted_billing_address();
+			$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+			$paystack_params['meta_billing_address'] = $billing_address;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Billing Address',
+				'variable_name' => 'billing_address',
+				'value'         => $billing_address,
+			);
+
+		}
+
+		if ( $this->meta_shipping_address ) {
+
+			$shipping_address = $order->get_formatted_shipping_address();
+			$shipping_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+
+			if ( empty( $shipping_address ) ) {
+
+				$billing_address = $order->get_formatted_billing_address();
+				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+				$shipping_address = $billing_address;
+
+			}
+			$custom_fields[] = array(
+				'display_name'  => 'Shipping Address',
+				'variable_name' => 'shipping_address',
+				'value'         => $shipping_address,
+			);
+
+		}
+
+		return $custom_fields;
 	}
 
 	/**
