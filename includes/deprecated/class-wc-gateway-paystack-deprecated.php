@@ -540,6 +540,10 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 						exit;
 					}
 
+					// Log successful transaction to Paystack plugin metrics tracker.
+					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+					$paystack_logger->log_transaction( $paystack_response->data->reference );
+
 					$order_total = $order->get_total();
 
 					$order_currency = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
@@ -626,6 +630,8 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 			http_response_code( 200 );
 
+			sleep( 6 );
+
 			$order_details = explode( '_', $event->data->reference );
 
 			$order_id = (int) $order_details[0];
@@ -641,6 +647,10 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 			if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
 			}
+
+			// Log successful transaction to Paystack plugin metrics tracker.
+			$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+			$paystack_logger->log_transaction( $event->data->reference );
 
 			$order_currency = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
