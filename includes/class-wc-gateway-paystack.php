@@ -559,7 +559,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			),
 		);
 
-		if ( 'GHS' == get_woocommerce_currency() ) {
+		if ( 'NGN' !== get_woocommerce_currency() ) {
 			unset( $form_fields['custom_gateways'] );
 		}
 
