@@ -628,8 +628,6 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 		if ( 'charge.success' == $event->event ) {
 
-			http_response_code( 200 );
-
 			sleep( 6 );
 
 			$order_details = explode( '_', $event->data->reference );
@@ -643,6 +641,8 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 			if ( $event->data->reference != $paystack_txn_ref ) {
 				exit;
 			}
+
+			http_response_code( 200 );
 
 			if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
