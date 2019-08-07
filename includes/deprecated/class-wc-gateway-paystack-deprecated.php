@@ -628,7 +628,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 		if ( 'charge.success' == $event->event ) {
 
-			sleep( 6 );
+			sleep( 10 );
 
 			$order_details = explode( '_', $event->data->reference );
 

@@ -1161,7 +1161,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( 'charge.success' == $event->event ) {
 
-			sleep( 6 );
+			sleep( 10 );
 
 			$order_details = explode( '_', $event->data->reference );
 
@@ -1554,6 +1554,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				} else {
 
 					$refund_response = json_decode( wp_remote_retrieve_body( $refund_request ) );
+
 					if ( isset( $refund_response->message ) ) {
 						return new WP_Error( 'error', $refund_response->message );
 					} else {
