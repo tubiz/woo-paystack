@@ -164,6 +164,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$this->supports = array(
 			'products',
+			'refunds',
 			'tokenization',
 			'subscriptions',
 			'multiple_subscriptions',
@@ -558,7 +559,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			),
 		);
 
-		if ( 'GHS' == get_woocommerce_currency() ) {
+		if ( 'NGN' !== get_woocommerce_currency() ) {
 			unset( $form_fields['custom_gateways'] );
 		}
 
@@ -841,9 +842,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'Authorization' => 'Bearer ' . $this->secret_key,
 			);
 
+			$metadata['custom_fields']= $this->get_custom_fields( $order_id );
+
 			$body = array(
 				'email'              => $email,
 				'amount'             => $order_amount,
+				'metadata'           => $metadata,
 				'authorization_code' => $token,
 			);
 
@@ -870,6 +874,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						exit;
 
 					}
+
+					// Log successful transaction to Paystack plugin metrics tracker.
+					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
+					$paystack_logger->log_transaction( $paystack_response->data->reference );
 
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
@@ -1153,9 +1161,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( 'charge.success' == $event->event ) {
 
-			http_response_code( 200 );
-
-			sleep( 6 );
+			sleep( 10 );
 
 			$order_details = explode( '_', $event->data->reference );
 
@@ -1168,6 +1174,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			if ( $event->data->reference != $paystack_txn_ref ) {
 				exit;
 			}
+
+			http_response_code( 200 );
 
 			if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
@@ -1337,6 +1345,238 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			}
 		}
 
+	}
+
+	/**
+	 * Get custom fields to pass to Paystack.
+	 *
+	 * @param int $order_id WC Order ID
+	 *
+	 * @return array
+	 */
+	public function get_custom_fields( $order_id ) {
+
+		$order = wc_get_order( $order_id );
+
+		$custom_fields = array();
+
+		$custom_fields[] = array(
+			'display_name'  => 'Plugin',
+			'variable_name' => 'plugin',
+			'value'         => 'woo-paystack',
+		);
+
+		if ( $this->meta_order_id ) {
+
+			$custom_fields[] = array(
+				'display_name'  => 'Order ID',
+				'variable_name' => 'order_id',
+				'value'         => $order_id,
+			);
+
+		}
+
+		if ( $this->meta_name ) {
+
+			$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+			$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Customer Name',
+				'variable_name' => 'customer_name',
+				'value'         => $first_name . ' ' . $last_name,
+			);
+
+		}
+
+		if ( $this->meta_email ) {
+
+			$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Customer Email',
+				'variable_name' => 'customer_email',
+				'value'         => $email,
+			);
+
+		}
+
+		if ( $this->meta_phone ) {
+
+			$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Customer Phone',
+				'variable_name' => 'customer_phone',
+				'value'         => $billing_phone,
+			);
+
+		}
+
+		if ( $this->meta_products ) {
+
+			$line_items = $order->get_items();
+
+			$products = '';
+
+			foreach ( $line_items as $item_id => $item ) {
+				$name     = $item['name'];
+				$quantity = $item['qty'];
+				$products .= $name . ' (Qty: ' . $quantity . ')';
+				$products .= ' | ';
+			}
+
+			$products = rtrim( $products, ' | ' );
+
+			$custom_fields[] = array(
+				'display_name'  => 'Products',
+				'variable_name' => 'products',
+				'value'         => $products,
+			);
+
+		}
+
+		if ( $this->meta_billing_address ) {
+
+			$billing_address = $order->get_formatted_billing_address();
+			$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+			$paystack_params['meta_billing_address'] = $billing_address;
+
+			$custom_fields[] = array(
+				'display_name'  => 'Billing Address',
+				'variable_name' => 'billing_address',
+				'value'         => $billing_address,
+			);
+
+		}
+
+		if ( $this->meta_shipping_address ) {
+
+			$shipping_address = $order->get_formatted_shipping_address();
+			$shipping_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+
+			if ( empty( $shipping_address ) ) {
+
+				$billing_address = $order->get_formatted_billing_address();
+				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+				$shipping_address = $billing_address;
+
+			}
+			$custom_fields[] = array(
+				'display_name'  => 'Shipping Address',
+				'variable_name' => 'shipping_address',
+				'value'         => $shipping_address,
+			);
+
+		}
+
+		return $custom_fields;
+	}
+
+	/**
+	 * Process a refund request from the Order details screen.
+	 *
+	 * @param int    $order_id WC Order ID.
+	 * @param null   $amount   WC Order Amount.
+	 * @param string $reason   Refund Reason
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function process_refund( $order_id, $amount = null, $reason = '' ) {
+
+		if ( ! ( $this->public_key && $this->secret_key ) ) {
+			return false;
+		}
+
+		$order = wc_get_order( $order_id );
+
+		if ( ! $order ) {
+			return false;
+		}
+
+		if ( $this->is_wc_lt( '3.0' ) ) {
+			$order_currency = get_post_meta( $order_id, '_order_currency', true );
+			$transaction_id = get_post_meta( $order_id, '_transaction_id', true );
+		} else {
+			$order_currency = $order->get_currency();
+			$transaction_id = $order->get_transaction_id();
+		}
+
+		$verify_url = 'https://api.paystack.co/transaction/verify/' . $transaction_id;
+
+		$headers = array(
+			'Authorization' => 'Bearer ' . $this->secret_key,
+		);
+
+		$args = array(
+			'headers' => $headers,
+			'timeout' => 60,
+		);
+
+		$request = wp_remote_get( $verify_url, $args );
+
+		if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+
+			$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
+
+			if ( 'success' == $paystack_response->data->status ) {
+
+				$merchant_note = sprintf( __( 'Refund for Order ID: #%1$s on %2$s', 'woo-paystack' ), $order_id, get_site_url() );
+
+				$body = array(
+					'transaction'   => $transaction_id,
+					'amount'        => $amount * 100,
+					'currency'      => $order_currency,
+					'customer_note' => $reason,
+					'merchant_note' => $merchant_note,
+				);
+
+				$args['body'] = $body;
+				$refund_url   = 'https://api.paystack.co/refund';
+
+				$refund_request = wp_remote_post( $refund_url, $args );
+
+				if ( ! is_wp_error( $refund_request ) && 200 === wp_remote_retrieve_response_code( $refund_request ) ) {
+
+					$refund_response = json_decode( wp_remote_retrieve_body( $refund_request ) );
+
+					if ( $refund_response->status ) {
+						$amount         = wc_price( $amount, array( 'currency' => $order_currency ) );
+						$refund_id      = $refund_response->data->id;
+						$refund_message = sprintf( __( 'Refunded %1$s. Refund ID: %2$s. Reason: %3$s', 'woo-paystack' ), $amount, $refund_id, $reason );
+						$order->add_order_note( $refund_message );
+
+						return true;
+					}
+
+				} else {
+
+					$refund_response = json_decode( wp_remote_retrieve_body( $refund_request ) );
+
+					if ( isset( $refund_response->message ) ) {
+						return new WP_Error( 'error', $refund_response->message );
+					} else {
+						return new WP_Error( 'error', __( 'Can&#39;t process refund at the moment. Try again later.', 'woo-paystack' ) );
+					}
+				}
+
+			}
+
+		}
+
+	}
+
+	/**
+	 * Checks if WC version is less than passed in version.
+	 *
+	 * @param string $version Version to check against.
+	 *
+	 * @return bool
+	 */
+	public static function is_wc_lt( $version ) {
+		return version_compare( WC_VERSION, $version, '<' );
 	}
 
 }

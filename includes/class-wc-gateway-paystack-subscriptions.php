@@ -112,9 +112,12 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 				'Authorization' => 'Bearer ' . $this->secret_key,
 			);
 
+			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
+
 			$body = array(
 				'email'              => $email,
 				'amount'             => $order_amount,
+				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
 			);
 
@@ -160,7 +163,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 			}
 		}
 
-		return new WP_Error( 'paystack_error', __( 'This subscription can\'t be renewed automatically. The customer will have to login to their account to renew their subscription', 'woo-paystack' ) );
+		return new WP_Error( 'paystack_error', __( 'This subscription can&#39;t be renewed automatically. The customer will have to login to their account to renew their subscription', 'woo-paystack' ) );
 
 	}
 

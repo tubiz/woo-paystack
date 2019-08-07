@@ -4,7 +4,7 @@ Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 Requires at least: 4.7
 Tested up to: 5.2
-Stable tag: 5.5.0
+Stable tag: 5.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -39,6 +39,7 @@ This plugin is meant to be used by merchants in Nigeria and Ghana.
 
 *   __Accept payment__ via Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR
 *   __Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
+*   __Refunds__ from the WooCommerce order details page. Refund an order directly from the order details page
 *   __Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
 
 = WooCommerce Subscriptions Integration =
@@ -122,6 +123,13 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 
 == Changelog ==
+
+= 5.6.0 - August 7, 2019 =
+*   New: Support for refunds via Paystack from the order details screen.
+*   New: Log successful transaction to Paystack metrics tracker.
+*   New: Add support for sending additional order details to Paystack when making payment using a saved card.
+*   New: Add support for sending additional order details to Paystack when a subscription payment is renewed.
+*   Update: WC 3.7 compatibility.
 
 = 5.5.0 - May 27, 2019 =
 *   Misc: Renamed Diamond Bank to Access Bank (Diamond)
@@ -209,8 +217,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.5.0 =
-*   Renamed Diamond Bank to Access Bank (Diamond), support for translation
+= 5.6.0
+*   Add support for refunds via Paystack from the order details screen. You can now process a refund for an order to the customer payment method from the order details page.
 
 == Screenshots ==
 
