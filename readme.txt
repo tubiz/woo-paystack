@@ -124,8 +124,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
-= 5.6.0 - August 6, 2019 =
-*   New: Support for refunds from the order details screen.
+= 5.6.0 - August 7, 2019 =
+*   New: Support for refunds via Paystack from the order details screen.
 *   New: Log successful transaction to Paystack metrics tracker.
 *   New: Add support for sending additional order details to Paystack when making payment using a saved card.
 *   New: Add support for sending additional order details to Paystack when a subscription payment is renewed.
@@ -217,8 +217,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.6.0 =
-*   Add support for refunds from the order details screen.
+= 5.6.0
+*   Add support for refunds via Paystack from the order details screen. You can now process a refund for an order to the customer payment method from the order details page.
 
 == Screenshots ==
 
