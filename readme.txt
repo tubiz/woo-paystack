@@ -3,8 +3,8 @@ Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 Requires at least: 4.7
-Tested up to: 5.2
-Stable tag: 5.6.0
+Tested up to: 5.3
+Stable tag: 5.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -124,6 +124,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.6.1 - November 13, 2019 =
+*   Update: WooCommerce 3.8 compatibility.
+
 = 5.6.0 - August 7, 2019 =
 *   New: Support for refunds via Paystack from the order details screen.
 *   New: Log successful transaction to Paystack metrics tracker.
@@ -217,8 +220,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.6.0
-*   Add support for refunds via Paystack from the order details screen. You can now process a refund for an order to the customer payment method from the order details page.
+= 5.6.1
+*   WooCommerce 3.8 compatibility.
 
 == Screenshots ==
 
