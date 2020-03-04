@@ -32,6 +32,24 @@ jQuery( function( $ ) {
 
 			$( '#woocommerce_paystack_testmode' ).change();
 
+			$( document.body ).on( 'change', '.woocommerce_paystack_split_payment', function() {
+				var subaccount_code = $( '.woocommerce_paystack_subaccount_code' ).parents( 'tr' ).eq( 0 ),
+					subaccount_charge = $( '.woocommerce_paystack_split_payment_charge_account' ).parents( 'tr' ).eq( 0 ),
+					transaction_charge = $( '.woocommerce_paystack_split_payment_transaction_charge' ).parents( 'tr' ).eq( 0 );
+
+				if ( $( this ).is( ':checked' ) ) {
+					subaccount_code.show();
+					subaccount_charge.show();
+					transaction_charge.show();
+				} else {
+					subaccount_code.hide();
+					subaccount_charge.hide();
+					transaction_charge.hide();
+				}
+			} );
+
+			$( '#woocommerce_paystack_split_payment' ).change();
+
 			// Toggle Custom Metadata settings.
 			$( '.wc-paystack-metadata' ).change( function() {
 				if ( $( this ).is( ':checked' ) ) {
@@ -39,34 +57,36 @@ jQuery( function( $ ) {
 				} else {
 					$( '.wc-paystack-meta-order-id, .wc-paystack-meta-name, .wc-paystack-meta-email, .wc-paystack-meta-phone, .wc-paystack-meta-billing-address, .wc-paystack-meta-shipping-address, .wc-paystack-meta-products' ).closest( 'tr' ).hide();
 				}
-			}).change();
+			} ).change();
 
 			// Toggle Bank filters settings.
-			$( '.wc-paystack-payment-channels' ).on( 'change', function () {
+			$( '.wc-paystack-payment-channels' ).on( 'change', function() {
 
-				var channels = $(".wc-paystack-payment-channels").val();
+				var channels = $( ".wc-paystack-payment-channels" ).val();
 
-				if( $.inArray( 'card', channels ) != '-1' ) {
+				if ( $.inArray( 'card', channels ) != '-1' ) {
 					$( '.wc-paystack-cards-allowed' ).closest( 'tr' ).show();
 					$( '.wc-paystack-banks-allowed' ).closest( 'tr' ).show();
 				}
-				else{
+				else {
 					$( '.wc-paystack-cards-allowed' ).closest( 'tr' ).hide();
 					$( '.wc-paystack-banks-allowed' ).closest( 'tr' ).hide();
 				}
 
-			}).change();
+			} ).change();
 
-			$(".wc-paystack-payment-icons").select2({
+			$( ".wc-paystack-payment-icons" ).select2( {
 				templateResult: formatPaystackPaymentIcons,
 				templateSelection: formatPaystackPaymentIcons
-			});
+			} );
 
 		}
 	};
 
-	function formatPaystackPaymentIcons (payment_method) {
-		if (!payment_method.id) { return payment_method.text; }
+	function formatPaystackPaymentIcons( payment_method ) {
+		if ( !payment_method.id ) {
+			return payment_method.text;
+		}
 		var $payment_method = $(
 			'<span><img src=" ' + wc_paystack_admin_params.plugin_url + '/assets/images/' + payment_method.element.value.toLowerCase() + '.png" class="img-flag" style="height: 15px; weight:18px;" /> ' + payment_method.text + '</span>'
 		);
@@ -75,4 +95,4 @@ jQuery( function( $ ) {
 
 	wc_paystack_admin.init();
 
-});
+} );
