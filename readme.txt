@@ -124,6 +124,11 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.6.3 - July 1, 2020 =
+*   Misc: Add icon for Ghanaian payment methods to checkout
+*   New: Add support for ZAR as an accepted currency
+*   Misc: Remove GBP as an accepted currency
+
 = 5.6.2 - March 12, 2020 =
 *   Update: WooCommerce 4.0 compatibility.
 
