@@ -250,9 +250,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function is_valid_for_use() {
 
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'GBP', 'GHS' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'ZAR', 'GHS' ) ) ) ) {
 
-			$this->msg = sprintf( __( 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;) or GBP (&#163;) <a href="%s">here</a>', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
+			$this->msg = sprintf( __( 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;) or ZAR (&#163;) <a href="%s">here</a>', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
 
 			return false;
 
@@ -266,8 +266,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * Display paystack payment icon.
 	 */
 	public function get_icon() {
+		$icon = "";
 
-		$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+		if('GHS' === get_woocommerce_currency()) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+		} else {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ng.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+		}
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
 

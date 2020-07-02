@@ -74,9 +74,9 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 	 */
 	public function is_valid_for_use() {
 
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'GBP' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'ZAR' ) ) ) ) {
 
-			$this->msg = 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), USD (&#36;) or GBP (&#163;) <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
+			$this->msg = 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), USD (&#36;) or ZAR (&#163;) <a href="' . admin_url( 'admin.php?page=wc-settings&tab=general' ) . '">here</a>';
 
 			return false;
 
