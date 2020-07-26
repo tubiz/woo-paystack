@@ -94,15 +94,8 @@ You can also follow me on Twitter! **[@tubiz](https://twitter.com/tubiz)**
 
 To configure the plugin, go to **WooCommerce > Settings** from the left hand menu, then click **Checkout** from the top tab. You will see **Paystack** as part of the available Checkout Options. Click on it to configure the payment gateway.
 
-- **Enable/Disable** - check the box to enable Paystack Payment Gateway.
-- **Title** - allows you to determine what your customers will see this payment option as on the checkout page.
-- **Description** - controls the message that appears under the payment fields on the checkout page. Here you can list the types of cards you accept.
-- **Test Mode** - Check to enable test mode. Test mode enables you to test payments before going live. If you ready to start receving real payment on your site, kindly uncheck this.
-- **Test Secret Key** - Enter your Test Secret Key here. Get your API keys from your Paystack account under Settings > Developer/API
-- **Test Public Key** - Enter your Test Public Key here. Get your API keys from your Paystack account under Settings > Developer/API
-- **Live Secret Key** - Enter your Live Secret Key here. Get your API keys from your Paystack account under Settings > Developer/API
-- **Live Public Key** - Enter your Live Public Key here. Get your API keys from your Paystack account under Settings > Developer/API
-- Click on **Save Changes** for the changes you made to be effected.
+### Configure the plugin
+To configure the plugin, go to __WooCommerce > Settings__ from the left hand menu, then click __Checkout__ from the top tab. You will see __Paystack__ as part of the available Checkout Options. Click on it to configure the payment gateway.
 
 ## Frequently Asked Questions
 
@@ -287,5 +280,4 @@ To configure the plugin, go to **WooCommerce > Settings** from the left hand me
 ### 5. Manage saved cards from your account page
 
 ###
-
 ![Screenshot 5](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-5.png)
