@@ -91,7 +91,11 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 	 */
 	public function get_icon() {
 
-		$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( '../assets/images/paystack-wc.png', __FILE__ ) ) . '" alt="cards" />';
+		if ( 'NGN' === get_woocommerce_currency() ) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
+		} else {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
+		}
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
 
