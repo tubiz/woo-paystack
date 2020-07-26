@@ -63,6 +63,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $split_payment;
 
 	/**
+	 * Should the cancel & remove order button be removed on the pay for order page.
+	 *
+	 * @var bool
+	 */
+	public $remove_cancel_order_button;
+
+	/**
 	 * Paystack sub account code.
 	 *
 	 * @var string
@@ -424,6 +431,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'type'        => 'text',
 				'description' => __( 'Enter your Live Public Key here.', 'woo-paystack' ),
 				'default'     => '',
+			),
+			'remove_cancel_order_button'       => array(
+				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
+				'label'       => __( 'Remove the cancel order & restore cart button on the pay for order page', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
 			),
 			'split_payment'                    => array(
 				'title'       => __( 'Split Payment', 'woo-paystack' ),
