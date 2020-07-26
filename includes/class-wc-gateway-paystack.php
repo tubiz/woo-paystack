@@ -943,7 +943,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					$this->save_subscription_payment_token( $order_id, $paystack_response );
 
-					wc_empty_cart();
+					WC()->cart->empty_cart();
 
 					return true;
 
@@ -1119,7 +1119,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					$this->save_card_details( $paystack_response, $order->get_user_id(), $order_id );
 
-					wc_empty_cart();
+					WC()->cart->empty_cart();
 
 				} else {
 
@@ -1224,7 +1224,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				wc_add_notice( $notice, $notice_type );
 
-				wc_empty_cart();
+				WC()->cart->empty_cart();
 
 			} else {
 
@@ -1254,7 +1254,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
 
-					wc_empty_cart();
+					WC()->cart->empty_cart();
 
 				}
 			}

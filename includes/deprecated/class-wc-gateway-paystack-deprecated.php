@@ -578,7 +578,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 						wc_add_notice( $notice, $notice_type );
 
-						wc_empty_cart();
+						WC()->cart->empty_cart();
 
 					} else {
 
@@ -586,7 +586,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 						$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
 
-						wc_empty_cart();
+						WC()->cart->empty_cart();
 					}
 				} else {
 
@@ -686,7 +686,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 				wc_add_notice( $notice, $notice_type );
 
-				wc_empty_cart();
+				WC()->cart->empty_cart();
 
 			} else {
 
@@ -694,7 +694,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 				$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
 
-				wc_empty_cart();
+				WC()->cart->empty_cart();
 			}
 
 			exit;
