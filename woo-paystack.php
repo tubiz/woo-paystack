@@ -3,13 +3,13 @@
  * Plugin Name: Paystack WooCommerce Payment Gateway
  * Plugin URI: https://paystack.com
  * Description: WooCommerce payment gateway for Paystack
- * Version: 5.6.2
+ * Version: 5.6.3
  * Author: Tunbosun Ayinla
  * Author URI: https://bosun.me
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * WC requires at least: 3.0.0
- * WC tested up to: 4.0
+ * WC tested up to: 4.3
  * Text Domain: woo-paystack
  * Domain Path: /languages
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 define( 'WC_PAYSTACK_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'WC_PAYSTACK_VERSION', '5.6.2' );
+define( 'WC_PAYSTACK_VERSION', '5.6.3' );
 
 /**
  * Initialize Paystack WooCommerce payment gateway.
@@ -37,27 +37,17 @@ function tbz_wc_paystack_init() {
 
 	add_action( 'admin_notices', 'tbz_wc_paystack_testmode_notice' );
 
-	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
+	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack.php';
 
-		require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack.php';
+	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack-subscriptions.php';
 
-		require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack-subscriptions.php';
+	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-custom-paystack.php';
 
-		require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-custom-paystack.php';
-
-		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-one.php';
-		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-two.php';
-		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-three.php';
-		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-four.php';
-		require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-five.php';
-
-	} else {
-
-		require_once dirname( __FILE__ ) . '/includes/deprecated/class-wc-gateway-paystack-deprecated.php';
-
-	}
-
-	require_once dirname( __FILE__ ) . '/includes/polyfill.php';
+	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-one.php';
+	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-two.php';
+	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-three.php';
+	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-four.php';
+	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-five.php';
 
 	require_once dirname( __FILE__ ) . '/includes/class-wc-paystack-plugin-tracker.php';
 
@@ -96,53 +86,48 @@ function tbz_wc_add_paystack_gateway( $methods ) {
 
 	if ( class_exists( 'WC_Subscriptions_Order' ) && class_exists( 'WC_Payment_Gateway_CC' ) ) {
 		$methods[] = 'WC_Gateway_Paystack_Subscriptions';
-	} elseif ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
-		$methods[] = 'WC_Gateway_Paystack';
 	} else {
-		$methods[] = 'WC_Gateway_Paystack_Deprecated';
+		$methods[] = 'WC_Gateway_Paystack';
 	}
 
-	if ( class_exists( 'WC_Payment_Gateway_CC' ) ) {
+	if ( 'NGN' === get_woocommerce_currency() ) {
 
-		if ( 'NGN' === get_woocommerce_currency() ) {
+		$settings        = get_option( 'woocommerce_paystack_settings', '' );
+		$custom_gateways = isset( $settings['custom_gateways'] ) ? $settings['custom_gateways'] : '';
 
-			$settings        = get_option( 'woocommerce_paystack_settings', '' );
-			$custom_gateways = isset( $settings['custom_gateways'] ) ? $settings['custom_gateways'] : '';
+		switch ( $custom_gateways ) {
+			case '5':
+				$methods[] = 'WC_Gateway_Paystack_One';
+				$methods[] = 'WC_Gateway_Paystack_Two';
+				$methods[] = 'WC_Gateway_Paystack_Three';
+				$methods[] = 'WC_Gateway_Paystack_Four';
+				$methods[] = 'WC_Gateway_Paystack_Five';
+				break;
 
-			switch ( $custom_gateways ) {
-				case '5':
-					$methods[] = 'WC_Gateway_Paystack_One';
-					$methods[] = 'WC_Gateway_Paystack_Two';
-					$methods[] = 'WC_Gateway_Paystack_Three';
-					$methods[] = 'WC_Gateway_Paystack_Four';
-					$methods[] = 'WC_Gateway_Paystack_Five';
-					break;
+			case '4':
+				$methods[] = 'WC_Gateway_Paystack_One';
+				$methods[] = 'WC_Gateway_Paystack_Two';
+				$methods[] = 'WC_Gateway_Paystack_Three';
+				$methods[] = 'WC_Gateway_Paystack_Four';
+				break;
 
-				case '4':
-					$methods[] = 'WC_Gateway_Paystack_One';
-					$methods[] = 'WC_Gateway_Paystack_Two';
-					$methods[] = 'WC_Gateway_Paystack_Three';
-					$methods[] = 'WC_Gateway_Paystack_Four';
-					break;
+			case '3':
+				$methods[] = 'WC_Gateway_Paystack_One';
+				$methods[] = 'WC_Gateway_Paystack_Two';
+				$methods[] = 'WC_Gateway_Paystack_Three';
+				break;
 
-				case '3':
-					$methods[] = 'WC_Gateway_Paystack_One';
-					$methods[] = 'WC_Gateway_Paystack_Two';
-					$methods[] = 'WC_Gateway_Paystack_Three';
-					break;
+			case '2':
+				$methods[] = 'WC_Gateway_Paystack_One';
+				$methods[] = 'WC_Gateway_Paystack_Two';
+				break;
 
-				case '2':
-					$methods[] = 'WC_Gateway_Paystack_One';
-					$methods[] = 'WC_Gateway_Paystack_Two';
-					break;
+			case '1':
+				$methods[] = 'WC_Gateway_Paystack_One';
+				break;
 
-				case '1':
-					$methods[] = 'WC_Gateway_Paystack_One';
-					break;
-
-				default:
-					break;
-			}
+			default:
+				break;
 		}
 	}
 

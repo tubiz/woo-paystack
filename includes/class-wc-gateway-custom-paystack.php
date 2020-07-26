@@ -46,6 +46,13 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 					'embed'  => __( 'Inline Embed', 'woo-paystack' ),
 				),
 			),
+			'remove_cancel_order_button'       => array(
+				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
+				'label'       => __( 'Remove the cancel order & restore cart button on the pay for order page', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
+			),
 			'split_payment'                    => array(
 				'title'       => __( 'Split Payment', 'woo-paystack' ),
 				'label'       => __( 'Enable Split Payment', 'woo-paystack' ),
@@ -345,7 +352,8 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			'mastercard'    => __( 'Mastercard', 'woo-paystack' ),
 			'paystackwhite' => __( 'Secured by Paystack White', 'woo-paystack' ),
 			'paystackblue'  => __( 'Secured by Paystack Blue', 'woo-paystack' ),
-			'paystack-wc'   => __( 'Paystack', 'woo-paystack' ),
+			'paystack-wc'   => __( 'Paystack Nigeria', 'woo-paystack' ),
+			'paystack-gh'   => __( 'Paystack Ghana', 'woo-paystack' ),
 			'access'        => __( 'Access Bank', 'woo-paystack' ),
 			'alat'          => __( 'ALAT by WEMA', 'woo-paystack' ),
 			'aso'           => __( 'ASO Savings and Loans', 'woo-paystack' ),
