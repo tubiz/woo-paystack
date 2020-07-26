@@ -271,7 +271,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		if('GHS' === get_woocommerce_currency()) {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
 		} else {
-			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ng.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
 		}
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );

@@ -345,7 +345,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			'mastercard'    => __( 'Mastercard', 'woo-paystack' ),
 			'paystackwhite' => __( 'Secured by Paystack White', 'woo-paystack' ),
 			'paystackblue'  => __( 'Secured by Paystack Blue', 'woo-paystack' ),
-			'paystack-ng'   => __( 'Paystack Nigeria', 'woo-paystack' ),
+			'paystack-wc'   => __( 'Paystack Nigeria', 'woo-paystack' ),
 			'paystack-gh'   => __( 'Paystack Ghana', 'woo-paystack' ),
 			'access'        => __( 'Access Bank', 'woo-paystack' ),
 			'alat'          => __( 'ALAT by WEMA', 'woo-paystack' ),
