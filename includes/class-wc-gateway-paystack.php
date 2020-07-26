@@ -63,6 +63,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $split_payment;
 
 	/**
+	 * Should the cancel & remove order button be removed on the pay for order page.
+	 *
+	 * @var bool
+	 */
+	public $remove_cancel_order_button;
+
+	/**
 	 * Paystack sub account code.
 	 *
 	 * @var string
@@ -199,10 +206,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$this->saved_cards = $this->get_option( 'saved_cards' ) === 'yes' ? true : false;
 
-		$this->split_payment       = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
-		$this->subaccount_code     = $this->get_option( 'subaccount_code' );
-		$this->charges_account     = $this->get_option( 'split_payment_charge_account' );
-		$this->transaction_charges = $this->get_option( 'split_payment_transaction_charge' );
+		$this->split_payment              = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
+		$this->remove_cancel_order_button = $this->get_option( 'remove_cancel_order_button' ) === 'yes' ? true : false;
+		$this->subaccount_code            = $this->get_option( 'subaccount_code' );
+		$this->charges_account            = $this->get_option( 'split_payment_charge_account' );
+		$this->transaction_charges        = $this->get_option( 'split_payment_transaction_charge' );
 
 		$this->custom_metadata = $this->get_option( 'custom_metadata' ) === 'yes' ? true : false;
 
@@ -424,6 +432,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'type'        => 'text',
 				'description' => __( 'Enter your Live Public Key here.', 'woo-paystack' ),
 				'default'     => '',
+			),
+			'remove_cancel_order_button'       => array(
+				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
+				'label'       => __( 'Remove the cancel order & restore cart button on the pay for order page', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
 			),
 			'split_payment'                    => array(
 				'title'       => __( 'Split Payment', 'woo-paystack' ),
@@ -1001,14 +1016,21 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form>
-				<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #EF3315; display: block; outline: none;">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form>';
+
+			if ( ! $this->remove_cancel_order_button ) {
+				echo '<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #ef3315; display: block; outline: none;">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+			}
 
 		} else {
 
 			echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button alt" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button alt" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
+
+			if ( ! $this->remove_cancel_order_button ) {
+				echo '  <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+			}
 
 		}
 

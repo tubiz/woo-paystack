@@ -46,6 +46,13 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 					'embed'  => __( 'Inline Embed', 'woo-paystack' ),
 				),
 			),
+			'remove_cancel_order_button'       => array(
+				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
+				'label'       => __( 'Remove the cancel order & restore cart button on the pay for order page', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
+			),
 			'split_payment'                    => array(
 				'title'       => __( 'Split Payment', 'woo-paystack' ),
 				'label'       => __( 'Enable Split Payment', 'woo-paystack' ),
