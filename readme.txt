@@ -4,7 +4,7 @@ Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, mastercard, visa
 Requires at least: 4.7
 Tested up to: 5.4
-Stable tag: 5.6.2
+Stable tag: 5.6.3
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -125,10 +125,16 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
-= 5.6.3 - July 1, 2020 =
-*   Misc: Add icon for Ghanaian payment methods to checkout
-*   New: Add support for ZAR as an accepted currency
-*   Misc: Remove GBP as an accepted currency
+= 5.6.3 - July 27, 2020 =
+*   New: Add support for ZAR as an accepted currency.
+*   New: Add setting to remove "Cancel order & restore cart" button.
+*   New: Minimum PHP version: 5.6
+*   New: Minimum WooCommerce supported version: 3.0.0
+*   Misc: Add icon for Ghanaian payment methods to checkout.
+*   Misc: Remove GBP as an accepted currency.
+*   Fix: Cart not fully cleared after successful payment.
+*   Fix: Selected payment icons not displayed on custom gateways settings page.
+*   Tweak: WooCommerce 4.3 compatibility.
 
 = 5.6.2 - March 12, 2020 =
 *   Update: WooCommerce 4.0 compatibility.
@@ -229,8 +235,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.6.2
-*   WooCommerce 4.0 compatibility.
+= 5.6.3
+*   Fixes
 
 == Screenshots ==
 
