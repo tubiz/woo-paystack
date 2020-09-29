@@ -279,8 +279,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( 'GH' === $base_location['country'] ) {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
-		} else if ('ZA' === $base_location['country'] ) {
-			$icon = '<img style="padding-top: 5px; width: 120px;" src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
+		} elseif ( 'ZA' === $base_location['country'] ) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		} else {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		}
@@ -654,6 +654,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$txnref        = $order_id . '_' . time();
 			$the_order_id  = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
 			$the_order_key = method_exists( $order, 'get_order_key' ) ? $order->get_order_key() : $order->order_key;
+			$currency      = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
@@ -661,7 +662,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$paystack_params['amount']       = $amount;
 				$paystack_params['txnref']       = $txnref;
 				$paystack_params['pay_page']     = $this->payment_page;
-				$paystack_params['currency']     = get_woocommerce_currency();
+				$paystack_params['currency']     = $currency;
 				$paystack_params['bank_channel'] = 'true';
 				$paystack_params['card_channel'] = 'true';
 
