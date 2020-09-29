@@ -9,7 +9,7 @@
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * WC requires at least: 3.0.0
- * WC tested up to: 4.3
+ * WC tested up to: 4.6
  * Text Domain: woo-paystack
  * Domain Path: /languages
  */
