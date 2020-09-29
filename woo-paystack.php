@@ -3,13 +3,13 @@
  * Plugin Name: Paystack WooCommerce Payment Gateway
  * Plugin URI: https://paystack.com
  * Description: WooCommerce payment gateway for Paystack
- * Version: 5.6.3
+ * Version: 5.6.4
  * Author: Tunbosun Ayinla
  * Author URI: https://bosun.me
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * WC requires at least: 3.0.0
- * WC tested up to: 4.3
+ * WC tested up to: 4.6
  * Text Domain: woo-paystack
  * Domain Path: /languages
  */
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 define( 'WC_PAYSTACK_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'WC_PAYSTACK_VERSION', '5.6.3' );
+define( 'WC_PAYSTACK_VERSION', '5.6.4' );
 
 /**
  * Initialize Paystack WooCommerce payment gateway.
@@ -152,6 +152,6 @@ function tbz_wc_paystack_testmode_notice() {
 
 	if ( 'yes' === $test_mode ) {
 		/* translators: 1. Paystack settings page URL link. */
-		echo '<div class="update-nag">' . sprintf( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</div>';
+		echo '<div class="error"><p>' . sprintf( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</p></div>';
 	}
 }

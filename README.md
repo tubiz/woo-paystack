@@ -8,9 +8,9 @@
 
 **Requires at least:** 4.7
 
-**Tested up to:** 5.4
+**Tested up to:** 5.5
 
-**Stable tag:** 5.6.3
+**Stable tag:** 5.6.4
 
 **License:** GPLv2 or later
 
@@ -145,6 +145,11 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Changelog
 
+### 5.6.4 - September 29, 2020 =
+*   Fix: Use order currency when paying for an order and not the store currency
+*   Fix: Test mode enabled admin notice not displayed properly
+*   Misc: Add payment icon for South Africa
+
 ### 5.6.3 - July 27, 2020
 *   New: Add support for ZAR as an accepted currency.
 *   New: Add setting to remove "Cancel order & restore cart" button.
@@ -257,7 +262,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 ## Upgrade Notice
 
 ### 5.6.3 ###
-*   Fixes.
+*   Add payment icon for South Africa. Use the order currency and not the store currency when paying for an order
 
 ## Screenshots ##
 
