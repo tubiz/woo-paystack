@@ -1,6 +1,6 @@
 jQuery( function( $ ) {
 
-	var paystack_submit = false;
+	let paystack_submit = false;
 
 	if ( 'embed' === wc_paystack_params.pay_page ) {
 
@@ -20,7 +20,7 @@ jQuery( function( $ ) {
 
 	function wcPaystackCustomFields() {
 
-		var custom_fields = [
+		let custom_fields = [
 			{
 				"display_name": "Plugin",
 				"variable_name": "plugin",
@@ -97,7 +97,7 @@ jQuery( function( $ ) {
 
 	function wcPaystackCustomFilters() {
 
-		var custom_filters = new Object();
+		let custom_filters = {};
 
 		if ( wc_paystack_params.banks_allowed ) {
 
@@ -113,6 +113,41 @@ jQuery( function( $ ) {
 		return custom_filters;
 	}
 
+	function wcPaymentChannels() {
+
+		let payment_channels = [];
+
+		if ( wc_paystack_params.bank_channel ) {
+			payment_channels.push( 'bank' );
+		}
+
+		if ( wc_paystack_params.card_channel ) {
+			payment_channels.push( 'card' );
+		}
+
+		if ( wc_paystack_params.ussd_channel ) {
+			payment_channels.push( 'ussd' );
+		}
+
+		if ( wc_paystack_params.qr_channel ) {
+			payment_channels.push( 'qr' );
+		}
+
+		if ( wc_paystack_params.mobile_money_channel ) {
+			payment_channels.push( 'mobile_money' );
+		}
+
+		if ( wc_paystack_params.bank_transfer_channel ) {
+			payment_channels.push( 'bank_transfer' );
+		}
+
+		if ( payment_channels.length === 0 ) {
+			payment_channels = [ 'card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer' ]
+		}
+
+		return payment_channels;
+	}
+
 	function wcPaystackFormHandler() {
 
 		if ( paystack_submit ) {
@@ -120,23 +155,13 @@ jQuery( function( $ ) {
 			return true;
 		}
 
-		var $form = $( 'form#payment-form, form#order_review' ),
+		let $form = $( 'form#payment-form, form#order_review' ),
 			paystack_txnref = $form.find( 'input.paystack_txnref' ),
-			bank = "false",
-			card = "false",
 			subaccount_code = '',
 			charges_account = '',
 			transaction_charges = '';
 
 		paystack_txnref.val( '' );
-
-		if ( wc_paystack_params.bank_channel ) {
-			bank = "true";
-		}
-
-		if ( wc_paystack_params.card_channel ) {
-			card = "true";
-		}
 
 		if ( wc_paystack_params.subaccount_code ) {
 			subaccount_code = wc_paystack_params.subaccount_code;
@@ -150,9 +175,9 @@ jQuery( function( $ ) {
 			transaction_charges = Number( wc_paystack_params.transaction_charges );
 		}
 
-		var amount = Number( wc_paystack_params.amount );
+		let amount = Number( wc_paystack_params.amount );
 
-		var paystack_callback = function( response ) {
+		let paystack_callback = function( response ) {
 			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
 			paystack_submit = true;
 
@@ -170,15 +195,14 @@ jQuery( function( $ ) {
 			} );
 		};
 
-		var handler = PaystackPop.setup( {
+		let handler = PaystackPop.setup( {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
 			amount: amount,
 			ref: wc_paystack_params.txnref,
 			currency: wc_paystack_params.currency,
 			callback: paystack_callback,
-			bank: bank,
-			card: card,
+			channels: wcPaymentChannels(),
 			subaccount: subaccount_code,
 			bearer: charges_account,
 			transaction_charge: transaction_charges,
@@ -204,23 +228,13 @@ jQuery( function( $ ) {
 			return true;
 		}
 
-		var $form = $( 'form#payment-form, form#order_review' ),
+		let $form = $( 'form#payment-form, form#order_review' ),
 			paystack_txnref = $form.find( 'input.paystack_txnref' ),
-			bank = "false",
-			card = "false",
 			subaccount_code = '',
 			charges_account = '',
 			transaction_charges = '';
 
 		paystack_txnref.val( '' );
-
-		if ( wc_paystack_params.bank_channel ) {
-			bank = "true";
-		}
-
-		if ( wc_paystack_params.card_channel ) {
-			card = "true";
-		}
 
 		if ( wc_paystack_params.subaccount_code ) {
 			subaccount_code = wc_paystack_params.subaccount_code;
@@ -234,9 +248,9 @@ jQuery( function( $ ) {
 			transaction_charges = Number( wc_paystack_params.transaction_charges );
 		}
 
-		var amount = Number( wc_paystack_params.amount );
+		let amount = Number( wc_paystack_params.amount );
 
-		var paystack_callback = function( response ) {
+		let paystack_callback = function( response ) {
 
 			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
 
@@ -259,7 +273,7 @@ jQuery( function( $ ) {
 
 		};
 
-		var handler = PaystackPop.setup( {
+		let handler = PaystackPop.setup( {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
 			amount: amount,
@@ -267,8 +281,7 @@ jQuery( function( $ ) {
 			currency: wc_paystack_params.currency,
 			container: "paystackWooCommerceEmbedContainer",
 			callback: paystack_callback,
-			bank: bank,
-			card: card,
+			channels: wcPaymentChannels(),
 			subaccount: subaccount_code,
 			bearer: charges_account,
 			transaction_charge: transaction_charges,
