@@ -1227,11 +1227,19 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function verify_paystack_transaction() {
 
+		if ( isset( $_REQUEST['paystack_txnref'] ) ) {
+			$paystack_txn_ref = sanitize_text_field( $_REQUEST['paystack_txnref'] );
+		} elseif ( isset( $_REQUEST['reference'] ) ) {
+			$paystack_txn_ref = sanitize_text_field( $_REQUEST['reference'] );
+		} else {
+			$paystack_txn_ref = false;
+		}
+
 		@ob_clean();
 
-		if ( isset( $_REQUEST['paystack_txnref'] ) ) {
+		if ( $paystack_txn_ref ) {
 
-			$paystack_url = 'https://api.paystack.co/transaction/verify/' . sanitize_text_field( $_REQUEST['paystack_txnref'] );
+			$paystack_url = 'https://api.paystack.co/transaction/verify/' . $paystack_txn_ref;
 
 			$headers = array(
 				'Authorization' => 'Bearer ' . $this->secret_key,
