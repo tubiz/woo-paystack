@@ -658,13 +658,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
-				$paystack_params['email']        = $email;
-				$paystack_params['amount']       = $amount;
-				$paystack_params['txnref']       = $txnref;
-				$paystack_params['pay_page']     = $this->payment_page;
-				$paystack_params['currency']     = $currency;
-				$paystack_params['bank_channel'] = 'true';
-				$paystack_params['card_channel'] = 'true';
+				$paystack_params['email']                 = $email;
+				$paystack_params['amount']                = $amount;
+				$paystack_params['txnref']                = $txnref;
+				$paystack_params['pay_page']              = $this->payment_page;
+				$paystack_params['currency']              = $currency;
+				$paystack_params['bank_channel']          = 'true';
+				$paystack_params['card_channel']          = 'true';
+				$paystack_params['ussd_channel']          = 'true';
+				$paystack_params['qr_channel']            = 'true';
+				$paystack_params['mobile_money_channel']  = 'true';
+				$paystack_params['bank_transfer_channel'] = 'true';
 
 			}
 
