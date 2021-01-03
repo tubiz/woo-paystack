@@ -42,7 +42,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 				'desc_tip'    => false,
 				'options'     => array(
 					''         => __( 'Select One', 'woo-paystack' ),
-					'inline'   => __( 'Inline', 'woo-paystack' ),
+					'inline'   => __( 'Popup', 'woo-paystack' ),
 					'embed'    => __( 'Inline Embed', 'woo-paystack' ),
 					'redirect' => __( 'Redirect', 'woo-paystack' ),
 				),
