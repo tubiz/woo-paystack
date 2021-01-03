@@ -286,7 +286,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 		return array(
 			'card'          => __( 'Cards', 'woo-paystack' ),
-			'bank'          => __( 'Banks', 'woo-paystack' ),
+			'bank'          => __( 'Pay with Bank', 'woo-paystack' ),
 			'ussd'          => __( 'USSD', 'woo-paystack' ),
 			'qr'            => __( 'QR', 'woo-paystack' ),
 			'mobile_money'  => __( 'Mobile Money', 'woo-paystack' ),
