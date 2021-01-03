@@ -801,7 +801,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function process_payment( $order_id ) {
 
-		if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+		if ( 'redirect' === $this->payment_page ) {
+
+			return $this->process_redirect_payment_option( $order_id );
+
+		} elseif ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
 
 			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
 			$token    = WC_Payment_Tokens::get( $token_id );
@@ -842,6 +846,178 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'redirect' => $order->get_checkout_payment_url( true ),
 			);
 
+		}
+
+	}
+
+	/**
+	 * Process a redirect payment option payment.
+	 *
+	 * @since 5.7
+	 * @param int $order_id
+	 * @return array|void
+	 */
+	public function process_redirect_payment_option( $order_id ) {
+
+		$order        = wc_get_order( $order_id );
+		$email        = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+		$amount       = $order->get_total() * 100;
+		$txnref       = $order_id . '_' . time();
+		$currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
+		$callback_url = WC()->api_request_url( 'WC_Gateway_Paystack' );
+		$custom_fields[]   = array(
+			'display_name'  => 'Plugin',
+			'variable_name' => 'plugin',
+			'value'         => 'woo-paystack',
+		);
+
+		$paystack_params = array(
+			'amount'       => $amount,
+			'email'        => $email,
+			'currency'     => $currency,
+			'reference'    => $txnref,
+			'callback_url' => $callback_url,
+			'channels'     => [ 'card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer' ],
+		);
+
+		if ( $this->split_payment ) {
+
+			$paystack_params['subaccount'] = $this->subaccount_code;
+			$paystack_params['bearer'] = $this->charges_account;
+
+			if ( empty( $this->transaction_charges ) ) {
+				$paystack_params['transaction_charge'] = '';
+			} else {
+				$paystack_params['transaction_charge'] = $this->transaction_charges * 100;
+			}
+		}
+
+		if ( $this->custom_metadata ) {
+
+			if ( $this->meta_order_id ) {
+				$custom_fields[] = array(
+					'display_name'  => 'Order ID',
+					'variable_name' => 'order_id',
+					'value'         => $order_id,
+				);
+			}
+
+			if ( $this->meta_name ) {
+				$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+				$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+
+				$custom_fields[] = array(
+					'display_name'  => 'Customer Name',
+					'variable_name' => 'customer_name',
+					'value'         => $first_name . ' ' . $last_name,
+				);
+			}
+
+			if ( $this->meta_email ) {
+				$custom_fields[] = array(
+					'display_name'  => 'Customer Email',
+					'variable_name' => 'customer_email',
+					'value'         => $email,
+				);
+			}
+
+			if ( $this->meta_phone ) {
+				$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
+
+				$custom_fields[] = array(
+					'display_name'  => 'Customer Phone',
+					'variable_name' => 'customer_phone',
+					'value'         => $billing_phone,
+				);
+			}
+
+			if ( $this->meta_billing_address ) {
+
+				$billing_address = $order->get_formatted_billing_address();
+				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+				$custom_fields[] = array(
+					'display_name'  => 'Billing Address',
+					'variable_name' => 'billing_address',
+					'value'         => $billing_address,
+				);
+			}
+
+			if ( $this->meta_shipping_address ) {
+
+				$shipping_address = $order->get_formatted_shipping_address();
+				$shipping_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+
+				if ( empty( $shipping_address ) ) {
+
+					$billing_address = $order->get_formatted_billing_address();
+					$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+					$shipping_address = $billing_address;
+				}
+
+				$custom_fields[] = array(
+					'display_name'  => 'Shipping Address',
+					'variable_name' => 'shipping_address',
+					'value'         => $shipping_address,
+				);
+			}
+
+			if ( $this->meta_products ) {
+
+				$line_items = $order->get_items();
+
+				$products = '';
+
+				foreach ( $line_items as $item_id => $item ) {
+					$name      = $item['name'];
+					$quantity  = $item['qty'];
+					$products .= $name . ' (Qty: ' . $quantity . ')';
+					$products .= ' | ';
+				}
+
+				$products = rtrim( $products, ' | ' );
+
+				$custom_fields[] = array(
+					'display_name'  => 'Products',
+					'variable_name' => 'products',
+					'value'         => $products,
+				);
+			}
+		}
+
+		$paystack_params['metadata']['custom_fields'] = $custom_fields;
+
+		update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
+
+		$paystack_url = 'https://api.paystack.co/transaction/initialize/';
+
+		$headers = array(
+			'Authorization' => 'Bearer ' . $this->secret_key,
+			'Content-Type'  => 'application/json',
+		);
+
+		$args = array(
+			'headers' => $headers,
+			'timeout' => 60,
+			'body'    => json_encode( $paystack_params ),
+		);
+
+		$request = wp_remote_post( $paystack_url, $args );
+
+		if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+
+			$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $paystack_response->data->authorization_url,
+			);
+
+		} else {
+			wc_add_notice( __( 'Unable to process payment try again', 'woo-paystack' ), 'error' );
+
+			return;
 		}
 
 	}
