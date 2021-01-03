@@ -1,6 +1,6 @@
 jQuery( function( $ ) {
 
-	var paystack_submit = false;
+	let paystack_submit = false;
 
 	if ( 'embed' === wc_paystack_params.pay_page ) {
 
@@ -20,7 +20,7 @@ jQuery( function( $ ) {
 
 	function wcPaystackCustomFields() {
 
-		var custom_fields = [
+		let custom_fields = [
 			{
 				"display_name": "Plugin",
 				"variable_name": "plugin",
@@ -97,7 +97,7 @@ jQuery( function( $ ) {
 
 	function wcPaystackCustomFilters() {
 
-		var custom_filters = {};
+		let custom_filters = {};
 
 		if ( wc_paystack_params.banks_allowed ) {
 
@@ -155,7 +155,7 @@ jQuery( function( $ ) {
 			return true;
 		}
 
-		var $form = $( 'form#payment-form, form#order_review' ),
+		let $form = $( 'form#payment-form, form#order_review' ),
 			paystack_txnref = $form.find( 'input.paystack_txnref' ),
 			subaccount_code = '',
 			charges_account = '',
@@ -175,9 +175,9 @@ jQuery( function( $ ) {
 			transaction_charges = Number( wc_paystack_params.transaction_charges );
 		}
 
-		var amount = Number( wc_paystack_params.amount );
+		let amount = Number( wc_paystack_params.amount );
 
-		var paystack_callback = function( response ) {
+		let paystack_callback = function( response ) {
 			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
 			paystack_submit = true;
 
@@ -195,7 +195,7 @@ jQuery( function( $ ) {
 			} );
 		};
 
-		var handler = PaystackPop.setup( {
+		let handler = PaystackPop.setup( {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
 			amount: amount,
@@ -228,7 +228,7 @@ jQuery( function( $ ) {
 			return true;
 		}
 
-		var $form = $( 'form#payment-form, form#order_review' ),
+		let $form = $( 'form#payment-form, form#order_review' ),
 			paystack_txnref = $form.find( 'input.paystack_txnref' ),
 			subaccount_code = '',
 			charges_account = '',
@@ -248,9 +248,9 @@ jQuery( function( $ ) {
 			transaction_charges = Number( wc_paystack_params.transaction_charges );
 		}
 
-		var amount = Number( wc_paystack_params.amount );
+		let amount = Number( wc_paystack_params.amount );
 
-		var paystack_callback = function( response ) {
+		let paystack_callback = function( response ) {
 
 			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
 
@@ -273,7 +273,7 @@ jQuery( function( $ ) {
 
 		};
 
-		var handler = PaystackPop.setup( {
+		let handler = PaystackPop.setup( {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
 			amount: amount,
