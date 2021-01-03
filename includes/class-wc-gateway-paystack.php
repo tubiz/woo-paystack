@@ -883,7 +883,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		if ( $this->split_payment ) {
 
 			$paystack_params['subaccount'] = $this->subaccount_code;
-			$paystack_params['bearer'] = $this->charges_account;
+			$paystack_params['bearer']     = $this->charges_account;
 
 			if ( empty( $this->transaction_charges ) ) {
 				$paystack_params['transaction_charge'] = '';
