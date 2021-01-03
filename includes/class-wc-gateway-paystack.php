@@ -949,7 +949,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'Authorization' => 'Bearer ' . $this->secret_key,
 			);
 
-			$metadata['custom_fields']= $this->get_custom_fields( $order_id );
+			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
 			$body = array(
 				'email'              => $email,
