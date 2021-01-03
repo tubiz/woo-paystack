@@ -284,8 +284,12 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	public function channels() {
 
 		return array(
-			'card' => __( 'Cards', 'woo-paystack' ),
-			'bank' => __( 'Banks', 'woo-paystack' ),
+			'card'          => __( 'Cards', 'woo-paystack' ),
+			'bank'          => __( 'Banks', 'woo-paystack' ),
+			'ussd'          => __( 'USSD', 'woo-paystack' ),
+			'qr'            => __( 'QR', 'woo-paystack' ),
+			'mobile_money'  => __( 'Mobile Money', 'woo-paystack' ),
+			'bank_transfer' => __( 'Bank Transfer', 'woo-paystack' ),
 		);
 
 	}
