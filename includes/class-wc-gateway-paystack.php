@@ -402,15 +402,16 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true,
 			),
 			'payment_page'                     => array(
-				'title'       => __( 'Payment Page', 'woo-paystack' ),
+				'title'       => __( 'Payment Option', 'woo-paystack' ),
 				'type'        => 'select',
-				'description' => __( 'Inline shows the payment popup on the page while Inline Embed shows the payment page directly on the page', 'woo-paystack' ),
+				'description' => __( 'Popup shows the payment popup on the page, Inline Embed shows the payment page directly on the page while Redirect will redirect the customer to Paystack to make payment.', 'woo-paystack' ),
 				'default'     => '',
 				'desc_tip'    => false,
 				'options'     => array(
-					''       => __( 'Select One', 'woo-paystack' ),
-					'inline' => __( 'Inline', 'woo-paystack' ),
-					'embed'  => __( 'Inline Embed', 'woo-paystack' ),
+					''          => __( 'Select One', 'woo-paystack' ),
+					'inline'    => __( 'Popup', 'woo-paystack' ),
+					'embed'     => __( 'Inline Embed', 'woo-paystack' ),
+					'redirect'  => __( 'Redirect', 'woo-paystack' ),
 				),
 			),
 			'test_secret_key'                  => array(
