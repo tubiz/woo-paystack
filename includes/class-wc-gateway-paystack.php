@@ -987,6 +987,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		}
 
 		$paystack_params['metadata']['custom_fields'] = $custom_fields;
+		$paystack_params['metadata']['cancel_action'] = wc_get_cart_url();
 
 		update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
 
