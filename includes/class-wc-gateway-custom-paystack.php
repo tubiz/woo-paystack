@@ -35,15 +35,16 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 				'default'     => '',
 			),
 			'payment_page'                     => array(
-				'title'       => __( 'Payment Page', 'woo-paystack' ),
+				'title'       => __( 'Payment Option', 'woo-paystack' ),
 				'type'        => 'select',
-				'description' => __( 'Inline shows the payment popup on the page while Inline Embed shows the payment page directly on the page', 'woo-paystack' ),
+				'description' => __( 'Popup shows the payment popup on the page, Inline Embed shows the payment page directly on the page while Redirect will redirect the customer to Paystack to make payment.', 'woo-paystack' ),
 				'default'     => '',
 				'desc_tip'    => false,
 				'options'     => array(
-					''       => __( 'Select One', 'woo-paystack' ),
-					'inline' => __( 'Inline', 'woo-paystack' ),
-					'embed'  => __( 'Inline Embed', 'woo-paystack' ),
+					''         => __( 'Select One', 'woo-paystack' ),
+					'inline'   => __( 'Popup', 'woo-paystack' ),
+					'embed'    => __( 'Inline Embed', 'woo-paystack' ),
+					'redirect' => __( 'Redirect', 'woo-paystack' ),
 				),
 			),
 			'remove_cancel_order_button'       => array(
@@ -285,7 +286,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 		return array(
 			'card'          => __( 'Cards', 'woo-paystack' ),
-			'bank'          => __( 'Banks', 'woo-paystack' ),
+			'bank'          => __( 'Pay with Bank', 'woo-paystack' ),
 			'ussd'          => __( 'USSD', 'woo-paystack' ),
 			'qr'            => __( 'QR', 'woo-paystack' ),
 			'mobile_money'  => __( 'Mobile Money', 'woo-paystack' ),
