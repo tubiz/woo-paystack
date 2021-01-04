@@ -688,7 +688,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 				$order->payment_complete( $paystack_ref );
 
-				$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
+				$order->add_order_note( sprintf( 'Paystack Transaction Ref: %s', $paystack_ref ) );
 
 				wc_empty_cart();
 			}

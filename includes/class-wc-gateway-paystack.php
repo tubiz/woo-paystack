@@ -89,7 +89,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @var bool
 	 */
 	public $custom_metadata;
-
+	public $autocomplete_order;
 	/**
 	 * Should the order id be sent as a custom metadata to Paystack?
 	 *
@@ -188,9 +188,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->description = $this->get_option( 'description' );
 		$this->enabled     = $this->get_option( 'enabled' );
 		$this->testmode    = $this->get_option( 'testmode' ) === 'yes' ? true : false;
-
+		$this->autocomplete_order = $this->get_option('autocomplete_order') === 'yes' ? true : false;
 		$this->payment_page = $this->get_option( 'payment_page' );
-
+		
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );
 
@@ -567,6 +567,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'type'        => 'checkbox',
 				'class'       => 'wc-paystack-meta-products',
 				'description' => __( 'If checked, the product(s) purchased will be sent to Paystack', 'woo-paystack' ),
+				'default'     => 'no',
+				'desc_tip'    => true,
+			),
+			'autocomplete_order'                  => array(
+				'title'       => __( 'Autocomplete order after payment', 'woo-paystack' ),
+				'label'       => __( 'Autocomplete order', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-autocomplete-order',
+				'description' => __( 'If enabled, the order will be marked as completed after successful payment', 'woo-paystack' ),
 				'default'     => 'no',
 				'desc_tip'    => true,
 			),
@@ -1122,7 +1131,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 							$order->payment_complete( $paystack_ref );
 							$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
-
+							if($this->autocomplete_order){
+								$order->update_status( 'completed' );
+							}
 						}
 					}
 
