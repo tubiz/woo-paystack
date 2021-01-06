@@ -1395,10 +1395,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					WC()->cart->empty_cart();
 
-				}
-
-				if ( $this->is_autocomplete_order_enabled( $order ) ) {
-					$order->update_status( 'completed' );
+					if ( $this->is_autocomplete_order_enabled( $order ) ) {
+						$order->update_status( 'completed' );
+					}
 				}
 			}
 
