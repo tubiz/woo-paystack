@@ -189,7 +189,7 @@ function tbz_wc_paystack_testmode_notice() {
 			}
 
 			$custom_gateway_settings = get_option( $option_name );
-			if ( ( 'yes' === $custom_gateway_settings['enabled'] ) && ( 'embed' === $custom_gateway_settings['payment_page'] ) ) {
+			if ( isset( $custom_gateway_settings['enabled'] ) && ( 'yes' === $custom_gateway_settings['enabled'] ) && ( 'embed' === $custom_gateway_settings['payment_page'] ) ) {
 				$embed_payment_option_enabled = true;
 			}
 		}
