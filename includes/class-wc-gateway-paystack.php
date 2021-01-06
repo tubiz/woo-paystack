@@ -14,6 +14,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $testmode;
 
 	/**
+	 * Should orders be marked as complete after payment?
+	 * 
+	 * @var bool
+	 */
+	public $autocomplete_order;
+
+	/**
 	 * Paystack payment page type.
 	 *
 	 * @var string
@@ -197,10 +204,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->init_settings();
 
 		// Get setting values
-		$this->title       = $this->get_option( 'title' );
-		$this->description = $this->get_option( 'description' );
-		$this->enabled     = $this->get_option( 'enabled' );
-		$this->testmode    = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+
+		$this->title              = $this->get_option( 'title' );
+		$this->description        = $this->get_option( 'description' );
+		$this->enabled            = $this->get_option( 'enabled' );
+		$this->testmode           = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+		$this->autocomplete_order = $this->get_option( 'autocomplete_order' ) === 'yes' ? true : false;
+		$this->payment_page       = $this->get_option( 'payment_page' );
 
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );
@@ -441,6 +451,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'type'        => 'text',
 				'description' => __( 'Enter your Live Public Key here.', 'woo-paystack' ),
 				'default'     => '',
+			),
+			'autocomplete_order'               => array(
+				'title'       => __( 'Autocomplete Order After Payment', 'woo-paystack' ),
+				'label'       => __( 'Autocomplete Order', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-autocomplete-order',
+				'description' => __( 'If enabled, the order will be marked as complete after successful payment', 'woo-paystack' ),
+				'default'     => 'no',
+				'desc_tip'    => true,
 			),
 			'remove_cancel_order_button'       => array(
 				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
@@ -1236,6 +1255,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 							$order->payment_complete( $paystack_ref );
 							$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
 
+							if ( $this->is_autocomplete_order_enabled( $order ) ) {
+								$order->update_status( 'completed' );
+							}
 						}
 					}
 
@@ -1378,6 +1400,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					WC()->cart->empty_cart();
 
+					if ( $this->is_autocomplete_order_enabled( $order ) ) {
+						$order->update_status( 'completed' );
+					}
 				}
 			}
 
@@ -1705,8 +1730,29 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 *
 	 * @return bool
 	 */
-	public static function is_wc_lt( $version ) {
+	public function is_wc_lt( $version ) {
 		return version_compare( WC_VERSION, $version, '<' );
+	}
+
+	/**
+	 * Checks if autocomplete order is enabled for the payment method.
+	 *
+	 * @since 5.7
+	 * @param WC_Order $order Order object.
+	 * @return bool
+	 */
+	protected function is_autocomplete_order_enabled( $order ) {
+		$autocomplete_order = false;
+
+		$payment_method = $order->get_payment_method();
+
+		$paystack_settings = get_option('woocommerce_' . $payment_method . '_settings');
+
+		if ( isset( $paystack_settings['autocomplete_order'] ) && 'yes' === $paystack_settings['autocomplete_order'] ) {
+			$autocomplete_order = true;
+		}
+
+		return $autocomplete_order;
 	}
 
 }
