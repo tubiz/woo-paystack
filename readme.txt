@@ -125,6 +125,9 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.6.5
+* New: Add option to autocomplete order after successful payment
+
 = 5.6.4 - September 29, 2020 =
 *   Fix: Use order currency when paying for an order and not the store currency
 *   Misc: Test mode enabled admin notice not displayed properly
@@ -242,6 +245,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 = 5.6.4
 *   Add payment icon for South Africa. Use the order currency and not the store currency when paying for an order
+
 
 == Screenshots ==
 
