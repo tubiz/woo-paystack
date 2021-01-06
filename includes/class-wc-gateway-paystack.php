@@ -1729,7 +1729,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 *
 	 * @return bool
 	 */
-	public static function is_wc_lt( $version ) {
+	public function is_wc_lt( $version ) {
 		return version_compare( WC_VERSION, $version, '<' );
 	}
 
