@@ -12,12 +12,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @var bool
 	 */
 	public $testmode;
+
 	/**
 	 * Should orders be marked as complete after payment?
 	 * 
 	 * @var bool
 	 */
 	public $autocomplete_order;
+
 	/**
 	 * Paystack payment page type.
 	 *
@@ -197,12 +199,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->init_settings();
 
 		// Get setting values
-		$this->title       = $this->get_option( 'title' );
-		$this->description = $this->get_option( 'description' );
-		$this->enabled     = $this->get_option( 'enabled' );
-		$this->testmode    = $this->get_option( 'testmode' ) === 'yes' ? true : false;
-		$this->autocomplete_order = $this->get_option('autocomplete_order') === 'yes' ? true : false;
-		$this->payment_page = $this->get_option( 'payment_page' );
+		$this->title              = $this->get_option( 'title' );
+		$this->description        = $this->get_option( 'description' );
+		$this->enabled            = $this->get_option( 'enabled' );
+		$this->testmode           = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+		$this->autocomplete_order = $this->get_option( 'autocomplete_order' ) === 'yes' ? true : false;
+		$this->payment_page       = $this->get_option( 'payment_page' );
 
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );
@@ -1388,9 +1390,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					$order->payment_complete( $paystack_ref );
 
 					$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
-					if($this->autocomplete_order){
+
+					if ( $this->autocomplete_order ) {
 						$order->update_status( 'completed' );
 					}
+
 					WC()->cart->empty_cart();
 
 				}
