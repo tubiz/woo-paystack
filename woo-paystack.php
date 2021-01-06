@@ -147,6 +147,10 @@ function tbz_wc_paystack_wc_missing_notice() {
  **/
 function tbz_wc_paystack_testmode_notice() {
 
+	if ( ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+
 	$paystack_settings = get_option( 'woocommerce_paystack_settings' );
 	$test_mode         = isset( $paystack_settings['testmode'] ) ? $paystack_settings['testmode'] : '';
 
