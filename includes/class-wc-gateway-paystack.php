@@ -1728,4 +1728,25 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		return version_compare( WC_VERSION, $version, '<' );
 	}
 
+	/**
+	 * Checks if autocomplete order is enabled for the payment method.
+	 *
+	 * @since 5.7
+	 * @param WC_Order $order Order object.
+	 * @return bool
+	 */
+	protected function is_autocomplete_order_enabled( $order ) {
+		$autocomplete_order = false;
+
+		$payment_method = $order->get_payment_method();
+
+		$paystack_settings = get_option('woocommerce_' . $payment_method . '_settings');
+
+		if ( isset( $paystack_settings['autocomplete_order'] ) && 'yes' === $paystack_settings['autocomplete_order'] ) {
+			$autocomplete_order = true;
+		}
+
+		return $autocomplete_order;
+	}
+
 }
