@@ -210,7 +210,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->enabled            = $this->get_option( 'enabled' );
 		$this->testmode           = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 		$this->autocomplete_order = $this->get_option( 'autocomplete_order' ) === 'yes' ? true : false;
-		$this->payment_page       = $this->get_option( 'payment_page' );
 
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );
