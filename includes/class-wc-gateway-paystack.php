@@ -1248,7 +1248,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 							$order->payment_complete( $paystack_ref );
 							$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
-							if($this->autocomplete_order){
+
+							if ( $this->is_autocomplete_order_enabled( $order ) ) {
 								$order->update_status( 'completed' );
 							}
 						}
