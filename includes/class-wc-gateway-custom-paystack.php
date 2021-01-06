@@ -219,6 +219,15 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 				'default'     => 'no',
 				'desc_tip'    => true,
 			),
+			'autocomplete_order'                  => array(
+				'title'       => __( 'Autocomplete order after payment', 'woo-paystack' ),
+				'label'       => __( 'Autocomplete order', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-autocomplete-order',
+				'description' => __( 'If enabled, the order will be marked as complete after successful payment', 'woo-paystack' ),
+				'default'     => 'no',
+				'desc_tip'    => true,
+			),
 		);
 
 	}
