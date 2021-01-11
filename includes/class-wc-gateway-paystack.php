@@ -25,7 +25,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 *
 	 * @var string
 	 */
-	
 	public $payment_page;
 
 	/**
@@ -177,6 +176,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 		$this->has_fields         = true;
 
+		$this->payment_page = $this->get_option( 'payment_page' );
+
+		if ( 'embed' === $this->payment_page ) {
+			$this->method_description .= '<p style="color:red">You are using the Paystack <strong>Inline Embed</strong> payment option for this payment method, it will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option by clicking on the <strong>Manage</strong> button on the right.</p>';
+		}
+
 		$this->supports = array(
 			'products',
 			'refunds',
@@ -205,7 +210,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->enabled            = $this->get_option( 'enabled' );
 		$this->testmode           = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 		$this->autocomplete_order = $this->get_option( 'autocomplete_order' ) === 'yes' ? true : false;
-		$this->payment_page       = $this->get_option( 'payment_page' );
 
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );

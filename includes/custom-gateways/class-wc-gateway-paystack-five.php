@@ -53,6 +53,12 @@ class WC_Gateway_Paystack_Five extends WC_Gateway_Custom_Paystack {
 		$this->method_title       = sprintf( __( 'Paystack - %s', 'woo-paystack' ), $gateway_title );
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 
+		$this->payment_page = $this->get_option( 'payment_page' );
+
+		if ( 'embed' === $this->payment_page ) {
+			$this->method_description .= '<p style="color:red">You are using the Paystack <strong>Inline Embed</strong> payment option for this payment method, it will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option by clicking on the <strong>Manage</strong> button on the right.</p>';
+		}
+
 		$this->has_fields = true;
 
 		$this->supports = array(
@@ -82,8 +88,6 @@ class WC_Gateway_Paystack_Five extends WC_Gateway_Custom_Paystack {
 
 		$this->cards = $this->get_option( 'cards_allowed' );
 		$this->banks = $this->get_option( 'banks_allowed' );
-
-		$this->payment_page = $this->get_option( 'payment_page' );
 
 		$this->test_public_key = $this->paystack_settings['test_public_key'];
 		$this->test_secret_key = $this->paystack_settings['test_secret_key'];
