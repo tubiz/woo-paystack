@@ -198,7 +198,7 @@ function tbz_wc_paystack_testmode_notice() {
 	if ( $embed_payment_option_enabled ) {
 		if ( $custom_gateway_enabled ) {
 			/* translators: 1. WooCommerce payment methods page URL link. */
-			echo '<div class="error"><p>' . sprintf( __( 'You are using the <strong>Inline Embed</strong> payment option which will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option. Click <strong><a href="%s">here</a></strong> to see which of the Paystack payment methods is affected.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) ) . '</p></div>';
+			echo '<div class="error"><p>' . sprintf( __( 'You are using the <strong>Inline Embed</strong> payment option which will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option. Click <strong><a href="%s">here</a></strong> to see which of the Paystack payment methods are affected.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) ) . '</p></div>';
 
 		} else {
 			/* translators: 1. Paystack settings page URL link. */
