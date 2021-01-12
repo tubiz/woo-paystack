@@ -888,14 +888,19 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
 		$callback_url = WC()->api_request_url( 'WC_Gateway_Paystack' );
 
+		$payment_channels = $this->get_gateway_payment_channels( $order );
+
 		$paystack_params = array(
 			'amount'       => $amount,
 			'email'        => $email,
 			'currency'     => $currency,
 			'reference'    => $txnref,
 			'callback_url' => $callback_url,
-			'channels'     => [ 'card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer' ],
 		);
+
+		if ( ! empty( $payment_channels ) ) {
+			$paystack_params['channels'] = $payment_channels;
+		}
 
 		if ( $this->split_payment ) {
 
@@ -1752,6 +1757,30 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		}
 
 		return $autocomplete_order;
+	}
+
+	/**
+	 * Retrieve the payment channels configured for the gateway
+	 *
+	 * @since 5.7
+	 * @param WC_Order $order Order object.
+	 * @return array
+	 */
+	protected function get_gateway_payment_channels( $order ) {
+
+		$payment_method = $order->get_payment_method();
+
+		if ( 'paystack' === $payment_method ) {
+			return array();
+		}
+
+		$payment_channels = $this->payment_channels;
+
+		if ( empty( $payment_channels ) ) {
+			$payment_channels = array( 'card' );
+		}
+
+		return $payment_channels;
 	}
 
 }
