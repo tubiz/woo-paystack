@@ -1135,10 +1135,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button alt" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
 
 			if ( ! $this->remove_cancel_order_button ) {
-				echo '  <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+				echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
 			}
 
 		}
