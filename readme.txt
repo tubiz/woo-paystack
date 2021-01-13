@@ -1,10 +1,10 @@
 === Paystack WooCommerce Payment Gateway ===
 Contributors: tubiz
 Donate link: https://bosun.me/donate
-Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, mastercard, visa
+Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, south africa, naira, cedi, rand, mastercard, visa
 Requires at least: 4.7
-Tested up to: 5.5
-Stable tag: 5.6.4
+Tested up to: 5.6
+Stable tag: 5.7
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -17,28 +17,32 @@ Paystack WooCommerce Payment Gateway allows you to accept online payments from l
 
 This is a Paystack payment gateway for WooCommerce.
 
-Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR.
+Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian, South African & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
 
 To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
 
-Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using Mastercard, Visa, Verve, bank accounts, GTB 737 & Visa QR.
+Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
 
 With this Paystack WooCommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
 
 * __Mastercard__
 * __Visa__
 * __Verve__
+* __USSD__
+* __Mobile Money__
+* __Bank Transfer__
+* __EFT__
 * __Bank Account__
 * __GTB 737__
 * __Visa QR__
 
 = Note =
 
-This plugin is meant to be used by merchants in Nigeria and Ghana.
+This plugin is meant to be used by merchants in Nigeria, South Africa and Ghana.
 
 = Plugin Features =
 
-*   __Accept payment__ via Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR
+*   __Accept payment__ via Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
 *   __Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
 *   __Refunds__ from the WooCommerce order details page. Refund an order directly from the order details page
 *   __Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
@@ -124,6 +128,14 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 
 == Changelog ==
+
+= 5.7 - January 13, 2021 =
+* New: Add additional payment channels to the custom gateways
+* New: Add redirect payment option
+* New: Add option to autocomplete order after successful payment
+* Misc: Add deprecate notice for Inline Embed payment option
+* Fix: The default gateway should display only the payment channel(s) set on the Paystack settings page
+* Tweak: WooCommerce 4.9 compatibility.
 
 = 5.6.4 - September 29, 2020 =
 *   Fix: Use order currency when paying for an order and not the store currency
@@ -240,8 +252,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.6.4
-*   Add payment icon for South Africa. Use the order currency and not the store currency when paying for an order
+= 5.7
+*   Add redirect payment option. Add option to autocomplete order after payment. Add additional payment channels to the custom gateways.
+
+
 
 == Screenshots ==
 
