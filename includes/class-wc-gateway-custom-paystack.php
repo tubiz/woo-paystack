@@ -298,7 +298,6 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			'bank'          => __( 'Pay with Bank', 'woo-paystack' ),
 			'ussd'          => __( 'USSD', 'woo-paystack' ),
 			'qr'            => __( 'QR', 'woo-paystack' ),
-			'mobile_money'  => __( 'Mobile Money', 'woo-paystack' ),
 			'bank_transfer' => __( 'Bank Transfer', 'woo-paystack' ),
 		);
 
@@ -501,10 +500,6 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 			if ( in_array( 'qr', $this->payment_channels ) ) {
 				$paystack_params['qr_channel'] = 'true';
-			}
-
-			if ( in_array( 'mobile_money', $this->payment_channels ) ) {
-				$paystack_params['mobile_money_channel'] = 'true';
 			}
 
 			if ( in_array( 'bank_transfer', $this->payment_channels ) ) {

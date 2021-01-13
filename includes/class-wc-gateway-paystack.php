@@ -690,7 +690,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$paystack_params['card_channel']          = 'true';
 				$paystack_params['ussd_channel']          = 'true';
 				$paystack_params['qr_channel']            = 'true';
-				$paystack_params['mobile_money_channel']  = 'true';
 				$paystack_params['bank_transfer_channel'] = 'true';
 
 			}
