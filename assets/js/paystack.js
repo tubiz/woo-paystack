@@ -99,15 +99,19 @@ jQuery( function( $ ) {
 
 		let custom_filters = {};
 
-		if ( wc_paystack_params.banks_allowed ) {
+		if ( wc_paystack_params.card_channel ) {
 
-			custom_filters[ 'banks' ] = wc_paystack_params.banks_allowed;
+			if ( wc_paystack_params.banks_allowed ) {
 
-		}
+				custom_filters[ 'banks' ] = wc_paystack_params.banks_allowed;
 
-		if ( wc_paystack_params.cards_allowed ) {
+			}
 
-			custom_filters[ 'card_brands' ] = wc_paystack_params.cards_allowed;
+			if ( wc_paystack_params.cards_allowed ) {
+
+				custom_filters[ 'card_brands' ] = wc_paystack_params.cards_allowed;
+			}
+
 		}
 
 		return custom_filters;
@@ -133,16 +137,8 @@ jQuery( function( $ ) {
 			payment_channels.push( 'qr' );
 		}
 
-		if ( wc_paystack_params.mobile_money_channel ) {
-			payment_channels.push( 'mobile_money' );
-		}
-
 		if ( wc_paystack_params.bank_transfer_channel ) {
 			payment_channels.push( 'bank_transfer' );
-		}
-
-		if ( payment_channels.length === 0 ) {
-			payment_channels = [ 'card', 'bank', 'ussd', 'qr', 'mobile_money', 'bank_transfer' ]
 		}
 
 		return payment_channels;
@@ -195,25 +191,32 @@ jQuery( function( $ ) {
 			} );
 		};
 
-		let handler = PaystackPop.setup( {
+		let paymentData = {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
 			amount: amount,
 			ref: wc_paystack_params.txnref,
 			currency: wc_paystack_params.currency,
 			callback: paystack_callback,
-			channels: wcPaymentChannels(),
 			subaccount: subaccount_code,
 			bearer: charges_account,
 			transaction_charge: transaction_charges,
 			metadata: {
 				custom_fields: wcPaystackCustomFields(),
-				custom_filters: wcPaystackCustomFilters()
 			},
 			onClose: function() {
 				$( this.el ).unblock();
 			}
-		} );
+		};
+
+		if ( Array.isArray( wcPaymentChannels() ) && wcPaymentChannels().length ) {
+			paymentData[ 'channels' ] = wcPaymentChannels();
+			if ( !$.isEmptyObject( wcPaystackCustomFilters() ) ) {
+				paymentData[ 'metadata' ][ 'custom_filters' ] = wcPaystackCustomFilters();
+			}
+		}
+
+		let handler = PaystackPop.setup( paymentData );
 
 		handler.openIframe();
 
