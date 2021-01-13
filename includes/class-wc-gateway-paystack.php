@@ -681,16 +681,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
-				$paystack_params['email']                 = $email;
-				$paystack_params['amount']                = $amount;
-				$paystack_params['txnref']                = $txnref;
-				$paystack_params['pay_page']              = $this->payment_page;
-				$paystack_params['currency']              = $currency;
-				$paystack_params['bank_channel']          = 'true';
-				$paystack_params['card_channel']          = 'true';
-				$paystack_params['ussd_channel']          = 'true';
-				$paystack_params['qr_channel']            = 'true';
-				$paystack_params['bank_transfer_channel'] = 'true';
+				$paystack_params['email']    = $email;
+				$paystack_params['amount']   = $amount;
+				$paystack_params['txnref']   = $txnref;
+				$paystack_params['pay_page'] = $this->payment_page;
+				$paystack_params['currency'] = $currency;
 
 			}
 
@@ -1140,10 +1135,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button alt" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
 
 			if ( ! $this->remove_cancel_order_button ) {
-				echo '  <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+				echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
 			}
 
 		}
