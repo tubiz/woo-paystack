@@ -55,10 +55,6 @@ class WC_Gateway_Paystack_Three extends WC_Gateway_Custom_Paystack {
 
 		$this->payment_page = $this->get_option( 'payment_page' );
 
-		if ( 'embed' === $this->payment_page ) {
-			$this->method_description .= '<p style="color:red">You are using the Paystack <strong>Inline Embed</strong> payment option for this payment method, it will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option by clicking on the <strong>Manage</strong> button on the right.</p>';
-		}
-
 		$this->has_fields = true;
 
 		$this->supports = array(

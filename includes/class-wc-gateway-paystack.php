@@ -178,10 +178,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$this->payment_page = $this->get_option( 'payment_page' );
 
-		if ( 'embed' === $this->payment_page ) {
-			$this->method_description .= '<p style="color:red">You are using the Paystack <strong>Inline Embed</strong> payment option for this payment method, it will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option by clicking on the <strong>Manage</strong> button on the right.</p>';
-		}
-
 		$this->supports = array(
 			'products',
 			'refunds',
@@ -417,13 +413,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			'payment_page'                     => array(
 				'title'       => __( 'Payment Option', 'woo-paystack' ),
 				'type'        => 'select',
-				'description' => __( 'Popup shows the payment popup on the page, Inline Embed shows the payment page directly on the page while Redirect will redirect the customer to Paystack to make payment.', 'woo-paystack' ),
+				'description' => __( 'Popup shows the payment popup on the page while Redirect will redirect the customer to Paystack to make payment.', 'woo-paystack' ),
 				'default'     => '',
 				'desc_tip'    => false,
 				'options'     => array(
 					''          => __( 'Select One', 'woo-paystack' ),
 					'inline'    => __( 'Popup', 'woo-paystack' ),
-					'embed'     => __( 'Inline Embed', 'woo-paystack' ),
 					'redirect'  => __( 'Redirect', 'woo-paystack' ),
 				),
 			),
@@ -684,7 +679,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$paystack_params['email']    = $email;
 				$paystack_params['amount']   = $amount;
 				$paystack_params['txnref']   = $txnref;
-				$paystack_params['pay_page'] = $this->payment_page;
 				$paystack_params['currency'] = $currency;
 
 			}
@@ -1119,28 +1113,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$order = wc_get_order( $order_id );
 
-		if ( 'embed' === $this->payment_page ) {
+		echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
-			echo '<p style="text-align: center; font-weight: bold;">' . __( 'Thank you for your order, please make payment below using Paystack.', 'woo-paystack' ) . '</p>';
+		echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
 
-			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
-
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form>';
-
-			if ( ! $this->remove_cancel_order_button ) {
-				echo '<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #ef3315; display: block; outline: none;">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
-			}
-
-		} else {
-
-			echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
-
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
-
-			if ( ! $this->remove_cancel_order_button ) {
-				echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
-			}
-
+		if ( ! $this->remove_cancel_order_button ) {
+			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
 		}
 
 	}
