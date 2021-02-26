@@ -2,21 +2,13 @@ jQuery( function( $ ) {
 
 	let paystack_submit = false;
 
-	if ( 'embed' === wc_paystack_params.pay_page ) {
+	jQuery( '#paystack-payment-button' ).click( function() {
+		return wcPaystackFormHandler();
+	} );
 
-		wcPayStackEmbedFormHandler();
-
-	} else {
-
-		jQuery( '#paystack-payment-button' ).click( function() {
-			return wcPaystackFormHandler();
-		} );
-
-		jQuery( '#paystack_form form#order_review' ).submit( function() {
-			return wcPaystackFormHandler();
-		} );
-
-	}
+	jQuery( '#paystack_form form#order_review' ).submit( function() {
+		return wcPaystackFormHandler();
+	} );
 
 	function wcPaystackCustomFields() {
 
@@ -217,85 +209,6 @@ jQuery( function( $ ) {
 		}
 
 		let handler = PaystackPop.setup( paymentData );
-
-		handler.openIframe();
-
-		return false;
-
-	}
-
-	function wcPayStackEmbedFormHandler() {
-
-		if ( paystack_submit ) {
-			paystack_submit = false;
-			return true;
-		}
-
-		let $form = $( 'form#payment-form, form#order_review' ),
-			paystack_txnref = $form.find( 'input.paystack_txnref' ),
-			subaccount_code = '',
-			charges_account = '',
-			transaction_charges = '';
-
-		paystack_txnref.val( '' );
-
-		if ( wc_paystack_params.subaccount_code ) {
-			subaccount_code = wc_paystack_params.subaccount_code;
-		}
-
-		if ( wc_paystack_params.charges_account ) {
-			charges_account = wc_paystack_params.charges_account;
-		}
-
-		if ( wc_paystack_params.transaction_charges ) {
-			transaction_charges = Number( wc_paystack_params.transaction_charges );
-		}
-
-		let amount = Number( wc_paystack_params.amount );
-
-		let paystack_callback = function( response ) {
-
-			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
-
-			$( '#paystack_form a' ).hide();
-
-			paystack_submit = true;
-
-			$form.submit();
-
-			$( 'body' ).block( {
-				message: null,
-				overlayCSS: {
-					background: "#fff",
-					opacity: 0.8
-				},
-				css: {
-					cursor: "wait"
-				}
-			} );
-
-		};
-
-		let handler = PaystackPop.setup( {
-			key: wc_paystack_params.key,
-			email: wc_paystack_params.email,
-			amount: amount,
-			ref: wc_paystack_params.txnref,
-			currency: wc_paystack_params.currency,
-			container: "paystackWooCommerceEmbedContainer",
-			callback: paystack_callback,
-			channels: wcPaymentChannels(),
-			subaccount: subaccount_code,
-			bearer: charges_account,
-			transaction_charge: transaction_charges,
-			metadata: {
-				custom_fields: wcPaystackCustomFields(),
-				custom_filters: wcPaystackCustomFilters()
-			},
-			onClose: function() {
-				$( this.el ).unblock();
-			}
-		} );
 
 		handler.openIframe();
 

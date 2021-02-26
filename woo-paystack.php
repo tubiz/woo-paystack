@@ -154,58 +154,6 @@ function tbz_wc_paystack_testmode_notice() {
 	$paystack_settings = get_option( 'woocommerce_paystack_settings' );
 	$test_mode         = isset( $paystack_settings['testmode'] ) ? $paystack_settings['testmode'] : '';
 
-	$custom_gateway_enabled       = false;
-	$embed_payment_option_enabled = false;
-
-	if ( ( 'yes' === $paystack_settings['enabled'] ) && ( 'embed' === $paystack_settings['payment_page'] ) ) {
-		$embed_payment_option_enabled = true;
-	}
-
-	if ( $paystack_settings['custom_gateways'] ) {
-
-		$custom_gateway_enabled = true;
-
-		for( $i = 1; $i <= $paystack_settings['custom_gateways']; $i++ ) {
-			switch ( $i ) {
-				case 1:
-					$option_name = 'woocommerce_paystack-one_settings';
-					break;
-
-				case 2:
-					$option_name = 'woocommerce_paystack-two_settings';
-					break;
-
-				case 3:
-					$option_name = 'woocommerce_paystack-three_settings';
-					break;
-
-				case 4:
-					$option_name = 'woocommerce_paystack-four_settings';
-					break;
-
-				case 5:
-					$option_name = 'woocommerce_paystack-five_settings';
-					break;
-			}
-
-			$custom_gateway_settings = get_option( $option_name );
-			if ( isset( $custom_gateway_settings['enabled'] ) && ( 'yes' === $custom_gateway_settings['enabled'] ) && ( 'embed' === $custom_gateway_settings['payment_page'] ) ) {
-				$embed_payment_option_enabled = true;
-			}
-		}
-	}
-
-	if ( $embed_payment_option_enabled ) {
-		if ( $custom_gateway_enabled ) {
-			/* translators: 1. WooCommerce payment methods page URL link. */
-			echo '<div class="error"><p>' . sprintf( __( 'You are using the <strong>Inline Embed</strong> payment option which will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option. Click <strong><a href="%s">here</a></strong> to see which of the Paystack payment methods are affected.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout' ) ) ) . '</p></div>';
-
-		} else {
-			/* translators: 1. Paystack settings page URL link. */
-			echo '<div class="error"><p>' . sprintf( __( 'You are using the <strong>Inline Embed</strong> payment option which will be removed in the next version of the Paystack WooCommerce plugin. Kindly switch to either the <strong>Popup</strong> or <strong>Redirect</strong> payment option. Click <strong><a href="%s">here</a></strong> to make the change.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</p></div>';
-		}
-	}
-
 	if ( 'yes' === $test_mode ) {
 		/* translators: 1. Paystack settings page URL link. */
 		echo '<div class="error"><p>' . sprintf( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</p></div>';
