@@ -10,7 +10,7 @@
 
 **Tested up to:** 5.6
 
-**Stable tag:** 5.7
+**Stable tag:** 5.7.1
 
 **License:** GPLv2 or later
 
@@ -148,6 +148,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Changelog
 
+### 5.7.1 - March 1, 2021
+* Removed: Remove inline embed payment option
+* Updated: Update payment method icon for South Africa
+
 ### 5.7 - January 13, 2021
 * New: Add additional payment channels to the custom gateways
 * New: Add redirect payment option
@@ -272,8 +276,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Upgrade Notice
 
-### 5.7 ###
-*   Add redirect payment option. Add option to autocomplete order after payment. Add additional payment channels to the custom gateways.
+### 5.7.1 ###
+*   Remove inline embed payment method and update payment method icon for South Africa.
 
 ## Screenshots ##
 
@@ -291,12 +295,6 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 ###
 ![Screenshot 3](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-3.png)
 
-
-### 4. Paystack inline embed payment page
+### 4. Manage saved cards from your account page
 ###
 ![Screenshot 4](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-4.png)
-
-
-### 5. Manage saved cards from your account page
-###
-![Screenshot 5](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-5.png)

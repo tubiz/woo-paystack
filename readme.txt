@@ -4,7 +4,7 @@ Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, south africa, naira, cedi, rand, mastercard, visa
 Requires at least: 4.7
 Tested up to: 5.6
-Stable tag: 5.7
+Stable tag: 5.7.1
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -129,6 +129,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Changelog ==
 
+= 5.7.1 - March 1, 2021 =
+* Removed: Remove inline embed payment option
+* Updated: Update payment method icon for South Africa
+
 = 5.7 - January 13, 2021 =
 * New: Add additional payment channels to the custom gateways
 * New: Add redirect payment option
@@ -252,8 +256,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.7
-*   Add redirect payment option. Add option to autocomplete order after payment. Add additional payment channels to the custom gateways.
+= 5.7.1
+*   Remove inline embed payment method and update payment method icon for South Africa.
 
 
 
@@ -263,8 +267,4 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 2. Paystack WooCommerce Payment Gateway on the checkout page
 
-3. Paystack inline payment page
-
-4. Paystack inline embed payment page
-
-5. Manage saved cards from your account page
+3. Paystack popup payment page
