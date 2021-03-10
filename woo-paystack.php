@@ -49,8 +49,6 @@ function tbz_wc_paystack_init() {
 	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-four.php';
 	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-five.php';
 
-	require_once dirname( __FILE__ ) . '/includes/class-wc-paystack-plugin-tracker.php';
-
 	add_filter( 'woocommerce_payment_gateways', 'tbz_wc_add_paystack_gateway', 99 );
 
 	add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'tbz_woo_paystack_plugin_action_links' );
