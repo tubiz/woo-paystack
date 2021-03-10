@@ -8,9 +8,9 @@
 
 **Requires at least:** 4.7
 
-**Tested up to:** 5.6
+**Tested up to:** 5.7
 
-**Stable tag:** 5.7.1
+**Stable tag:** 5.7.2
 
 **License:** GPLv2 or later
 
@@ -148,6 +148,11 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Changelog
 
+### 5.7.2 - March 10, 2021
+* New: Auto display paystack payment popup on the payment page
+* Removed: Remove Paystack metrics tracker
+* Tweak: WooCommerce 5.1 compatibility
+
 ### 5.7.1 - March 1, 2021
 * Removed: Remove inline embed payment option
 * Updated: Update payment method icon for South Africa
@@ -276,8 +281,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Upgrade Notice
 
-### 5.7.1 ###
-*   Remove inline embed payment method and update payment method icon for South Africa.
+### 5.7.2 ###
+*   Auto display Paystack payment popup on the payment page
 
 ## Screenshots ##
 
