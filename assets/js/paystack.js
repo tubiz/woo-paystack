@@ -2,6 +2,10 @@ jQuery( function( $ ) {
 
 	let paystack_submit = false;
 
+	$( '#wc-paystack-form' ).hide();
+
+	wcPaystackFormHandler();
+
 	jQuery( '#paystack-payment-button' ).click( function() {
 		return wcPaystackFormHandler();
 	} );
@@ -138,6 +142,8 @@ jQuery( function( $ ) {
 
 	function wcPaystackFormHandler() {
 
+		$( '#wc-paystack-form' ).hide();
+
 		if ( paystack_submit ) {
 			paystack_submit = false;
 			return true;
@@ -197,6 +203,7 @@ jQuery( function( $ ) {
 				custom_fields: wcPaystackCustomFields(),
 			},
 			onClose: function() {
+				$( '#wc-paystack-form' ).show();
 				$( this.el ).unblock();
 			}
 		};
