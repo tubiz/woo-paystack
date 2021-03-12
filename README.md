@@ -148,7 +148,7 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Changelog
 
-### 5.7.2 - March 10, 2021
+### 5.7.2 - March 12, 2021
 * New: Auto display paystack payment popup on the payment page
 * Removed: Remove Paystack metrics tracker
 * Tweak: WooCommerce 5.1 compatibility
