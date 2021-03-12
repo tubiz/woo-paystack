@@ -997,10 +997,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					}
 
-					// Log successful transaction to Paystack plugin metrics tracker.
-					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-					$paystack_logger->log_transaction( $paystack_response->data->reference );
-
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 					$currency_symbol  = get_woocommerce_currency_symbol( $order_currency );
@@ -1113,6 +1109,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$order = wc_get_order( $order_id );
 
+		echo '<div id="wc-paystack-form">';
+
 		echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
 		echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
@@ -1120,6 +1118,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		if ( ! $this->remove_cancel_order_button ) {
 			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
 		}
+
+		echo '</div>';
 
 	}
 
@@ -1170,10 +1170,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						exit;
 
 					}
-
-					// Log successful transaction to Paystack plugin metrics tracker.
-					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-					$paystack_logger->log_transaction( $paystack_response->data->reference );
 
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
@@ -1304,10 +1300,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			if ( in_array( $order->get_status(), array( 'processing', 'completed', 'on-hold' ) ) ) {
 				exit;
 			}
-
-			// Log successful transaction to Paystack plugin metrics tracker.
-			$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-			$paystack_logger->log_transaction( $event->data->reference );
 
 			$order_currency = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
