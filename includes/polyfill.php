@@ -191,8 +191,10 @@ if ( ! function_exists( 'http_response_code' ) ) {
 			}
 
 			$defaultCode = $code;
-
-			$protocol = ( isset( $_SERVER['SERVER_PROTOCOL'] ) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0' );
+			$protocol =  'HTTP/1.0';
+			if (isset($_SERVER['SERVER_PROTOCOL'])) {
+				$protocol = esc_url_raw($_SERVER['SERVER_PROTOCOL']);
+			}
 			header( $protocol . ' ' . $code . ' ' . $text );
 		}
 

@@ -3,7 +3,7 @@
  * Plugin Name: Paystack WooCommerce Payment Gateway
  * Plugin URI: https://paystack.com
  * Description: WooCommerce payment gateway for Paystack
- * Version: 5.6.2
+ * Version: 5.6.5
  * Author: Tunbosun Ayinla
  * Author URI: https://bosun.me
  * License: GPL-2.0+
@@ -154,7 +154,8 @@ function tbz_wc_add_paystack_gateway( $methods ) {
  * Display a notice if WooCommerce is not installed
  */
 function tbz_wc_paystack_wc_missing_notice() {
-	echo '<div class="error"><p><strong>' . sprintf( __( 'Paystack requires WooCommerce to be installed and active. Click %s to install WooCommerce.', 'woo-paystack' ), '<a href="' . admin_url( 'plugin-install.php?tab=plugin-information&plugin=woocommerce&TB_iframe=true&width=772&height=539' ) . '" class="thickbox open-plugin-details-modal">here</a>' ) . '</strong></p></div>';
+	/* translators: %s: admin url */
+	echo '<div class="error"><p><strong>' . sprintf( esc_html( __( 'Paystack requires WooCommerce to be installed and active. Click %s to install WooCommerce.', 'woo-paystack' )), '<a href="' . esc_url( admin_url( 'plugin-install.php?tab=plugin-information&plugin=woocommerce&TB_iframe=true&width=772&height=539' )) . '" class="thickbox open-plugin-details-modal">here</a>' ) . '</strong></p></div>';
 }
 
 /**
@@ -167,6 +168,6 @@ function tbz_wc_paystack_testmode_notice() {
 
 	if ( 'yes' === $test_mode ) {
 		/* translators: 1. Paystack settings page URL link. */
-		echo '<div class="update-nag">' . sprintf( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</div>';
+		echo '<div class="update-nag">' . sprintf( esc_html( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' )), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</div>';
 	}
 }

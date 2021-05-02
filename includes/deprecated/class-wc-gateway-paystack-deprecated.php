@@ -103,13 +103,14 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 	 */
 	public function admin_notices() {
 
-		if ( $this->enabled == 'no' ) {
+		if (  'no' === $this->enabled ) {
 			return;
 		}
 
 		// Check required fields
 		if ( ! ( $this->public_key && $this->secret_key ) ) {
-			echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) . '</p></div>';
+			/* translators: %s: admin url */
+			echo '<div class="error"><p>' . sprintf( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', esc_url(admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' )) ) . '</p></div>';
 			return;
 		}
 
@@ -121,7 +122,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 	 */
 	public function is_available() {
 
-		if ( $this->enabled == 'yes' ) {
+		if ( 'yes' === $this->enabled ) {
 
 			if ( ! ( $this->public_key && $this->secret_key ) ) {
 
@@ -146,7 +147,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 		<h3>Paystack</h3>
 
-		<h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer" target="_blank" rel="noopener noreferrer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ); ?></code></pre></strong></h4>
+		<h4>Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="https://dashboard.paystack.co/#/settings/developer" target="_blank" rel="noopener noreferrer">here</a> to the URL below<strong style="color: red"><pre><code><?php echo esc_url(WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' )); ?></code></pre></strong></h4>
 
 		<?php
 
@@ -158,7 +159,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 		} else {
 			?>
-			<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo $this->msg; ?></p></div>
+			<div class="inline error"><p><strong>Paystack Payment Gateway Disabled</strong>: <?php echo esc_html( $this->msg); ?></p></div>
 
 			<?php
 		}
@@ -330,7 +331,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 		if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
 
-			$order_key = urldecode( $_GET['key'] );
+			$order_key = urldecode( sanitize_text_field( isset( $_GET['key']) ?  $_GET['key'] :'') );
 			$order_id  = absint( get_query_var( 'order-pay' ) );
 
 			$order = wc_get_order( $order_id );
@@ -485,7 +486,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form>
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . esc_url(WC()->api_request_url( 'WC_Gateway_Paystack' )) . '"></form>
 				<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #EF3315; display: block; outline: none;">Cancel order &amp; restore cart</a></div>
 				';
 
@@ -493,7 +494,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 			echo '<p>Thank you for your order, please click the button below to pay with Paystack.</p>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
+			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . esc_url(WC()->api_request_url( 'WC_Gateway_Paystack' )) . '"></form><button class="button alt" id="paystack-payment-button">Pay Now</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">Cancel order &amp; restore cart</a></div>
 				';
 
 		}
@@ -510,7 +511,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 
 		if ( isset( $_REQUEST['paystack_txnref'] ) ) {
 
-			$paystack_url = 'https://api.paystack.co/transaction/verify/' . $_REQUEST['paystack_txnref'];
+			$paystack_url = 'https://api.paystack.co/transaction/verify/' . sanitize_text_field($_REQUEST['paystack_txnref']);
 
 			$headers = array(
 				'Authorization' => 'Bearer ' . $this->secret_key,
@@ -579,14 +580,14 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 					} else {
 
 						$order->payment_complete( $paystack_ref );
-
+						/* translators: %s: transaction reference  */
 						$order->add_order_note( sprintf( 'PayStack Transaction Ref: %s', $paystack_ref ) );
 
 						wc_empty_cart();
 					}
 				} else {
 
-					$order_details = explode( '_', $_REQUEST['paystack_txnref'] );
+					$order_details = explode( '_', sanitize_text_field($_REQUEST['paystack_txnref']) );
 
 					$order_id = (int) $order_details[0];
 
@@ -613,14 +614,14 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 	 */
 	public function process_webhooks() {
 
-		if ( ( strtoupper( $_SERVER['REQUEST_METHOD'] ) != 'POST' ) || ! array_key_exists( 'HTTP_X_PAYSTACK_SIGNATURE', $_SERVER ) ) {
+		if ( ( strtoupper( sanitize_text_field(isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : '') ) != 'POST' ) || ! array_key_exists( 'HTTP_X_PAYSTACK_SIGNATURE', $_SERVER ) ) {
 			exit;
 		}
 
 		$json = file_get_contents( 'php://input' );
 
 		// validate event do all at once to avoid timing attack
-		if ( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
+		if ( hash_hmac( 'sha512', $json, $this->secret_key ) !== $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] ) {
 			exit;
 		}
 
@@ -687,7 +688,7 @@ class WC_Gateway_Paystack_Deprecated extends WC_Payment_Gateway {
 			} else {
 
 				$order->payment_complete( $paystack_ref );
-
+				/* translators: %s: transaction reference */
 				$order->add_order_note( sprintf( 'Paystack Transaction Ref: %s', $paystack_ref ) );
 
 				wc_empty_cart();

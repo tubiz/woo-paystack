@@ -49,8 +49,9 @@ class WC_Gateway_Paystack_One extends WC_Gateway_Custom_Paystack {
 		if ( empty( $gateway_title ) ) {
 			$gateway_title = __( 'One', 'woo-paystack' );
 		}
-
+		/* translators: %s: gateway title */
 		$this->method_title       = sprintf( __( 'Paystack - %s', 'woo-paystack' ), $gateway_title );
+		/* translators: %s: gateway description */
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 
 		$this->has_fields = true;
@@ -76,101 +77,6 @@ class WC_Gateway_Paystack_One extends WC_Gateway_Custom_Paystack {
 		$this->description = $this->get_option( 'description' );
 		$this->enabled     = $this->get_option( 'enabled' );
 
-		$this->testmode = $this->paystack_settings['testmode'] === 'yes' ? true : false;
-
-		$this->payment_channels = $this->get_option( 'payment_channels' );
-
-		$this->cards = $this->get_option( 'cards_allowed' );
-		$this->banks = $this->get_option( 'banks_allowed' );
-
-		$this->payment_page = $this->get_option( 'payment_page' );
-
-		$this->test_public_key = $this->paystack_settings['test_public_key'];
-		$this->test_secret_key = $this->paystack_settings['test_secret_key'];
-
-		$this->live_public_key = $this->paystack_settings['live_public_key'];
-		$this->live_secret_key = $this->paystack_settings['live_secret_key'];
-
-		$this->saved_cards = $this->paystack_settings['saved_cards'] === 'yes' ? true : false;
-
-		$this->split_payment       = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
-		$this->subaccount_code     = $this->get_option( 'subaccount_code' );
-		$this->charges_account     = $this->get_option( 'split_payment_charge_account' );
-		$this->transaction_charges = $this->get_option( 'split_payment_transaction_charge' );
-
-		$this->payment_icons = $this->get_option( 'payment_icons' );
-
-		$this->custom_metadata = $this->get_option( 'custom_metadata' ) === 'yes' ? true : false;
-
-		$this->meta_order_id         = $this->get_option( 'meta_order_id' ) === 'yes' ? true : false;
-		$this->meta_name             = $this->get_option( 'meta_name' ) === 'yes' ? true : false;
-		$this->meta_email            = $this->get_option( 'meta_email' ) === 'yes' ? true : false;
-		$this->meta_phone            = $this->get_option( 'meta_phone' ) === 'yes' ? true : false;
-		$this->meta_billing_address  = $this->get_option( 'meta_billing_address' ) === 'yes' ? true : false;
-		$this->meta_shipping_address = $this->get_option( 'meta_shipping_address' ) === 'yes' ? true : false;
-		$this->meta_products         = $this->get_option( 'meta_products' ) === 'yes' ? true : false;
-
-		$this->public_key = $this->testmode ? $this->test_public_key : $this->live_public_key;
-		$this->secret_key = $this->testmode ? $this->test_secret_key : $this->live_secret_key;
-
-		// Load the form fields.
-		$this->init_form_fields();
-
-		// Load the settings.
-		$this->init_settings();
-
-		add_action( 'wp_enqueue_scripts', array( $this, 'payment_scripts' ) );
-
-		add_action( 'woocommerce_update_options_payment_gateways_' . $this->id, array( $this, 'process_admin_options' ) );
-
-		add_action( 'woocommerce_receipt_' . $this->id, array( $this, 'receipt_page' ) );
-
-		add_filter( 'woocommerce_available_payment_gateways', array( $this, 'add_gateway_to_checkout' ) );
-
-		if ( class_exists( 'WC_Subscriptions_Order' ) ) {
-
-			add_action( 'woocommerce_scheduled_subscription_payment_' . $this->id, array( $this, 'scheduled_subscription_payment' ), 10, 2 );
-
-		}
-
-	}
-
-	/**
-	 * Display the selected payment icon.
-	 */
-	public function get_icon() {
-		$icon_html = '<img src="' . WC_HTTPS::force_https_url( WC_PAYSTACK_URL . '/assets/images/paystack.png' ) . '" alt="paystack" style="height: 40px; margin-right: 0.4em;margin-bottom: 0.6em;" />';
-		$icon      = $this->payment_icons;
-
-		if ( is_array( $icon ) ) {
-
-			foreach ( $icon as $i ) {
-				$icon_html .= '<img src="' . WC_HTTPS::force_https_url( WC_PAYSTACK_URL . '/assets/images/' . $i . '.png' ) . '" alt="' . $i . '" style="height: 40px; margin-right: 0.4em;margin-bottom: 0.6em;" />';
-			}
-		}
-
-		return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
-	}
-
-	/**
-	 * Outputs scripts used for paystack payment.
-	 */
-	public function payment_scripts() {
-
-		if ( ! is_checkout_pay_page() ) {
-			return;
-		}
-
-		if ( $this->enabled === 'no' ) {
-			return;
-		}
-
-		$order_key = urldecode( $_GET['key'] );
-		$order_id  = absint( get_query_var( 'order-pay' ) );
-
-		$order = wc_get_order( $order_id );
-
-		$payment_method = method_exists( $order, 'get_payment_method' ) ? $order->get_payment_method() : $order->payment_method;
 
 		if ( $this->id !== $payment_method ) {
 			return;
@@ -332,7 +238,7 @@ class WC_Gateway_Paystack_One extends WC_Gateway_Custom_Paystack {
 	 */
 	public function add_gateway_to_checkout( $available_gateways ) {
 
-		if ( 'no' == $this->enabled ) {
+		if ( 'no' === $this->enabled ) {
 			unset( $available_gateways[ $this->id ] );
 		}
 

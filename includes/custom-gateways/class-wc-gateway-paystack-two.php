@@ -49,8 +49,9 @@ class WC_Gateway_Paystack_Two extends WC_Gateway_Custom_Paystack {
 		if ( empty( $gateway_title ) ) {
 			$gateway_title = __( 'Two', 'woo-paystack' );
 		}
-
+		/* translators: %s: gateway title */
 		$this->method_title       = sprintf( __( 'Paystack - %s', 'woo-paystack' ), $gateway_title );
+		/* translators: %s: gateway description */
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 
 		$this->has_fields = true;
@@ -76,7 +77,8 @@ class WC_Gateway_Paystack_Two extends WC_Gateway_Custom_Paystack {
 		$this->description = $this->get_option( 'description' );
 		$this->enabled     = $this->get_option( 'enabled' );
 
-		$this->testmode = $this->paystack_settings['testmode'] === 'yes' ? true : false;
+	
+		$this->testmode = 'yes' === $this->paystack_settings['testmode'] ? true : false;
 
 		$this->payment_channels = $this->get_option( 'payment_channels' );
 
@@ -91,8 +93,8 @@ class WC_Gateway_Paystack_Two extends WC_Gateway_Custom_Paystack {
 		$this->live_public_key = $this->paystack_settings['live_public_key'];
 		$this->live_secret_key = $this->paystack_settings['live_secret_key'];
 
-		$this->saved_cards = $this->paystack_settings['saved_cards'] === 'yes' ? true : false;
-
+		$this->saved_cards =  'yes' === $this->paystack_settings['saved_cards'] ? true : false;
+		$this->remove_cancel_order_button = $this->get_option( 'remove_cancel_order_button' ) === 'yes' ? true : false;
 		$this->split_payment       = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
 		$this->subaccount_code     = $this->get_option( 'subaccount_code' );
 		$this->charges_account     = $this->get_option( 'split_payment_charge_account' );
@@ -167,11 +169,10 @@ class WC_Gateway_Paystack_Two extends WC_Gateway_Custom_Paystack {
 			return;
 		}
 
-		if ( $this->enabled === 'no' ) {
+		if ( 'no' === $this->enabled  ) {
 			return;
 		}
-
-		$order_key = urldecode( $_GET['key'] );
+		$order_key = urldecode( sanitize_text_field( isset( $_GET['key']) ?  $_GET['key'] :'') );
 		$order_id  = absint( get_query_var( 'order-pay' ) );
 
 		$order = wc_get_order( $order_id );
@@ -341,7 +342,7 @@ class WC_Gateway_Paystack_Two extends WC_Gateway_Custom_Paystack {
 	 */
 	public function add_gateway_to_checkout( $available_gateways ) {
 
-		if ( $this->enabled == 'no' ) {
+		if ( 'no' === $this->enabled ) {
 			unset( $available_gateways[ $this->id ] );
 		}
 
