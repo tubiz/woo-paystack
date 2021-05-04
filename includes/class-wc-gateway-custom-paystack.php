@@ -438,11 +438,11 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			return;
 		}
 
-		if ( $this->enabled === 'no' ) {
+		if ( 'no' ===  $this->enabled ) {
 			return;
 		}
 
-		$order_key = urldecode( $_GET['key'] );
+		$order_key = isset( $_GET['key'] ) ? urldecode( $_GET['key'] ) : '';
 		$order_id  = absint( get_query_var( 'order-pay' ) );
 
 		$order = wc_get_order( $order_id );
@@ -621,7 +621,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	 */
 	public function add_gateway_to_checkout( $available_gateways ) {
 
-		if ( $this->enabled == 'no' ) {
+		if (  'no'  === $this->enabled ) {
 			unset( $available_gateways[ $this->id ] );
 		}
 
