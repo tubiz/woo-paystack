@@ -54,6 +54,8 @@ class WC_Gateway_Paystack_One extends WC_Gateway_Custom_Paystack {
 		/* translators: %s: gateway description */
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 
+		$this->payment_page = $this->get_option( 'payment_page' );
+
 		$this->has_fields = true;
 
 		$this->supports = array(

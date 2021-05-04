@@ -77,7 +77,7 @@ jQuery( function( $ ) {
 
 			$( ".wc-paystack-payment-icons" ).select2( {
 				templateResult: formatPaystackPaymentIcons,
-				templateSelection: formatPaystackPaymentIcons
+				templateSelection: formatPaystackPaymentIconDisplay
 			} );
 
 		}
@@ -87,10 +87,16 @@ jQuery( function( $ ) {
 		if ( !payment_method.id ) {
 			return payment_method.text;
 		}
+
 		var $payment_method = $(
 			'<span><img src=" ' + wc_paystack_admin_params.plugin_url + '/assets/images/' + payment_method.element.value.toLowerCase() + '.png" class="img-flag" style="height: 15px; weight:18px;" /> ' + payment_method.text + '</span>'
 		);
+
 		return $payment_method;
+	};
+
+	function formatPaystackPaymentIconDisplay( payment_method ) {
+		return payment_method.text;
 	};
 
 	wc_paystack_admin.init();

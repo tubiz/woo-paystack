@@ -14,6 +14,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $testmode;
 
 	/**
+	 * Should orders be marked as complete after payment?
+	 * 
+	 * @var bool
+	 */
+	public $autocomplete_order;
+
+	/**
 	 * Paystack payment page type.
 	 *
 	 * @var string
@@ -61,6 +68,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @var bool
 	 */
 	public $split_payment;
+
+	/**
+	 * Should the cancel & remove order button be removed on the pay for order page.
+	 *
+	 * @var bool
+	 */
+	public $remove_cancel_order_button;
 
 	/**
 	 * Paystack sub account code.
@@ -163,6 +177,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 		$this->has_fields         = true;
 
+		$this->payment_page = $this->get_option( 'payment_page' );
+
 		$this->supports = array(
 			'products',
 			'refunds',
@@ -200,10 +216,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$this->saved_cards = $this->get_option( 'saved_cards' ) === 'yes' ? true : false;
 
-		$this->split_payment       = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
-		$this->subaccount_code     = $this->get_option( 'subaccount_code' );
-		$this->charges_account     = $this->get_option( 'split_payment_charge_account' );
-		$this->transaction_charges = $this->get_option( 'split_payment_transaction_charge' );
+		$this->split_payment              = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
+		$this->remove_cancel_order_button = $this->get_option( 'remove_cancel_order_button' ) === 'yes' ? true : false;
+		$this->subaccount_code            = $this->get_option( 'subaccount_code' );
+		$this->charges_account            = $this->get_option( 'split_payment_charge_account' );
+		$this->transaction_charges        = $this->get_option( 'split_payment_transaction_charge' );
 
 		$this->custom_metadata = $this->get_option( 'custom_metadata' ) === 'yes' ? true : false;
 
@@ -269,10 +286,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public function get_icon() {
 		$icon = '';
 
-		if ('GHS' === get_woocommerce_currency()) {
-			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+		$base_location = wc_get_base_location();
+
+		if ( 'GH' === $base_location['country'] ) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
+		} elseif ( 'ZA' === $base_location['country'] ) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		} else {
-			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ng.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="cards" />';
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		}
 
 		return apply_filters( 'woocommerce_gateway_icon', $icon, $this->id );
@@ -397,15 +418,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'desc_tip'    => true,
 			),
 			'payment_page'                     => array(
-				'title'       => __( 'Payment Page', 'woo-paystack' ),
+				'title'       => __( 'Payment Option', 'woo-paystack' ),
 				'type'        => 'select',
-				'description' => __( 'Inline shows the payment popup on the page while Inline Embed shows the payment page directly on the page', 'woo-paystack' ),
+				'description' => __( 'Popup shows the payment popup on the page while Redirect will redirect the customer to Paystack to make payment.', 'woo-paystack' ),
 				'default'     => '',
 				'desc_tip'    => false,
 				'options'     => array(
-					''       => __( 'Select One', 'woo-paystack' ),
-					'inline' => __( 'Inline', 'woo-paystack' ),
-					'embed'  => __( 'Inline Embed', 'woo-paystack' ),
+					''          => __( 'Select One', 'woo-paystack' ),
+					'inline'    => __( 'Popup', 'woo-paystack' ),
+					'redirect'  => __( 'Redirect', 'woo-paystack' ),
 				),
 			),
 			'test_secret_key'                  => array(
@@ -431,6 +452,22 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'type'        => 'text',
 				'description' => __( 'Enter your Live Public Key here.', 'woo-paystack' ),
 				'default'     => '',
+			),
+			'autocomplete_order'               => array(
+				'title'       => __( 'Autocomplete Order After Payment', 'woo-paystack' ),
+				'label'       => __( 'Autocomplete Order', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-autocomplete-order',
+				'description' => __( 'If enabled, the order will be marked as complete after successful payment', 'woo-paystack' ),
+				'default'     => 'no',
+				'desc_tip'    => true,
+			),
+			'remove_cancel_order_button'       => array(
+				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
+				'label'       => __( 'Remove the cancel order & restore cart button on the pay for order page', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
 			),
 			'split_payment'                    => array(
 				'title'       => __( 'Split Payment', 'woo-paystack' ),
@@ -651,16 +688,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$txnref        = $order_id . '_' . time();
 			$the_order_id  = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
 			$the_order_key = method_exists( $order, 'get_order_key' ) ? $order->get_order_key() : $order->order_key;
+			$currency      = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
-				$paystack_params['email']        = $email;
-				$paystack_params['amount']       = $amount;
-				$paystack_params['txnref']       = $txnref;
-				$paystack_params['pay_page']     = $this->payment_page;
-				$paystack_params['currency']     = get_woocommerce_currency();
-				$paystack_params['bank_channel'] = 'true';
-				$paystack_params['card_channel'] = 'true';
+				$paystack_params['email']    = $email;
+				$paystack_params['amount']   = $amount;
+				$paystack_params['txnref']   = $txnref;
+				$paystack_params['currency'] = $currency;
 
 			}
 
@@ -792,59 +827,138 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function process_payment( $order_id ) {
 
-		if ( isset( $_REQUEST['_wpnonce']) && wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'wpdocs-my-nonce' ) ) {
-			
-			if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+		if ( 'redirect' === $this->payment_page ) {
 
-				$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
-				$token    = WC_Payment_Tokens::get( $token_id );
-	
-				if ( $token->get_user_id() !== get_current_user_id() ) {
-	
-					wc_add_notice( 'Invalid token ID', 'error' );
-	
-					return;
-	
-				} else {
-	
-					$status = $this->process_token_payment( $token->get_token(), $order_id );
-	
-					if ( $status ) {
-	
-						$order = wc_get_order( $order_id );
-	
-						return array(
-							'result'   => 'success',
-							'redirect' => $this->get_return_url( $order ),
-						);
-	
-					}
-				}
+			return $this->process_redirect_payment_option( $order_id );
+
+		} 
+		if ( isset( $_REQUEST['_wpnonce']) && wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'wpdocs-my-nonce' ) ) {
+		if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+
+			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
+			$token    = WC_Payment_Tokens::get( $token_id );
+
+			if ( $token->get_user_id() !== get_current_user_id() ) {
+
+				wc_add_notice( 'Invalid token ID', 'error' );
+
+				return;
+
 			} else {
-	
-				if ( is_user_logged_in() && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-' . $this->id . '-new-payment-method' ] && $this->saved_cards ) {
-	
-					update_post_meta( $order_id, '_wc_paystack_save_card', true );
-	
+
+				$status = $this->process_token_payment( $token->get_token(), $order_id );
+
+				if ( $status ) {
+
+					$order = wc_get_order( $order_id );
+
+					return array(
+						'result'   => 'success',
+						'redirect' => $this->get_return_url( $order ),
+					);
+
 				}
-	
-				$order = wc_get_order( $order_id );
-	
-				return array(
-					'result'   => 'success',
-					'redirect' => $order->get_checkout_payment_url( true ),
-				);
-	
 			}
 		} else {
-		   
-			die( esc_html(__( 'Security check', 'woo-paystack' )) ); 
-				 
-			  
-	  
+
+			if ( is_user_logged_in() && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-' . $this->id . '-new-payment-method' ] && $this->saved_cards ) {
+
+				update_post_meta( $order_id, '_wc_paystack_save_card', true );
+
+			}
+
+			$order = wc_get_order( $order_id );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $order->get_checkout_payment_url( true ),
+			);
+
 		}
-			 
-	} 
+	}else{
+		die( esc_html(__( 'Security check', 'woo-paystack' )) ); 
+	}
+
+	}
+
+	/**
+	 * Process a redirect payment option payment.
+	 *
+	 * @since 5.7
+	 * @param int $order_id
+	 * @return array|void
+	 */
+	public function process_redirect_payment_option( $order_id ) {
+
+		$order        = wc_get_order( $order_id );
+		$email        = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+		$amount       = $order->get_total() * 100;
+		$txnref       = $order_id . '_' . time();
+		$currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
+		$callback_url = WC()->api_request_url( 'WC_Gateway_Paystack' );
+
+		$payment_channels = $this->get_gateway_payment_channels( $order );
+
+		$paystack_params = array(
+			'amount'       => $amount,
+			'email'        => $email,
+			'currency'     => $currency,
+			'reference'    => $txnref,
+			'callback_url' => $callback_url,
+		);
+
+		if ( ! empty( $payment_channels ) ) {
+			$paystack_params['channels'] = $payment_channels;
+		}
+
+		if ( $this->split_payment ) {
+
+			$paystack_params['subaccount'] = $this->subaccount_code;
+			$paystack_params['bearer']     = $this->charges_account;
+
+			if ( empty( $this->transaction_charges ) ) {
+				$paystack_params['transaction_charge'] = '';
+			} else {
+				$paystack_params['transaction_charge'] = $this->transaction_charges * 100;
+			}
+		}
+
+		$paystack_params['metadata']['custom_fields'] = $this->get_custom_fields( $order_id );
+		$paystack_params['metadata']['cancel_action'] = wc_get_cart_url();
+
+		update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
+
+		$paystack_url = 'https://api.paystack.co/transaction/initialize/';
+
+		$headers = array(
+			'Authorization' => 'Bearer ' . $this->secret_key,
+			'Content-Type'  => 'application/json',
+		);
+
+		$args = array(
+			'headers' => $headers,
+			'timeout' => 60,
+			'body'    => json_encode( $paystack_params ),
+		);
+
+		$request = wp_remote_post( $paystack_url, $args );
+
+		if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+
+			$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
+
+			return array(
+				'result'   => 'success',
+				'redirect' => $paystack_response->data->authorization_url,
+			);
+
+		} else {
+			wc_add_notice( __( 'Unable to process payment try again', 'woo-paystack' ), 'error' );
+
+			return;
+		}
+
+	}
 
 	/**
 	 * Process a token payment.
@@ -871,7 +985,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'Authorization' => 'Bearer ' . $this->secret_key,
 			);
 
-			$metadata['custom_fields']= $this->get_custom_fields( $order_id );
+			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
 			$body = array(
 				'email'              => $email,
@@ -903,10 +1017,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						exit;
 
 					}
-
-					// Log successful transaction to Paystack plugin metrics tracker.
-					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-					$paystack_logger->log_transaction( $paystack_response->data->reference );
 
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
@@ -970,7 +1080,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					$this->save_subscription_payment_token( $order_id, $paystack_response );
 
-					wc_empty_cart();
+					WC()->cart->empty_cart();
 
 					return true;
 
@@ -1023,22 +1133,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$order = wc_get_order( $order_id );
 
-		if ( 'embed' === $this->payment_page ) {
+		echo '<div id="wc-paystack-form">';
 
-			echo '<p style="text-align: center; font-weight: bold;">' . esc_html(__( 'Thank you for your order, please make payment below using Paystack.', 'woo-paystack' )) . '</p>';
+		echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
-			echo '<div id="paystackWooCommerceEmbedContainer"></div>';
+		echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
 
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . esc_html( WC()->api_request_url( 'WC_Gateway_Paystack' )) . '"></form>
-				<a href="' . esc_url( $order->get_cancel_order_url() ) . '" style="text-align:center; color: #EF3315; display: block; outline: none;">' . esc_html(__( 'Cancel order &amp; restore cart', 'woo-paystack' )) . '</a></div>';
-
-		} else {
-
-			echo '<p>' . esc_html(__( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' )) . '</p>';
-
-			echo '<div id="paystack_form"><form id="order_review" method="post" action="' . esc_url( WC()->api_request_url( 'WC_Gateway_Paystack' )) . '"></form><button class="button alt" id="paystack-payment-button">' . esc_html( __( 'Pay Now', 'woo-paystack' ) ) . '</button> <a class="button cancel" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . esc_html( __( 'Cancel order &amp; restore cart', 'woo-paystack' )) . '</a></div>';
-
+		if ( ! $this->remove_cancel_order_button ) {
+			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
 		}
+
+		echo '</div>';
 
 	}
 
@@ -1047,11 +1152,19 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function verify_paystack_transaction() {
 
+		if ( isset( $_REQUEST['paystack_txnref'] ) ) {
+			$paystack_txn_ref = sanitize_text_field( $_REQUEST['paystack_txnref'] );
+		} elseif ( isset( $_REQUEST['reference'] ) ) {
+			$paystack_txn_ref = sanitize_text_field( $_REQUEST['reference'] );
+		} else {
+			$paystack_txn_ref = false;
+		}
+
 		@ob_clean();
 
-		if ( isset( $_REQUEST['paystack_txnref'] ) ) {
+		if ( $paystack_txn_ref ) {
 
-			$paystack_url = 'https://api.paystack.co/transaction/verify/' . sanitize_text_field( $_REQUEST['paystack_txnref'] );
+			$paystack_url = 'https://api.paystack.co/transaction/verify/' . $paystack_txn_ref;
 
 			$headers = array(
 				'Authorization' => 'Bearer ' . $this->secret_key,
@@ -1081,10 +1194,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						exit;
 
 					}
-
-					// Log successful transaction to Paystack plugin metrics tracker.
-					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-					$paystack_logger->log_transaction( $paystack_response->data->reference );
 
 					$order_total      = $order->get_total();
 					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
@@ -1144,7 +1253,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 							$order->payment_complete( $paystack_ref );
 							/* translators: %s: transaction reference */
 							$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
-							if ($this->autocomplete_order) {
+
+							if ( $this->is_autocomplete_order_enabled( $order ) ) {
 								$order->update_status( 'completed' );
 							}
 						}
@@ -1152,7 +1262,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					$this->save_card_details( $paystack_response, $order->get_user_id(), $order_id );
 
-					wc_empty_cart();
+					WC()->cart->empty_cart();
 
 				} else {
 
@@ -1218,10 +1328,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				exit;
 			}
 
-			// Log successful transaction to Paystack plugin metrics tracker.
-			$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-			$paystack_logger->log_transaction( $event->data->reference );
-
 			$order_currency = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
 
 			$currency_symbol = get_woocommerce_currency_symbol( $order_currency );
@@ -1258,7 +1364,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				wc_add_notice( $notice, $notice_type );
 
-				wc_empty_cart();
+				WC()->cart->empty_cart();
 
 			} else {
 
@@ -1289,8 +1395,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					/* translators: %s: transaction reference */
 					$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
 
-					wc_empty_cart();
+					WC()->cart->empty_cart();
 
+					if ( $this->is_autocomplete_order_enabled( $order ) ) {
+						$order->update_status( 'completed' );
+					}
 				}
 			}
 
@@ -1404,110 +1513,114 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			'variable_name' => 'plugin',
 			'value'         => 'woo-paystack',
 		);
+		
+		if ( $this->custom_metadata ) {
 
-		if ( $this->meta_order_id ) {
+			if ( $this->meta_order_id ) {
 
-			$custom_fields[] = array(
-				'display_name'  => 'Order ID',
-				'variable_name' => 'order_id',
-				'value'         => $order_id,
-			);
+				$custom_fields[] = array(
+					'display_name'  => 'Order ID',
+					'variable_name' => 'order_id',
+					'value'         => $order_id,
+				);
 
-		}
-
-		if ( $this->meta_name ) {
-
-			$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
-			$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
-
-			$custom_fields[] = array(
-				'display_name'  => 'Customer Name',
-				'variable_name' => 'customer_name',
-				'value'         => $first_name . ' ' . $last_name,
-			);
-
-		}
-
-		if ( $this->meta_email ) {
-
-			$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
-
-			$custom_fields[] = array(
-				'display_name'  => 'Customer Email',
-				'variable_name' => 'customer_email',
-				'value'         => $email,
-			);
-
-		}
-
-		if ( $this->meta_phone ) {
-
-			$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
-
-			$custom_fields[] = array(
-				'display_name'  => 'Customer Phone',
-				'variable_name' => 'customer_phone',
-				'value'         => $billing_phone,
-			);
-
-		}
-
-		if ( $this->meta_products ) {
-
-			$line_items = $order->get_items();
-
-			$products = '';
-
-			foreach ( $line_items as $item_id => $item ) {
-				$name     = $item['name'];
-				$quantity = $item['qty'];
-				$products .= $name . ' (Qty: ' . $quantity . ')';
-				$products .= ' | ';
 			}
 
-			$products = rtrim( $products, ' | ' );
+			if ( $this->meta_name ) {
 
-			$custom_fields[] = array(
-				'display_name'  => 'Products',
-				'variable_name' => 'products',
-				'value'         => $products,
-			);
+				$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+				$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
 
-		}
+				$custom_fields[] = array(
+					'display_name'  => 'Customer Name',
+					'variable_name' => 'customer_name',
+					'value'         => $first_name . ' ' . $last_name,
+				);
 
-		if ( $this->meta_billing_address ) {
+			}
 
-			$billing_address = $order->get_formatted_billing_address();
-			$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+			if ( $this->meta_email ) {
 
-			$paystack_params['meta_billing_address'] = $billing_address;
+				$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
-			$custom_fields[] = array(
-				'display_name'  => 'Billing Address',
-				'variable_name' => 'billing_address',
-				'value'         => $billing_address,
-			);
+				$custom_fields[] = array(
+					'display_name'  => 'Customer Email',
+					'variable_name' => 'customer_email',
+					'value'         => $email,
+				);
 
-		}
+			}
 
-		if ( $this->meta_shipping_address ) {
+			if ( $this->meta_phone ) {
 
-			$shipping_address = $order->get_formatted_shipping_address();
-			$shipping_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+				$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
 
-			if ( empty( $shipping_address ) ) {
+				$custom_fields[] = array(
+					'display_name'  => 'Customer Phone',
+					'variable_name' => 'customer_phone',
+					'value'         => $billing_phone,
+				);
+
+			}
+
+			if ( $this->meta_products ) {
+
+				$line_items = $order->get_items();
+
+				$products = '';
+
+				foreach ( $line_items as $item_id => $item ) {
+					$name     = $item['name'];
+					$quantity = $item['qty'];
+					$products .= $name . ' (Qty: ' . $quantity . ')';
+					$products .= ' | ';
+				}
+
+				$products = rtrim( $products, ' | ' );
+
+				$custom_fields[] = array(
+					'display_name'  => 'Products',
+					'variable_name' => 'products',
+					'value'         => $products,
+				);
+
+			}
+
+			if ( $this->meta_billing_address ) {
 
 				$billing_address = $order->get_formatted_billing_address();
 				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
 
-				$shipping_address = $billing_address;
+				$paystack_params['meta_billing_address'] = $billing_address;
+
+				$custom_fields[] = array(
+					'display_name'  => 'Billing Address',
+					'variable_name' => 'billing_address',
+					'value'         => $billing_address,
+				);
 
 			}
-			$custom_fields[] = array(
-				'display_name'  => 'Shipping Address',
-				'variable_name' => 'shipping_address',
-				'value'         => $shipping_address,
-			);
+
+			if ( $this->meta_shipping_address ) {
+
+				$shipping_address = $order->get_formatted_shipping_address();
+				$shipping_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+
+				if ( empty( $shipping_address ) ) {
+
+					$billing_address = $order->get_formatted_billing_address();
+					$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+					$shipping_address = $billing_address;
+
+				}
+				$custom_fields[] = array(
+					'display_name'  => 'Shipping Address',
+					'variable_name' => 'shipping_address',
+					'value'         => $shipping_address,
+				);
+
+			}
 
 		}
 
@@ -1615,8 +1728,53 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 *
 	 * @return bool
 	 */
-	public static function is_wc_lt( $version ) {
+	public function is_wc_lt( $version ) {
 		return version_compare( WC_VERSION, $version, '<' );
+	}
+
+	/**
+	 * Checks if autocomplete order is enabled for the payment method.
+	 *
+	 * @since 5.7
+	 * @param WC_Order $order Order object.
+	 * @return bool
+	 */
+	protected function is_autocomplete_order_enabled( $order ) {
+		$autocomplete_order = false;
+
+		$payment_method = $order->get_payment_method();
+
+		$paystack_settings = get_option('woocommerce_' . $payment_method . '_settings');
+
+		if ( isset( $paystack_settings['autocomplete_order'] ) && 'yes' === $paystack_settings['autocomplete_order'] ) {
+			$autocomplete_order = true;
+		}
+
+		return $autocomplete_order;
+	}
+
+	/**
+	 * Retrieve the payment channels configured for the gateway
+	 *
+	 * @since 5.7
+	 * @param WC_Order $order Order object.
+	 * @return array
+	 */
+	protected function get_gateway_payment_channels( $order ) {
+
+		$payment_method = $order->get_payment_method();
+
+		if ( 'paystack' === $payment_method ) {
+			return array();
+		}
+
+		$payment_channels = $this->payment_channels;
+
+		if ( empty( $payment_channels ) ) {
+			$payment_channels = array( 'card' );
+		}
+
+		return $payment_channels;
 	}
 
 }

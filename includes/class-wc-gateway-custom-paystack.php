@@ -35,16 +35,32 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 				'default'     => '',
 			),
 			'payment_page'                     => array(
-				'title'       => __( 'Payment Page', 'woo-paystack' ),
+				'title'       => __( 'Payment Option', 'woo-paystack' ),
 				'type'        => 'select',
-				'description' => __( 'Inline shows the payment popup on the page while Inline Embed shows the payment page directly on the page', 'woo-paystack' ),
+				'description' => __( 'Popup shows the payment popup on the page while Redirect will redirect the customer to Paystack to make payment.', 'woo-paystack' ),
 				'default'     => '',
 				'desc_tip'    => false,
 				'options'     => array(
-					''       => __( 'Select One', 'woo-paystack' ),
-					'inline' => __( 'Inline', 'woo-paystack' ),
-					'embed'  => __( 'Inline Embed', 'woo-paystack' ),
+					''         => __( 'Select One', 'woo-paystack' ),
+					'inline'   => __( 'Popup', 'woo-paystack' ),
+					'redirect' => __( 'Redirect', 'woo-paystack' ),
 				),
+			),
+			'autocomplete_order'               => array(
+				'title'       => __( 'Autocomplete Order After Payment', 'woo-paystack' ),
+				'label'       => __( 'Autocomplete Order', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'class'       => 'wc-paystack-autocomplete-order',
+				'description' => __( 'If enabled, the order will be marked as complete after successful payment', 'woo-paystack' ),
+				'default'     => 'no',
+				'desc_tip'    => true,
+			),
+			'remove_cancel_order_button'       => array(
+				'title'       => __( 'Remove Cancel Order & Restore Cart Button', 'woo-paystack' ),
+				'label'       => __( 'Remove the cancel order & restore cart button on the pay for order page', 'woo-paystack' ),
+				'type'        => 'checkbox',
+				'description' => '',
+				'default'     => 'no',
 			),
 			'split_payment'                    => array(
 				'title'       => __( 'Split Payment', 'woo-paystack' ),
@@ -286,8 +302,11 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	public function channels() {
 
 		return array(
-			'card' => __( 'Cards', 'woo-paystack' ),
-			'bank' => __( 'Banks', 'woo-paystack' ),
+			'card'          => __( 'Cards', 'woo-paystack' ),
+			'bank'          => __( 'Pay with Bank', 'woo-paystack' ),
+			'ussd'          => __( 'USSD', 'woo-paystack' ),
+			'qr'            => __( 'QR', 'woo-paystack' ),
+			'bank_transfer' => __( 'Bank Transfer', 'woo-paystack' ),
 		);
 
 	}
@@ -355,6 +374,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			'paystackwhite' => __( 'Secured by Paystack White', 'woo-paystack' ),
 			'paystackblue'  => __( 'Secured by Paystack Blue', 'woo-paystack' ),
 			'paystack-ng'   => __( 'Paystack Nigeria', 'woo-paystack' ),
+			'paystack-wc'   => __( 'Paystack Nigeria', 'woo-paystack' ),
 			'paystack-gh'   => __( 'Paystack Ghana', 'woo-paystack' ),
 			'access'        => __( 'Access Bank', 'woo-paystack' ),
 			'alat'          => __( 'ALAT by WEMA', 'woo-paystack' ),
@@ -385,6 +405,227 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			'wema'          => __( 'Wema Bank', 'woo-paystack' ),
 			'zenith'        => __( 'Zenith Bank', 'woo-paystack' ),
 		);
+
+	}
+
+	/**
+	 * Display the selected payment icon.
+	 */
+	public function get_icon() {
+		$icon_html = '<img src="' . WC_HTTPS::force_https_url( WC_PAYSTACK_URL . '/assets/images/paystack.png' ) . '" alt="paystack" style="height: 40px; margin-right: 0.4em;margin-bottom: 0.6em;" />';
+		$icon      = $this->payment_icons;
+
+		if ( is_array( $icon ) ) {
+
+			$additional_icon = '';
+
+			foreach ( $icon as $i ) {
+				$additional_icon .= '<img src="' . WC_HTTPS::force_https_url( WC_PAYSTACK_URL . '/assets/images/' . $i . '.png' ) . '" alt="' . $i . '" style="height: 40px; margin-right: 0.4em;margin-bottom: 0.6em;" />';
+			}
+
+			$icon_html .= $additional_icon;
+		}
+
+		return apply_filters( 'woocommerce_gateway_icon', $icon_html, $this->id );
+	}
+
+	/**
+	 * Outputs scripts used for paystack payment.
+	 */
+	public function payment_scripts() {
+
+		if ( ! is_checkout_pay_page() ) {
+			return;
+		}
+
+		if ( $this->enabled === 'no' ) {
+			return;
+		}
+
+		$order_key = urldecode( $_GET['key'] );
+		$order_id  = absint( get_query_var( 'order-pay' ) );
+
+		$order = wc_get_order( $order_id );
+
+		$payment_method = method_exists( $order, 'get_payment_method' ) ? $order->get_payment_method() : $order->payment_method;
+
+		if ( $this->id !== $payment_method ) {
+			return;
+		}
+
+		$suffix = ( defined( 'SCRIPT_DEBUG' ) && SCRIPT_DEBUG ) ? '' : '.min';
+
+		wp_enqueue_script( 'jquery' );
+
+		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, false );
+
+		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack' . $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array( 'jquery', 'paystack' ), WC_PAYSTACK_VERSION, false );
+
+		$paystack_params = array(
+			'key' => $this->public_key,
+		);
+
+		if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
+
+			$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+
+			$amount = $order->get_total() * 100;
+
+			$txnref = $order_id . '_' . time();
+
+			$the_order_id  = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
+			$the_order_key = method_exists( $order, 'get_order_key' ) ? $order->get_order_key() : $order->order_key;
+			$currency      = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
+
+			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
+
+				$paystack_params['email']    = $email;
+				$paystack_params['amount']   = $amount;
+				$paystack_params['txnref']   = $txnref;
+				$paystack_params['currency'] = $currency;
+
+			}
+
+			if ( $this->split_payment ) {
+
+				$paystack_params['subaccount_code']     = $this->subaccount_code;
+				$paystack_params['charges_account']     = $this->charges_account;
+				$paystack_params['transaction_charges'] = $this->transaction_charges * 100;
+
+			}
+
+			if ( in_array( 'bank', $this->payment_channels ) ) {
+				$paystack_params['bank_channel'] = 'true';
+			}
+
+			if ( in_array( 'card', $this->payment_channels ) ) {
+				$paystack_params['card_channel'] = 'true';
+			}
+
+			if ( in_array( 'ussd', $this->payment_channels ) ) {
+				$paystack_params['ussd_channel'] = 'true';
+			}
+
+			if ( in_array( 'qr', $this->payment_channels ) ) {
+				$paystack_params['qr_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank_transfer', $this->payment_channels ) ) {
+				$paystack_params['bank_transfer_channel'] = 'true';
+			}
+
+			if ( $this->banks ) {
+
+				$paystack_params['banks_allowed'] = $this->banks;
+
+			}
+
+			if ( $this->cards ) {
+
+				$paystack_params['cards_allowed'] = $this->cards;
+
+			}
+
+			if ( $this->custom_metadata ) {
+
+				if ( $this->meta_order_id ) {
+
+					$paystack_params['meta_order_id'] = $order_id;
+
+				}
+
+				if ( $this->meta_name ) {
+
+					$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
+					$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
+
+					$paystack_params['meta_name'] = $first_name . ' ' . $last_name;
+
+				}
+
+				if ( $this->meta_email ) {
+
+					$paystack_params['meta_email'] = $email;
+
+				}
+
+				if ( $this->meta_phone ) {
+
+					$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
+
+					$paystack_params['meta_phone'] = $billing_phone;
+
+				}
+
+				if ( $this->meta_products ) {
+
+					$line_items = $order->get_items();
+
+					$products = '';
+
+					foreach ( $line_items as $item_id => $item ) {
+						$name      = $item['name'];
+						$quantity  = $item['qty'];
+						$products .= $name . ' (Qty: ' . $quantity . ')';
+						$products .= ' | ';
+					}
+
+					$products = rtrim( $products, ' | ' );
+
+					$paystack_params['meta_products'] = $products;
+
+				}
+
+				if ( $this->meta_billing_address ) {
+
+					$billing_address = $order->get_formatted_billing_address();
+					$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+					$paystack_params['meta_billing_address'] = $billing_address;
+
+				}
+
+				if ( $this->meta_shipping_address ) {
+
+					$shipping_address = $order->get_formatted_shipping_address();
+					$shipping_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $shipping_address ) );
+
+					if ( empty( $shipping_address ) ) {
+
+						$billing_address = $order->get_formatted_billing_address();
+						$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
+
+						$shipping_address = $billing_address;
+
+					}
+
+					$paystack_params['meta_shipping_address'] = $shipping_address;
+
+				}
+			}
+
+			update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
+
+		}
+
+		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
+
+	}
+
+	/**
+	 * Add Gateway to checkout page.
+	 *
+	 * @param $available_gateways
+	 *
+	 * @return mixed
+	 */
+	public function add_gateway_to_checkout( $available_gateways ) {
+
+		if ( $this->enabled == 'no' ) {
+			unset( $available_gateways[ $this->id ] );
+		}
+
+		return $available_gateways;
 
 	}
 

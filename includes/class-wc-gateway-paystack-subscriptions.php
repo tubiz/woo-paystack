@@ -143,9 +143,9 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 					$order->add_order_note( $message );
 
-					// Log successful transaction to Paystack plugin metrics tracker.
-					$paystack_logger = new WC_Paystack_Plugin_Tracker( 'woo-paystack', $this->public_key );
-					$paystack_logger->log_transaction( $paystack_ref );
+					if ( parent::is_autocomplete_order_enabled( $order ) ) {
+						$order->update_status( 'completed' );
+					}
 
 					return true;
 
