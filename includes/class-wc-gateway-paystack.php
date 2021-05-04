@@ -396,14 +396,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'default'     => 'yes',
 				'desc_tip'    => true,
 			),
-			'sickomode'                         => array(
-				'title'       => __( 'Sicko mode', 'woo-paystack' ),
-				'label'       => __( 'Enable Sicko Mode', 'woo-paystack' ),
-				'type'        => 'checkbox',
-				'description' => __( 'Sicko mode is the best mode', 'woo-paystack' ),
-				'default'     => 'no',
-				'desc_tip'    => true,
-			),
 			'payment_page'                     => array(
 				'title'       => __( 'Payment Page', 'woo-paystack' ),
 				'type'        => 'select',
