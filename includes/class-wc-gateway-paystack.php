@@ -103,7 +103,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @var bool
 	 */
 	public $custom_metadata;
-	public $autocomplete_order;
 	/**
 	 * Should the order id be sent as a custom metadata to Paystack?
 	 *
