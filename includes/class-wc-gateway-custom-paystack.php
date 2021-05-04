@@ -443,7 +443,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 		}
 
 		$order_key = '';
-		if( isset( $_GET['key'] )) {
+		if ( isset( $_GET['key'] )) {
 			$order_key = urldecode( sanitize_text_field( $_GET['key'] ) );
 		}
 		$order_id  = absint( get_query_var( 'order-pay' ) );

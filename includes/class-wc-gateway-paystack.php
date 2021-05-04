@@ -831,7 +831,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			return $this->process_redirect_payment_option( $order_id );
 
 		} 
-		if ( isset( $_REQUEST['_wpnonce']) && wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'wpdocs-my-nonce' ) ) {
+		$nonce_value = wc_get_var( $_REQUEST['woocommerce-process-checkout-nonce'], wc_get_var( $_REQUEST['_wpnonce'], '' ) );
+		if ( empty( $nonce_value ) || ! wp_verify_nonce( $nonce_value, 'woocommerce-process_checkout' ) ) {
+			wc_add_notice( 'Nonce verification failed', 'error' );
+				return;
+		}
+
 			if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
 
 				$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
@@ -874,9 +879,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				);
 
 			}
-		} else {
-			die( esc_html(__( 'Security check', 'woo-paystack' )) ); 
-		}
 
 	}
 
