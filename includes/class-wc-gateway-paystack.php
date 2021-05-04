@@ -832,51 +832,51 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		} 
 		if ( isset( $_REQUEST['_wpnonce']) && wp_verify_nonce( sanitize_text_field($_REQUEST['_wpnonce']), 'wpdocs-my-nonce' ) ) {
-		if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+			if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
 
-			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
-			$token    = WC_Payment_Tokens::get( $token_id );
+				$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
+				$token    = WC_Payment_Tokens::get( $token_id );
 
-			if ( $token->get_user_id() !== get_current_user_id() ) {
+				if ( $token->get_user_id() !== get_current_user_id() ) {
 
-				wc_add_notice( 'Invalid token ID', 'error' );
+					wc_add_notice( 'Invalid token ID', 'error' );
 
-				return;
+					return;
 
-			} else {
+				} else {
 
-				$status = $this->process_token_payment( $token->get_token(), $order_id );
+					$status = $this->process_token_payment( $token->get_token(), $order_id );
 
-				if ( $status ) {
+					if ( $status ) {
 
-					$order = wc_get_order( $order_id );
+						$order = wc_get_order( $order_id );
 
-					return array(
+						return array(
 						'result'   => 'success',
 						'redirect' => $this->get_return_url( $order ),
-					);
+						);
+
+					}
+				}
+			} else {
+
+				if ( is_user_logged_in() && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-' . $this->id . '-new-payment-method' ] && $this->saved_cards ) {
+
+					update_post_meta( $order_id, '_wc_paystack_save_card', true );
 
 				}
-			}
-		} else {
 
-			if ( is_user_logged_in() && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-' . $this->id . '-new-payment-method' ] && $this->saved_cards ) {
+				$order = wc_get_order( $order_id );
 
-				update_post_meta( $order_id, '_wc_paystack_save_card', true );
-
-			}
-
-			$order = wc_get_order( $order_id );
-
-			return array(
+				return array(
 				'result'   => 'success',
 				'redirect' => $order->get_checkout_payment_url( true ),
-			);
+				);
 
+			}
+		} else {
+			die( esc_html(__( 'Security check', 'woo-paystack' )) ); 
 		}
-	}else{
-		die( esc_html(__( 'Security check', 'woo-paystack' )) ); 
-	}
 
 	}
 
