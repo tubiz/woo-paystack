@@ -93,7 +93,12 @@ class WC_Gateway_Paystack_One extends WC_Gateway_Custom_Paystack {
 		$this->live_public_key = $this->paystack_settings['live_public_key'];
 		$this->live_secret_key = $this->paystack_settings['live_secret_key'];
 
+<<<<<<< HEAD
 		$this->saved_cards =  'yes' === $this->paystack_settings['saved_cards'] ? true : false;
+=======
+		$this->saved_cards = $this->paystack_settings['saved_cards'] === 'yes' ? true : false;
+
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		$this->split_payment              = $this->get_option( 'split_payment' ) === 'yes' ? true : false;
 		$this->remove_cancel_order_button = $this->get_option( 'remove_cancel_order_button' ) === 'yes' ? true : false;
 		$this->subaccount_code            = $this->get_option( 'subaccount_code' );

@@ -155,6 +155,10 @@ function tbz_wc_paystack_testmode_notice() {
 
 	if ( 'yes' === $test_mode ) {
 		/* translators: 1. Paystack settings page URL link. */
+<<<<<<< HEAD
 		echo '<div class="update-nag">' . sprintf( esc_html( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' )), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</div>';
+=======
+		echo '<div class="error"><p>' . sprintf( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</p></div>';
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 	}
 }

@@ -201,6 +201,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->init_settings();
 
 		// Get setting values
+<<<<<<< HEAD
 		$this->title       = $this->get_option( 'title' );
 		$this->description = $this->get_option( 'description' );
 		$this->enabled     = $this->get_option( 'enabled' );
@@ -208,6 +209,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->autocomplete_order = $this->get_option('autocomplete_order') === 'yes' ? true : false;
 		$this->payment_page = $this->get_option( 'payment_page' );
 		
+=======
+
+		$this->title              = $this->get_option( 'title' );
+		$this->description        = $this->get_option( 'description' );
+		$this->enabled            = $this->get_option( 'enabled' );
+		$this->testmode           = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+		$this->autocomplete_order = $this->get_option( 'autocomplete_order' ) === 'yes' ? true : false;
+
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );
 
@@ -269,7 +279,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public function is_valid_for_use() {
 
 		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'ZAR', 'GHS' ) ) ) ) {
+<<<<<<< HEAD
 			/* translators: %s: admin url */
+=======
+
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 			$this->msg = sprintf( __( 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;) or ZAR (R) <a href="%s">here</a>', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
 
 			return false;
@@ -821,6 +835,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			return $this->process_redirect_payment_option( $order_id );
 
+<<<<<<< HEAD
 		} 
 		$nonce_value = '' ;
 		if ( isset($_REQUEST['woocommerce-process-checkout-nonce'])  || isset( $_REQUEST['_wpnonce']) ) {
@@ -832,6 +847,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		}
 
 		if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+=======
+		} elseif ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 
 			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
 			$token    = WC_Payment_Tokens::get( $token_id );
@@ -1129,6 +1147,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$order = wc_get_order( $order_id );
 
 		echo '<div id="wc-paystack-form">';
+<<<<<<< HEAD
 
 		echo '<p>' . esc_html(__( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' )) . '</p>';
 
@@ -1136,6 +1155,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( ! $this->remove_cancel_order_button ) {
 			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . esc_html( __( 'Cancel order &amp; restore cart', 'woo-paystack' )) . '</a></div>';
+=======
+
+		echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
+
+		echo '<div id="paystack_form"><form id="order_review" method="post" action="' . WC()->api_request_url( 'WC_Gateway_Paystack' ) . '"></form><button class="button" id="paystack-payment-button">' . __( 'Pay Now', 'woo-paystack' ) . '</button>';
+
+		if ( ! $this->remove_cancel_order_button ) {
+			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		}
 
 		echo '</div>';
@@ -1670,7 +1698,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
 			if ( 'success' == $paystack_response->data->status ) {
+<<<<<<< HEAD
 				/* translators: refund order id */
+=======
+
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 				$merchant_note = sprintf( __( 'Refund for Order ID: #%1$s on %2$s', 'woo-paystack' ), $order_id, get_site_url() );
 
 				$body = array(
@@ -1693,7 +1725,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					if ( $refund_response->status ) {
 						$amount         = wc_price( $amount, array( 'currency' => $order_currency ) );
 						$refund_id      = $refund_response->data->id;
+<<<<<<< HEAD
 						/* translators: %s: refund notice */
+=======
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 						$refund_message = sprintf( __( 'Refunded %1$s. Refund ID: %2$s. Reason: %3$s', 'woo-paystack' ), $amount, $refund_id, $reason );
 						$order->add_order_note( $refund_message );
 

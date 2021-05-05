@@ -428,6 +428,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			return;
 		}
 
+<<<<<<< HEAD
 		if ( 'no' ===  $this->enabled ) {
 			return;
 		}
@@ -436,6 +437,13 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 		if ( isset( $_GET['key'] )) {
 			$order_key = urldecode( sanitize_text_field( $_GET['key'] ) );
 		}
+=======
+		if ( $this->enabled === 'no' ) {
+			return;
+		}
+
+		$order_key = urldecode( $_GET['key'] );
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		$order_id  = absint( get_query_var( 'order-pay' ) );
 
 		$order = wc_get_order( $order_id );
@@ -614,7 +622,11 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	 */
 	public function add_gateway_to_checkout( $available_gateways ) {
 
+<<<<<<< HEAD
 		if ( 'no' ===  $this->enabled ) {
+=======
+		if ( $this->enabled == 'no' ) {
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 			unset( $available_gateways[ $this->id ] );
 		}
 
