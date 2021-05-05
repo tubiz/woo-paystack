@@ -8,9 +8,9 @@
 
 **Requires at least:** 4.7
 
-**Tested up to:** 5.5
+**Tested up to:** 5.7
 
-**Stable tag:** 5.6.4
+**Stable tag:** 5.7.2
 
 **License:** GPLv2 or later
 
@@ -25,17 +25,21 @@ Paystack WooCommerce Payment Gateway allows you to accept online payments from l
 
 This is a Paystack payment gateway for WooCommerce.
 
-Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR.
+Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian, South African & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
 
 To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
 
-Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using Mastercard, Visa, Verve, bank accounts, GTB 737 & Visa QR.
+Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
 
 With this Paystack WooCommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
 
 * __Mastercard__
 * __Visa__
 * __Verve__
+* __USSD__
+* __Mobile Money__
+* __Bank Transfer__
+* __EFT__
 * __Bank Account__
 * __GTB 737__
 * __Visa QR__
@@ -43,12 +47,11 @@ With this Paystack WooCommerce Payment Gateway plugin, you will be able to accep
 
 ### Note
 
-This plugin is meant to be used by merchants in Nigeria and Ghana.
-
+This plugin is meant to be used by merchants in Nigeria, South Africa and Ghana.
 
 ### Plugin Features
 
-*   __Accept payment__ via Mastercard, Visa, Verve, Bank Accounts, GTB 737 & Visa QR
+*   __Accept payment__ via Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
 *   __Seamless integration__ into the WooCommerce checkout page. Accept payment directly on your site
 *   __Refunds__ from the WooCommerce order details page. Refund an order directly from the order details page
 *   __Recurring payment__ using [WooCommerce Subscriptions](https://woocommerce.com/products/woocommerce-subscriptions/) plugin
@@ -145,7 +148,24 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Changelog
 
-### 5.6.4 - September 29, 2020 =
+### 5.7.2 - March 12, 2021
+* New: Auto display paystack payment popup on the payment page
+* Removed: Remove Paystack metrics tracker
+* Tweak: WooCommerce 5.1 compatibility
+
+### 5.7.1 - March 1, 2021
+* Removed: Remove inline embed payment option
+* Updated: Update payment method icon for South Africa
+
+### 5.7 - January 13, 2021
+* New: Add additional payment channels to the custom gateways
+* New: Add redirect payment option
+* New: Add option to autocomplete order after successful payment
+* Misc: Add deprecate notice for Inline Embed payment option
+* Fix: The default gateway should display only the payment channel(s) set on the Paystack settings page
+* Tweak: WooCommerce 4.9 compatibility.
+
+### 5.6.4 - September 29, 2020
 *   Fix: Use order currency when paying for an order and not the store currency
 *   Fix: Test mode enabled admin notice not displayed properly
 *   Misc: Add payment icon for South Africa
@@ -261,8 +281,8 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 
 ## Upgrade Notice
 
-### 5.6.3 ###
-*   Add payment icon for South Africa. Use the order currency and not the store currency when paying for an order
+### 5.7.2 ###
+*   Auto display Paystack payment popup on the payment page
 
 ## Screenshots ##
 
@@ -280,12 +300,6 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand men
 ###
 ![Screenshot 3](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-3.png)
 
-
-### 4. Paystack inline embed payment page
+### 4. Manage saved cards from your account page
 ###
 ![Screenshot 4](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-4.png)
-
-
-### 5. Manage saved cards from your account page
-###
-![Screenshot 5](https://github.com/tubiz/woo-paystack/blob/master/assets/images/screenshot-5.png)
