@@ -78,7 +78,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 		$response = $this->process_subscription_payment( $renewal_order, $amount_to_charge );
 
 		if ( is_wp_error( $response ) ) {
-
+			/* translators: %s: error message */
 			$renewal_order->update_status( 'failed', sprintf( __( 'Paystack Transaction Failed (%s)', 'woo-paystack' ), $response->get_error_message() ) );
 
 		}
@@ -112,9 +112,12 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 				'Authorization' => 'Bearer ' . $this->secret_key,
 			);
 
+			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
+
 			$body = array(
 				'email'              => $email,
 				'amount'             => $order_amount,
+				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
 			);
 
@@ -135,10 +138,14 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 					$paystack_ref = $paystack_response->data->reference;
 
 					$order->payment_complete( $paystack_ref );
-
+					/* translators: %s: transaction reference */
 					$message = sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref );
 
 					$order->add_order_note( $message );
+
+					if ( parent::is_autocomplete_order_enabled( $order ) ) {
+						$order->update_status( 'completed' );
+					}
 
 					return true;
 
@@ -147,6 +154,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 					$gateway_response = __( 'Paystack payment failed.', 'woo-paystack' );
 
 					if ( isset( $paystack_response->data->gateway_response ) && ! empty( $paystack_response->data->gateway_response ) ) {
+						/* translators: %s: transaction error message */
 						$gateway_response = sprintf( __( 'Paystack payment failed. Reason: %s', 'woo-paystack' ), $paystack_response->data->gateway_response );
 					}
 
@@ -156,7 +164,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 			}
 		}
 
-		return new WP_Error( 'paystack_error', __( 'This subscription can\'t be renewed automatically. The customer will have to login to their account to renew their subscription', 'woo-paystack' ) );
+		return new WP_Error( 'paystack_error', __( 'This subscription can&#39;t be renewed automatically. The customer will have to login to their account to renew their subscription', 'woo-paystack' ) );
 
 	}
 
