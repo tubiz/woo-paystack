@@ -173,6 +173,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public function __construct() {
 		$this->id                 = 'paystack';
 		$this->method_title       = __( 'Paystack', 'woo-paystack' );
+		/* translators: %s: gateway description */
 		$this->method_description = sprintf( __( 'Paystack provide merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve Cards and Bank Accounts. <a href="%1$s" target="_blank">Sign up</a> for a Paystack account, and <a href="%2$s" target="_blank">get your API keys</a>.', 'woo-paystack' ), 'https://paystack.com', 'https://dashboard.paystack.com/#/settings/developer' );
 		$this->has_fields         = true;
 
@@ -200,6 +201,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->init_settings();
 
 		// Get setting values
+<<<<<<< HEAD
+		$this->title       = $this->get_option( 'title' );
+		$this->description = $this->get_option( 'description' );
+		$this->enabled     = $this->get_option( 'enabled' );
+		$this->testmode    = $this->get_option( 'testmode' ) === 'yes' ? true : false;
+		$this->autocomplete_order = $this->get_option('autocomplete_order') === 'yes' ? true : false;
+		$this->payment_page = $this->get_option( 'payment_page' );
+		
+=======
 
 		$this->title              = $this->get_option( 'title' );
 		$this->description        = $this->get_option( 'description' );
@@ -207,6 +217,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$this->testmode           = $this->get_option( 'testmode' ) === 'yes' ? true : false;
 		$this->autocomplete_order = $this->get_option( 'autocomplete_order' ) === 'yes' ? true : false;
 
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		$this->test_public_key = $this->get_option( 'test_public_key' );
 		$this->test_secret_key = $this->get_option( 'test_secret_key' );
 
@@ -268,7 +279,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public function is_valid_for_use() {
 
 		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'ZAR', 'GHS' ) ) ) ) {
+<<<<<<< HEAD
+			/* translators: %s: admin url */
+=======
 
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 			$this->msg = sprintf( __( 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;) or ZAR (R) <a href="%s">here</a>', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
 
 			return false;
@@ -303,13 +318,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function admin_notices() {
 
-		if ( $this->enabled == 'no' ) {
+		if ( 'no' == $this->enabled ) {
 			return;
 		}
 
 		// Check required fields.
 		if ( ! ( $this->public_key && $this->secret_key ) ) {
-			echo '<div class="error"><p>' . sprintf( __( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) . '</p></div>';
+			/* translators: %s: admin url */
+			echo '<div class="error"><p>' . esc_html(sprintf( __( 'Please enter your Paystack merchant details <a href="%s">here</a> to be able to use the Paystack WooCommerce plugin.', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) )) . '</p></div>';
 			return;
 		}
 
@@ -345,7 +361,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		?>
 
-		<h2><?php _e( 'Paystack', 'woo-paystack' ); ?>
+		<h2>
+		<?php  
+			esc_html(__('Paystack', 'woo-paystack' )); 
+		?>
 		<?php
 		if ( function_exists( 'wc_back_link' ) ) {
 			wc_back_link( __( 'Return to payments', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=checkout' ) );
@@ -354,7 +373,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		</h2>
 
 		<h4>
-			<strong><?php printf( __( 'Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="%1$s" target="_blank" rel="noopener noreferrer">here</a> to the URL below<span style="color: red"><pre><code>%2$s</code></pre></span>', 'woo-paystack' ), 'https://dashboard.paystack.co/#/settings/developer', WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ) ); ?></strong>
+			<?php /* translators: %s: set webhook url */ ?>
+			<strong><?php printf( esc_html( __( 'Optional: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="%1$s" target="_blank" rel="noopener noreferrer">here</a> to the URL below<span style="color: red"><pre><code>%2$s</code></pre></span>', 'woo-paystack' ), 'https://dashboard.paystack.co/#/settings/developer', WC()->api_request_url( 'Tbz_WC_Paystack_Webhook' ) )); ?></strong>
 		</h4>
 
 		<?php
@@ -367,7 +387,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		} else {
 			?>
-			<div class="inline error"><p><strong><?php _e( 'Paystack Payment Gateway Disabled', 'woo-paystack' ); ?></strong>: <?php echo $this->msg; ?></p></div>
+			<div class="inline error"><p><strong><?php esc_html(__( 'Paystack Payment Gateway Disabled', 'woo-paystack' )); ?></strong>: <?php echo  esc_html( $this->msg); ?></p></div>
 
 			<?php
 		}
@@ -614,7 +634,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public function payment_fields() {
 
 		if ( $this->description ) {
-			echo wpautop( wptexturize( $this->description ) );
+			echo esc_html(wpautop( wptexturize( esc_html( $this->description) ) ) );
 		}
 
 		if ( ! is_ssl() ) {
@@ -638,11 +658,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			return;
 		}
 
-		if ( $this->enabled === 'no' ) {
+		if ( 'no' === $this->enabled ) {
 			return;
 		}
 
-		$order_key = urldecode( $_GET['key'] );
+		$order_key = urldecode( sanitize_text_field( isset($_GET['key'] ) ? $_GET['key']:''));
 		$order_id  = absint( get_query_var( 'order-pay' ) );
 
 		$order = wc_get_order( $order_id );
@@ -815,7 +835,21 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			return $this->process_redirect_payment_option( $order_id );
 
+<<<<<<< HEAD
+		} 
+		$nonce_value = '' ;
+		if ( isset($_REQUEST['woocommerce-process-checkout-nonce'])  || isset( $_REQUEST['_wpnonce']) ) {
+			$nonce_value = wc_get_var( sanitize_text_field($_REQUEST['woocommerce-process-checkout-nonce']), wc_get_var( sanitize_text_field( $_REQUEST['_wpnonce']), '' ) );
+		}
+		if ( empty( $nonce_value ) || ! wp_verify_nonce( $nonce_value, 'woocommerce-process_checkout' ) ) {
+			wc_add_notice( 'Nonce verification failed', 'error' );
+			return;
+		}
+
+		if ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+=======
 		} elseif ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 
 			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
 			$token    = WC_Payment_Tokens::get( $token_id );
@@ -1011,7 +1045,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						$order->update_status( 'on-hold', '' );
 
 						add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
-
+						/* translators: amount error */
 						$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment transaction was successful, but the amount paid is not the same as the total order amount.%2$sYour order is currently on hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 						$notice_type = 'notice';
 
@@ -1019,6 +1053,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						$order->add_order_note( $notice, 1 );
 
 						// Add Admin Order Note
+						/* translators: amount error */
 						$admin_order_note = sprintf( __( '<strong>Look into this order</strong>%1$sThis order is currently on hold.%2$sReason: Amount paid is less than the total order amount.%3$sAmount Paid was <strong>%4$s (%5$s)</strong> while the total order amount is <strong>%6$s (%7$s)</strong>%8$s<strong>Paystack Transaction Reference:</strong> %9$s', 'woo-paystack' ), '<br />', '<br />', '<br />', $currency_symbol, $amount_paid, $currency_symbol, $order_total, '<br />', $paystack_ref );
 						$order->add_order_note( $admin_order_note );
 
@@ -1031,7 +1066,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 							$order->update_status( 'on-hold', '' );
 
 							update_post_meta( $order_id, '_transaction_id', $paystack_ref );
-
+							/* translators: currency error */
 							$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment was successful, but the payment currency is different from the order currency.%2$sYour order is currently on-hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 							$notice_type = 'notice';
 
@@ -1039,6 +1074,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 							$order->add_order_note( $notice, 1 );
 
 							// Add Admin Order Note
+							/* translators: currency error */
 							$admin_order_note = sprintf( __( '<strong>Look into this order</strong>%1$sThis order is currently on hold.%2$sReason: Order currency is different from the payment currency.%3$sOrder Currency is <strong>%4$s (%5$s)</strong> while the payment currency is <strong>%6$s (%7$s)</strong>%8$s<strong>Paystack Transaction Reference:</strong> %9$s', 'woo-paystack' ), '<br />', '<br />', '<br />', $order_currency, $currency_symbol, $payment_currency, $gateway_symbol, '<br />', $paystack_ref );
 							$order->add_order_note( $admin_order_note );
 
@@ -1049,7 +1085,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						} else {
 
 							$order->payment_complete( $paystack_ref );
-
+							/* translators: %s: transaction reference  */
 							$order->add_order_note( sprintf( 'Payment via Paystack successful (Transaction Reference: %s)', $paystack_ref ) );
 
 						}
@@ -1067,9 +1103,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					$failed_notice = __( 'Payment failed using the saved card. Kindly use another payment option.', 'woo-paystack' );
 
 					if ( isset( $paystack_response->data->gateway_response ) && ! empty( $paystack_response->data->gateway_response ) ) {
-
-						$order_notice  = sprintf( __( 'Payment was declined by Paystack. Reason: %s.', 'woo-paystack' ), $paystack_response->data->gateway_response );
-						$failed_notice = sprintf( __( 'Payment failed using the saved card. Reason: %s. Kindly use another payment option.', 'woo-paystack' ), $paystack_response->data->gateway_response );
+					/* translators: %s: transaction error message */
+					$order_notice  = sprintf( __( 'Payment was declined by Paystack. Reason: %s.', 'woo-paystack' ), $paystack_response->data->gateway_response );
+					/* translators: %s: transaction error message */
+					$failed_notice = sprintf( __( 'Payment failed using the saved card. Reason: %s. Kindly use another payment option.', 'woo-paystack' ), $paystack_response->data->gateway_response );
 
 					}
 
@@ -1110,6 +1147,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$order = wc_get_order( $order_id );
 
 		echo '<div id="wc-paystack-form">';
+<<<<<<< HEAD
+
+		echo '<p>' . esc_html(__( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' )) . '</p>';
+
+		echo '<div id="paystack_form"><form id="order_review" method="post" action="' . esc_url(WC()->api_request_url( 'WC_Gateway_Paystack' )) . '"></form><button class="button" id="paystack-payment-button">' . esc_html (__( 'Pay Now', 'woo-paystack' )) . '</button>';
+
+		if ( ! $this->remove_cancel_order_button ) {
+			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . esc_html( __( 'Cancel order &amp; restore cart', 'woo-paystack' )) . '</a></div>';
+=======
 
 		echo '<p>' . __( 'Thank you for your order, please click the button below to pay with Paystack.', 'woo-paystack' ) . '</p>';
 
@@ -1117,6 +1163,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( ! $this->remove_cancel_order_button ) {
 			echo '  <a class="button cancel" id="paystack-cancel-payment-button" href="' . esc_url( $order->get_cancel_order_url() ) . '">' . __( 'Cancel order &amp; restore cart', 'woo-paystack' ) . '</a></div>';
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		}
 
 		echo '</div>';
@@ -1185,7 +1232,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						$order->update_status( 'on-hold', '' );
 
 						add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
-
+						/* translators: amount error */
 						$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment transaction was successful, but the amount paid is not the same as the total order amount.%2$sYour order is currently on hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 						$notice_type = 'notice';
 
@@ -1193,6 +1240,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 						$order->add_order_note( $notice, 1 );
 
 						// Add Admin Order Note
+						/* translators: amount error */
 						$admin_order_note = sprintf( __( '<strong>Look into this order</strong>%1$sThis order is currently on hold.%2$sReason: Amount paid is less than the total order amount.%3$sAmount Paid was <strong>%4$s (%5$s)</strong> while the total order amount is <strong>%6$s (%7$s)</strong>%8$s<strong>Paystack Transaction Reference:</strong> %9$s', 'woo-paystack' ), '<br />', '<br />', '<br />', $currency_symbol, $amount_paid, $currency_symbol, $order_total, '<br />', $paystack_ref );
 						$order->add_order_note( $admin_order_note );
 
@@ -1208,6 +1256,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 							update_post_meta( $order_id, '_transaction_id', $paystack_ref );
 
+							/* translators: currency error */
 							$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment was successful, but the payment currency is different from the order currency.%2$sYour order is currently on-hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 							$notice_type = 'notice';
 
@@ -1215,16 +1264,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 							$order->add_order_note( $notice, 1 );
 
 							// Add Admin Order Note
+							/* translators: currency error */
 							$admin_order_note = sprintf( __( '<strong>Look into this order</strong>%1$sThis order is currently on hold.%2$sReason: Order currency is different from the payment currency.%3$sOrder Currency is <strong>%4$s (%5$s)</strong> while the payment currency is <strong>%6$s (%7$s)</strong>%8$s<strong>Paystack Transaction Reference:</strong> %9$s', 'woo-paystack' ), '<br />', '<br />', '<br />', $order_currency, $currency_symbol, $payment_currency, $gateway_symbol, '<br />', $paystack_ref );
 							$order->add_order_note( $admin_order_note );
 
 							function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
-
 							wc_add_notice( $notice, $notice_type );
 
 						} else {
 
 							$order->payment_complete( $paystack_ref );
+							/* translators: %s: transaction reference */
 							$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
 
 							if ( $this->is_autocomplete_order_enabled( $order ) ) {
@@ -1239,7 +1289,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				} else {
 
-					$order_details = explode( '_', $_REQUEST['paystack_txnref'] );
+					$order_details = explode( '_', sanitize_text_field($_REQUEST['paystack_txnref']) );
 
 					$order_id = (int) $order_details[0];
 
@@ -1266,14 +1316,14 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function process_webhooks() {
 
-		if ( ( strtoupper( $_SERVER['REQUEST_METHOD'] ) != 'POST' ) || ! array_key_exists( 'HTTP_X_PAYSTACK_SIGNATURE', $_SERVER ) ) {
+		if ( ( strtoupper( sanitize_text_field(isset($_SERVER['REQUEST_METHOD'] ) ? $_SERVER['REQUEST_METHOD'] : '' ) ) != 'POST' ) || ! array_key_exists( 'HTTP_X_PAYSTACK_SIGNATURE', $_SERVER ) ) {
 			exit;
 		}
 
 		$json = file_get_contents( 'php://input' );
 
 		// validate event do all at once to avoid timing attack.
-		if ( $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] !== hash_hmac( 'sha512', $json, $this->secret_key ) ) {
+		if ( hash_hmac( 'sha512', $json, $this->secret_key ) !== $_SERVER['HTTP_X_PAYSTACK_SIGNATURE'] ) {
 			exit;
 		}
 
@@ -1322,6 +1372,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
 
+				/* translators: amount error */
 				$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment transaction was successful, but the amount paid is not the same as the total order amount.%2$sYour order is currently on hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 				$notice_type = 'notice';
 
@@ -1329,6 +1380,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$order->add_order_note( $notice, 1 );
 
 				// Add Admin Order Note.
+				/* translators: amount error */
 				$admin_order_note = sprintf( __( '<strong>Look into this order</strong>%1$sThis order is currently on hold.%2$sReason: Amount paid is less than the total order amount.%3$sAmount Paid was <strong>%4$s (%5$s)</strong> while the total order amount is <strong>%6$s (%7$s)</strong>%8$s<strong>Paystack Transaction Reference:</strong> %9$s', 'woo-paystack' ), '<br />', '<br />', '<br />', $currency_symbol, $amount_paid, $currency_symbol, $order_total, '<br />', $paystack_ref );
 				$order->add_order_note( $admin_order_note );
 
@@ -1346,6 +1398,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					update_post_meta( $order_id, '_transaction_id', $paystack_ref );
 
+					/* translators: currency error */
 					$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment was successful, but the payment currency is different from the order currency.%2$sYour order is currently on-hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 					$notice_type = 'notice';
 
@@ -1353,17 +1406,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					$order->add_order_note( $notice, 1 );
 
 					// Add Admin Order Note.
+					/* translators: currency error */
 					$admin_order_note = sprintf( __( '<strong>Look into this order</strong>%1$sThis order is currently on hold.%2$sReason: Order currency is different from the payment currency.%3$sOrder Currency is <strong>%4$s (%5$s)</strong> while the payment currency is <strong>%6$s (%7$s)</strong>%8$s<strong>Paystack Transaction Reference:</strong> %9$s', 'woo-paystack' ), '<br />', '<br />', '<br />', $order_currency, $currency_symbol, $payment_currency, $gateway_symbol, '<br />', $paystack_ref );
 					$order->add_order_note( $admin_order_note );
 
 					function_exists( 'wc_reduce_stock_levels' ) ? wc_reduce_stock_levels( $order_id ) : $order->reduce_order_stock();
-
 					wc_add_notice( $notice, $notice_type );
 
 				} else {
 
 					$order->payment_complete( $paystack_ref );
-
+					/* translators: %s: transaction reference */
 					$order->add_order_note( sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref ) );
 
 					WC()->cart->empty_cart();
@@ -1645,7 +1698,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
 			if ( 'success' == $paystack_response->data->status ) {
+<<<<<<< HEAD
+				/* translators: refund order id */
+=======
 
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 				$merchant_note = sprintf( __( 'Refund for Order ID: #%1$s on %2$s', 'woo-paystack' ), $order_id, get_site_url() );
 
 				$body = array(
@@ -1668,6 +1725,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					if ( $refund_response->status ) {
 						$amount         = wc_price( $amount, array( 'currency' => $order_currency ) );
 						$refund_id      = $refund_response->data->id;
+<<<<<<< HEAD
+						/* translators: %s: refund notice */
+=======
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 						$refund_message = sprintf( __( 'Refunded %1$s. Refund ID: %2$s. Reason: %3$s', 'woo-paystack' ), $amount, $refund_id, $reason );
 						$order->add_order_note( $refund_message );
 

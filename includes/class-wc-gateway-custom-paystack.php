@@ -243,7 +243,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 		<h2>
 			<?php
 			/* translators: payment method title */
-			printf( __( 'Paystack - %s', 'woo-paystack' ), esc_attr( $this->title ) );
+			printf( esc_html( __( 'Paystack - %s', 'woo-paystack' )), esc_attr( $this->title ) );
 			?>
 			<?php
 			if ( function_exists( 'wc_back_link' ) ) {
@@ -255,7 +255,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 		<h4>
 			<?php
 			/* translators: link to Paystack developers settings page */
-			printf( __( 'Important: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="%s" target="_blank" rel="noopener noreferrer">here</a> to the URL below', 'woo-paystack' ), 'https://dashboard.paystack.co/#/settings/developer' );
+			printf( esc_html( __( 'Important: To avoid situations where bad network makes it impossible to verify transactions, set your webhook URL <a href="%s" target="_blank" rel="noopener noreferrer">here</a> to the URL below', 'woo-paystack' )), 'https://dashboard.paystack.co/#/settings/developer' );
 			?>
 		</h4>
 
@@ -266,7 +266,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 		<p>
 			<?php
 			/* translators: link to Paystack general settings page */
-			printf( __( 'To configure your Paystack API keys and enable/disable test mode, do that <a href="%s">here</a>', 'woo-paystack' ), esc_url( $paystack_settings_url ) );
+			printf( esc_html( __( 'To configure your Paystack API keys and enable/disable test mode, do that <a href="%s">here</a>', 'woo-paystack' )), esc_url( $paystack_settings_url ) );
 			?>
 		</p>
 
@@ -281,7 +281,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 		} else {
 
 			/* translators: disabled message */
-			echo '<div class="inline error"><p><strong>' . sprintf( __( 'Paystack Payment Gateway Disabled: %s', 'woo-paystack' ), esc_attr( $this->msg ) ) . '</strong></p></div>';
+			echo '<div class="inline error"><p><strong>' . sprintf(  esc_html(__( 'Paystack Payment Gateway Disabled: %s', 'woo-paystack' )), esc_attr( $this->msg ) ) . '</strong></p></div>';
 
 		}
 
@@ -428,11 +428,22 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			return;
 		}
 
+<<<<<<< HEAD
+		if ( 'no' ===  $this->enabled ) {
+			return;
+		}
+
+		$order_key = '';
+		if ( isset( $_GET['key'] )) {
+			$order_key = urldecode( sanitize_text_field( $_GET['key'] ) );
+		}
+=======
 		if ( $this->enabled === 'no' ) {
 			return;
 		}
 
 		$order_key = urldecode( $_GET['key'] );
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 		$order_id  = absint( get_query_var( 'order-pay' ) );
 
 		$order = wc_get_order( $order_id );
@@ -611,7 +622,11 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	 */
 	public function add_gateway_to_checkout( $available_gateways ) {
 
+<<<<<<< HEAD
+		if ( 'no' ===  $this->enabled ) {
+=======
 		if ( $this->enabled == 'no' ) {
+>>>>>>> 328402cdc94180808ce85c110c7318c468914b2b
 			unset( $available_gateways[ $this->id ] );
 		}
 
