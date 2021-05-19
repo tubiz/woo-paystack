@@ -255,6 +255,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		// Webhook listener/API hook.
 		add_action( 'woocommerce_api_tbz_wc_paystack_webhook', array( $this, 'process_webhooks' ) );
 
+		add_filter( 'woocommerce_gateway_' . $this->id . '_settings_values', array( $this, 'update_quick_setup_settings' ) );
+
 		// Check if the gateway can be used.
 		if ( ! $this->is_valid_for_use() ) {
 			$this->enabled = false;
@@ -1764,6 +1766,18 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			__( 'Your API details can be obtained from your <a href="%s">Paystack account</a>.', 'woo-paystack' ),
 			'https://dashboard.paystack.com/#/settings/developer'
 		);
+	}
+
+	/**
+	 * Updates the currency and test mode when setting up via the quick setup.
+	 */
+	public function update_quick_setup_settings( $settings ) {
+		if ( ! empty( $settings['live_public_key'] ) && ! empty( $settings['live_secret_key'] ) ) {
+			$settings['testmode'] = 'no';
+			update_option( 'woocommerce_currency', 'ZAR' );
+		}
+
+		return $settings;
 	}
 
 }
