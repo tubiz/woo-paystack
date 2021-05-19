@@ -1747,4 +1747,23 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		return $payment_channels;
 	}
 
+	/**
+	 * Get required setting keys for setup.
+	 *
+	 * @return array Array of setting keys used for setup.
+	 */
+	public function get_required_settings_keys() {
+		return array( 'live_public_key', 'live_secret_key' );
+	}
+
+	/**
+	 * Get help text to display during quick setup.
+	 */
+	public function get_setup_help_text() {
+		return sprintf(
+			__( 'Your API details can be obtained from your <a href="%s">Paystack account</a>.', 'woo-paystack' ),
+			'https://dashboard.paystack.com/#/settings/developer'
+		);
+	}
+
 }
