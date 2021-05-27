@@ -1780,4 +1780,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		return $settings;
 	}
 
+	/**
+	 * Determine if the gateway still requires setup.
+	 *
+	 * @return bool
+	 */
+	public function needs_setup() {
+		return ! $this->get_option( 'live_public_key' ) || ! $this->get_option( 'live_secret_key' ) || get_option( 'woocommerce_currency', 'USD' ) !== 'ZAR';
+	}
+
 }
