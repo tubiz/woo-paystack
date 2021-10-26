@@ -168,6 +168,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $secret_key;
 
 	/**
+	 * Gateway disabled message
+	 *
+	 * @var string
+	 */
+	public $msg;
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
