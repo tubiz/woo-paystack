@@ -1,44 +1,48 @@
 === Paystack WooCommerce Payment Gateway ===
 Contributors: tubiz
 Donate link: https://bosun.me/donate
-Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, nigeria, south africa, naira, cedi, rand, mastercard, visa
+Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
 Requires at least: 4.7
-Tested up to: 5.7
-Stable tag: 5.7.2
+Tested up to: 5.8
+Stable tag: 5.7.3
 Requires PHP: 5.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Paystack WooCommerce Payment Gateway allows you to accept online payments from local and international customers
-
-
+Paystack for WooCommerce allows your store in Nigeria, Ghana, Kenya, or South Africa to accept secure payments from multiple local and global payment channels.
 
 == Description ==
 
-This is a Paystack payment gateway for WooCommerce.
+Paystack makes it easy for businesses in Nigeria, Ghana, Kenya and South Africa to accept secure payments from multiple local and global payment channels. Integrate Paystack with your store today, and let your customers pay you with their choice of methods.
 
-Paystack is on a mission to deliver a safe and convenient payment experience for customers and merchants. Paystack provide Nigerian, South African & Ghanaian merchants with the tools and services needed to accept online payments from local and international customers using Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
+With Paystack for WooCommerce, you can accept payments via:
 
-To signup for a Paystack Merchant account visit their website by clicking [here](https://paystack.com)
+* Credit/Debit Cards — Visa, Mastercard, Verve (NG, GH, KE), American Express (SA only)
+* Bank transfer (Nigeria)
+* Mobile money (Ghana)
+* Masterpass (South Africa)
+* EFT (South Africa)
+* USSD (Nigeria)
+* Visa QR (Nigeria)
+* Many more coming soon
 
-Paystack WooCommerce Payment Gateway allows you to accept payment on your WooCommerce store using Mastercard, Visa, Verve, USSD, Mobile Money, Bank Transfer, EFT, Bank Accounts, GTB 737 & Visa QR.
+= Why Paystack? =
 
-With this Paystack WooCommerce Payment Gateway plugin, you will be able to accept the following payment methods in your shop:
+* Start receiving payments instantly—go from sign-up to your first real transaction in as little as 15 minutes
+* Simple, transparent pricing—no hidden charges or fees
+* Modern, seamless payment experience via the Paystack Checkout — [Try the demo!](https://paystack.com/demo/checkout)
+* Advanced fraud detection
+* Understand your customers better through a simple and elegant dashboard
+* Access to attentive, empathetic customer support 24/7
+* Free updates as we launch new features and payment options
+* Clearly documented APIs to build your custom payment experiences
 
-* __Mastercard__
-* __Visa__
-* __Verve__
-* __USSD__
-* __Mobile Money__
-* __Bank Transfer__
-* __EFT__
-* __Bank Account__
-* __GTB 737__
-* __Visa QR__
+Over 60,000 businesses of all sizes in Nigeria, Ghana, Kenya, and South Africa rely on Paystack's suite of products to receive payments and make payouts seamlessly. Sign up on [Paystack.com/signup](https://paystack.com/signup) to get started.
+
 
 = Note =
 
-This plugin is meant to be used by merchants in Nigeria, South Africa and Ghana.
+This plugin is meant to be used by merchants in Ghana, Kenya, Nigeria and South Africa.
 
 = Plugin Features =
 
@@ -68,51 +72,41 @@ You can also follow me on Twitter! **[@tubiz](https://twitter.com/tubiz)**
 
 == Installation ==
 
-= Automatic Installation =
-* 	Login to your WordPress Admin area
-* 	Go to "Plugins > Add New" from the left hand menu
-* 	In the search box type __Paystack WooCommerce Payment Gateway__
-*	From the search result you will see __Paystack WooCommerce Payment Gateway__ click on __Install Now__ to install the plugin
-*	A popup window will ask you to confirm your wish to install the Plugin.
-*	After installation, activate the plugin.
-* 	Open the settings page for WooCommerce and click the "Checkout" tab.
-* 	Click on the __Paystack__ link from the available Checkout Options
-*	Configure your __Paystack Payment Gateway__ settings. See below for details.
-
-= Manual Installation =
-1. 	Download the plugin zip file
-2. 	Login to your WordPress Admin. Click on "Plugins > Add New" from the left hand menu.
-3.  Click on the "Upload" option, then click "Choose File" to select the zip file from your computer. Once selected, press "OK" and press the "Install Now" button.
-4.  Activate the plugin.
-5. 	Open the settings page for WooCommerce and click the "Checkout" tab.
-6. 	Click on the __Paystack__ link from the available Checkout Options
-7.	Configure your __Paystack Payment Gateway__ settings. See below for details.
+*   Go to __WordPress Admin__ > __Plugins__ > __Add New__ from the left-hand menu
+*   In the search box type __Paystack WooCommerce Payment Gateway__
+*   Click on Install now when you see __Paystack WooCommerce Payment Gateway__ to install the plugin
+*   After installation, __activate__ the plugin.
 
 
+= Paystack Setup and Configuration =
+*   Go to __WooCommerce > Settings__ and click on the __Payments__ tab
+*   You'll see Paystack listed along with your other payment methods. Click __Set Up__
+*   On the next screen, configure the plugin. There is a selection of options on the screen. Read what each one does below.
 
-= Configure the plugin =
-To configure the plugin, go to __WooCommerce > Settings__ from the left hand menu, then click __Checkout__ from the top tab. You will see __Paystack__ as part of the available Checkout Options. Click on it to configure the payment gateway.
+1. __Enable/Disable__ - Check this checkbox to Enable Paystack on your store's checkout
+2. __Title__ - This will represent Paystack on your list of Payment options during checkout. It guides users to know which option to select to pay with Paystack. __Title__ is set to "Debit/Credit Cards" by default, but you can change it to suit your needs.
+3. __Description__ - This controls the message that appears under the payment fields on the checkout page. Use this space to give more details to customers about what Paystack is and what payment methods they can use with it.
+4. __Test Mode__ - Check this to enable test mode. When selected, the fields in step six will say "Test" instead of "Live." Test mode enables you to test payments before going live. The orders process with test payment methods, no money is involved so there is no risk. You can uncheck this when your store is ready to accept real payments.
+5. __Payment Option__ - Select how Paystack Checkout displays to your customers. A popup displays Paystack Checkout on the same page, while Redirect will redirect your customer to make payment.
+6. __API Keys__ - The next two text boxes are for your Paystack API keys, which you can get from your Paystack Dashboard. If you enabled Test Mode in step four, then you'll need to use your test API keys here. Otherwise, you can enter your live keys.
+7. __Additional Settings__ - While not necessary for the plugin to function, there are some extra configuration options you have here. You can do things like add custom metadata to your transactions (the data will show up on your Paystack dashboard) or use Paystack's [Split Payment feature](https://paystack.com/docs/payments/split-payments). The tooltips next to the options provide more information on what they do.
+8. Click on __Save Changes__ to update the settings.
 
-* __Enable/Disable__ - check the box to enable Paystack Payment Gateway.
-* __Title__ - allows you to determine what your customers will see this payment option as on the checkout page.
-* __Description__ - controls the message that appears under the payment fields on the checkout page. Here you can list the types of cards you accept.
-* __Test Mode__ - Check to enable test mode. Test mode enables you to test payments before going live. If you ready to start receving real payment on your site, kindly uncheck this.
-* __Test Secret Key__ - Enter your Test Secret Key here. Get your API keys from your Paystack account under Settings > Developer/API
-* __Test Public Key__ - Enter your Test Public Key here. Get your API keys from your Paystack account under Settings > Developer/API
-* __Live Secret Key__ - Enter your Live Secret Key here. Get your API keys from your Paystack account under Settings > Developer/API
-* __Live Public Key__ - Enter your Live Public Key here. Get your API keys from your Paystack account under Settings > Developer/API
-* Click on __Save Changes__ for the changes you made to be effected.
+To account for poor network connections, which can sometimes affect order status updates after a transaction, we __strongly__ recommend that you set a Webhook URL on your Paystack dashboard. This way, whenever a transaction is complete on your store, we'll send a notification to the Webhook URL, which will update the order and mark it as paid. You can set this up by using the URL in red at the top of the Settings page. Just copy the URL and save it as your webhook URL on your Paystack dashboard under __Settings > API Keys & Webhooks__ tab.
 
+If you do not find Paystack on the Payment method options, please go through the settings again and ensure that:
 
-
-
+*   You've checked the __"Enable/Disable"__ checkbox
+*   You've entered your __API Keys__ in the appropriate field
+*   You've clicked on __Save Changes__ during setup
 
 == Frequently Asked Questions ==
 
 = What Do I Need To Use The Plugin =
 
-1.	You need to have WooCommerce plugin installed and activated on your WordPress site.
-2.	You need to open a Paystack merchant account on [Paystack](https://paystack.com)
+*   A Paystack merchant account—use an existing account or [create an account here](https://paystack.com/signup)
+*   An active [WooCommerce installation](https://docs.woocommerce.com/document/installing-uninstalling-woocommerce/)
+*   A valid [SSL Certificate](https://docs.woocommerce.com/document/ssl-and-https/)
 
 = WooCommerce Subscriptions Integration =
 
@@ -128,6 +122,10 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 
 == Changelog ==
+
+= 5.7.3 - October 26, 2021 =
+*   New: Add support for KES as an accepted currency.
+*   Tweak: WooCommerce 5.8 compatibility
 
 = 5.7.2 - March 12, 2021 =
 * New: Auto display Paystack payment popup on the payment page
@@ -261,15 +259,15 @@ To configure the plugin, go to __WooCommerce > Settings__ from the left hand me
 
 == Upgrade Notice ==
 
-= 5.7.2
-*   Auto display Paystack payment popup on the payment page
+= 5.7.3
+*   Add support for KES as an accepted currency.
 
 
 
 == Screenshots ==
 
-1. Paystack WooCommerce Payment Gateway Setting Page
+1. Paystack displayed as a payment method on the WooCommerce payment methods page
 
-2. Paystack WooCommerce Payment Gateway on the checkout page
+2. Paystack WooCommerce payment gateway settings page
 
-3. Paystack popup payment page
+3. Paystack on WooCommerce Checkout
