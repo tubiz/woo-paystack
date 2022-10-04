@@ -2,10 +2,10 @@
 Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
-Requires at least: 4.7
-Tested up to: 5.8
+Requires at least: 5.8
+Tested up to: 6.0
 Stable tag: 5.7.4
-Requires PHP: 5.6
+Requires PHP: 7.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -123,8 +123,13 @@ If you do not find Paystack on the Payment method options, please go through the
 
 == Changelog ==
 
-= 5.7.4 - September 8, 2022 =
+= 5.7.4 - October 4, 2022 =
 *   New: Add support for XOF as an accepted currency.
+*   New: Minimum PHP version: 7.2
+*   New: Minimum WooCommerce supported version: 6.1
+*   Misc: WooCommerce 6.9 compatibility
+*   Fix: Paystack payment modal displaying on the "Pay for Order" page
+*   Improve: Change secret key input field type to a password field.
 
 = 5.7.3 - October 26, 2021 =
 *   New: Add support for KES as an accepted currency.
@@ -257,15 +262,6 @@ If you do not find Paystack on the Payment method options, please go through the
 
 = 1.0.0 - February 3, 2016 =
 *   First release
-
-
-
-== Upgrade Notice ==
-
-= 5.7.4
-*   Add support for XOF as an accepted currency.
-
-
 
 
 
