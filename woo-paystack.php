@@ -8,8 +8,8 @@
  * Author URI: https://bosun.me
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- * WC requires at least: 3.0.0
- * WC tested up to: 5.8
+ * WC requires at least: 6.1
+ * WC tested up to: 6.9
  * Text Domain: woo-paystack
  * Domain Path: /languages
  */
