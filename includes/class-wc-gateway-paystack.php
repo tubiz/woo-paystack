@@ -643,7 +643,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_scripts() {
 
-		if ( ! is_checkout_pay_page() ) {
+		if ( isset( $_GET['pay_for_order'] ) || ! is_checkout_pay_page() ) {
 			return;
 		}
 
