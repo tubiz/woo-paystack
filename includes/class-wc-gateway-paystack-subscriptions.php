@@ -95,13 +95,11 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 	 */
 	public function process_subscription_payment( $order, $amount ) {
 
-		$order_id = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
+		$order_id = $order->get_id();
 
 		$auth_code = get_post_meta( $order_id, '_paystack_token', true );
 
 		if ( $auth_code ) {
-
-			$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 
 			$order_amount = $amount * 100;
 
@@ -115,7 +113,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
 			$body = array(
-				'email'              => $email,
+				'email'              => $order->get_billing_email(),
 				'amount'             => $order_amount,
 				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
