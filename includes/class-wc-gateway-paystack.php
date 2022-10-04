@@ -433,7 +433,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			),
 			'test_secret_key'                  => array(
 				'title'       => __( 'Test Secret Key', 'woo-paystack' ),
-				'type'        => 'text',
+				'type'        => 'password',
 				'description' => __( 'Enter your Test Secret Key here', 'woo-paystack' ),
 				'default'     => '',
 			),
@@ -445,7 +445,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			),
 			'live_secret_key'                  => array(
 				'title'       => __( 'Live Secret Key', 'woo-paystack' ),
-				'type'        => 'text',
+				'type'        => 'password',
 				'description' => __( 'Enter your Live Secret Key here.', 'woo-paystack' ),
 				'default'     => '',
 			),
