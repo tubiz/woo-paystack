@@ -596,7 +596,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 	}
 
 	/**
-	 * Add Gateway to checkout page.
+	 * Add custom gateways to the checkout page.
 	 *
 	 * @param $available_gateways
 	 *
