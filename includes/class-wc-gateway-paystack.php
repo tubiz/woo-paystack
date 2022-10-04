@@ -274,9 +274,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function is_valid_for_use() {
 
-		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'ZAR', 'GHS', 'KES' ) ) ) ) {
+		if ( ! in_array( get_woocommerce_currency(), apply_filters( 'woocommerce_paystack_supported_currencies', array( 'NGN', 'USD', 'ZAR', 'GHS', 'KES', 'XOF' ) ) ) ) {
 
-			$this->msg = sprintf( __( 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;), KES (KSh) or ZAR (R) <a href="%s">here</a>', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
+			$this->msg = sprintf( __( 'Paystack does not support your store currency. Kindly set it to either NGN (&#8358), GHS (&#x20b5;), USD (&#36;), KES (KSh), ZAR (R), or XOF (CFA) <a href="%s">here</a>', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=general' ) );
 
 			return false;
 
@@ -433,7 +433,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			),
 			'test_secret_key'                  => array(
 				'title'       => __( 'Test Secret Key', 'woo-paystack' ),
-				'type'        => 'text',
+				'type'        => 'password',
 				'description' => __( 'Enter your Test Secret Key here', 'woo-paystack' ),
 				'default'     => '',
 			),
@@ -445,7 +445,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			),
 			'live_secret_key'                  => array(
 				'title'       => __( 'Live Secret Key', 'woo-paystack' ),
-				'type'        => 'text',
+				'type'        => 'password',
 				'description' => __( 'Enter your Live Secret Key here.', 'woo-paystack' ),
 				'default'     => '',
 			),
@@ -643,7 +643,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 */
 	public function payment_scripts() {
 
-		if ( ! is_checkout_pay_page() ) {
+		if ( isset( $_GET['pay_for_order'] ) || ! is_checkout_pay_page() ) {
 			return;
 		}
 
@@ -656,9 +656,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$order = wc_get_order( $order_id );
 
-		$payment_method = method_exists( $order, 'get_payment_method' ) ? $order->get_payment_method() : $order->payment_method;
-
-		if ( $this->id !== $payment_method ) {
+		if ( $this->id !== $order->get_payment_method() ) {
 			return;
 		}
 
@@ -676,12 +674,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
 
-			$email         = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+			$email         = $order->get_billing_email();
 			$amount        = $order->get_total() * 100;
 			$txnref        = $order_id . '_' . time();
-			$the_order_id  = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
-			$the_order_key = method_exists( $order, 'get_order_key' ) ? $order->get_order_key() : $order->order_key;
-			$currency      = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
+			$the_order_id  = $order->get_id();
+			$the_order_key = $order->get_order_key();
+			$currency      = $order->get_currency();
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
@@ -714,10 +712,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				if ( $this->meta_name ) {
 
-					$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
-					$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
-
-					$paystack_params['meta_name'] = $first_name . ' ' . $last_name;
+					$paystack_params['meta_name'] = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
 
 				}
 
@@ -729,9 +724,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				if ( $this->meta_phone ) {
 
-					$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
-
-					$paystack_params['meta_phone'] = $billing_phone;
+					$paystack_params['meta_phone'] = $order->get_billing_phone();
 
 				}
 
@@ -879,18 +872,16 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public function process_redirect_payment_option( $order_id ) {
 
 		$order        = wc_get_order( $order_id );
-		$email        = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
 		$amount       = $order->get_total() * 100;
 		$txnref       = $order_id . '_' . time();
-		$currency     = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
 		$callback_url = WC()->api_request_url( 'WC_Gateway_Paystack' );
 
 		$payment_channels = $this->get_gateway_payment_channels( $order );
 
 		$paystack_params = array(
 			'amount'       => $amount,
-			'email'        => $email,
-			'currency'     => $currency,
+			'email'        => $order->get_billing_email(),
+			'currency'     => $order->get_currency(),
 			'reference'    => $txnref,
 			'callback_url' => $callback_url,
 		);
@@ -962,9 +953,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$order = wc_get_order( $order_id );
 
-			$email        = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
-			$order_amount = method_exists( $order, 'get_total' ) ? $order->get_total() : $order->order_total;
-			$order_amount = $order_amount * 100;
+			$order_amount = $order->get_total() * 100;
 
 			$paystack_url = 'https://api.paystack.co/transaction/charge_authorization';
 
@@ -976,7 +965,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
 			$body = array(
-				'email'              => $email,
+				'email'              => $order->get_billing_email(),
 				'amount'             => $order_amount,
 				'metadata'           => $metadata,
 				'authorization_code' => $token,
@@ -1007,7 +996,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					}
 
 					$order_total      = $order->get_total();
-					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
+					$order_currency   = $order->get_currency();
 					$currency_symbol  = get_woocommerce_currency_symbol( $order_currency );
 					$amount_paid      = $paystack_response->data->amount / 100;
 					$paystack_ref     = $paystack_response->data->reference;
@@ -1181,7 +1170,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					}
 
 					$order_total      = $order->get_total();
-					$order_currency   = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
+					$order_currency   = $order->get_currency();
 					$currency_symbol  = get_woocommerce_currency_symbol( $order_currency );
 					$amount_paid      = $paystack_response->data->amount / 100;
 					$paystack_ref     = $paystack_response->data->reference;
@@ -1310,7 +1299,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				exit;
 			}
 
-			$order_currency = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->get_order_currency();
+			$order_currency = $order->get_currency();
 
 			$currency_symbol = get_woocommerce_currency_symbol( $order_currency );
 
@@ -1508,37 +1497,30 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			if ( $this->meta_name ) {
 
-				$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
-				$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
-
 				$custom_fields[] = array(
 					'display_name'  => 'Customer Name',
 					'variable_name' => 'customer_name',
-					'value'         => $first_name . ' ' . $last_name,
+					'value'         => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
 				);
 
 			}
 
 			if ( $this->meta_email ) {
 
-				$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
-
 				$custom_fields[] = array(
 					'display_name'  => 'Customer Email',
 					'variable_name' => 'customer_email',
-					'value'         => $email,
+					'value'         => $order->get_billing_email(),
 				);
 
 			}
 
 			if ( $this->meta_phone ) {
 
-				$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
-
 				$custom_fields[] = array(
 					'display_name'  => 'Customer Phone',
 					'variable_name' => 'customer_phone',
-					'value'         => $billing_phone,
+					'value'         => $order->get_billing_phone(),
 				);
 
 			}
