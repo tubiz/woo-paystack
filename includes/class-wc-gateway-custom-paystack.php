@@ -437,9 +437,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 		$order = wc_get_order( $order_id );
 
-		$payment_method = method_exists( $order, 'get_payment_method' ) ? $order->get_payment_method() : $order->payment_method;
-
-		if ( $this->id !== $payment_method ) {
+		if ( $this->id !== $order->get_payment_method() ) {
 			return;
 		}
 
@@ -457,15 +455,15 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 		if ( is_checkout_pay_page() && get_query_var( 'order-pay' ) ) {
 
-			$email = method_exists( $order, 'get_billing_email' ) ? $order->get_billing_email() : $order->billing_email;
+			$email = $order->get_billing_email();
 
 			$amount = $order->get_total() * 100;
 
 			$txnref = $order_id . '_' . time();
 
-			$the_order_id  = method_exists( $order, 'get_id' ) ? $order->get_id() : $order->id;
-			$the_order_key = method_exists( $order, 'get_order_key' ) ? $order->get_order_key() : $order->order_key;
-			$currency      = method_exists( $order, 'get_currency' ) ? $order->get_currency() : $order->order_currency;
+			$the_order_id  = $order->get_id();
+			$the_order_key = $order->get_order_key();
+			$currency      = $order->get_currency();
 
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
@@ -526,10 +524,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 				if ( $this->meta_name ) {
 
-					$first_name = method_exists( $order, 'get_billing_first_name' ) ? $order->get_billing_first_name() : $order->billing_first_name;
-					$last_name  = method_exists( $order, 'get_billing_last_name' ) ? $order->get_billing_last_name() : $order->billing_last_name;
-
-					$paystack_params['meta_name'] = $first_name . ' ' . $last_name;
+					$paystack_params['meta_name'] = $order->get_billing_first_name() . ' ' . $order->get_billing_last_name();
 
 				}
 
@@ -541,9 +536,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 				if ( $this->meta_phone ) {
 
-					$billing_phone = method_exists( $order, 'get_billing_phone' ) ? $order->get_billing_phone() : $order->billing_phone;
-
-					$paystack_params['meta_phone'] = $billing_phone;
+					$paystack_params['meta_phone'] = $order->get_billing_phone();
 
 				}
 
