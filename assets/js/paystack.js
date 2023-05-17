@@ -171,8 +171,8 @@ jQuery( function( $ ) {
 
 		let amount = Number( wc_paystack_params.amount );
 
-		let paystack_callback = function( response ) {
-			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + response.trxref + '"/>' );
+		let paystack_callback = function( transaction ) {
+			$form.append( '<input type="hidden" class="paystack_txnref" name="paystack_txnref" value="' + transaction.reference + '"/>' );
 			paystack_submit = true;
 
 			$form.submit();
@@ -195,14 +195,14 @@ jQuery( function( $ ) {
 			amount: amount,
 			ref: wc_paystack_params.txnref,
 			currency: wc_paystack_params.currency,
-			callback: paystack_callback,
 			subaccount: subaccount_code,
 			bearer: charges_account,
 			transaction_charge: transaction_charges,
 			metadata: {
 				custom_fields: wcPaystackCustomFields(),
 			},
-			onClose: function() {
+			onSuccess: paystack_callback,
+			onCancel: () => {
 				$( '#wc-paystack-form' ).show();
 				$( this.el ).unblock();
 			}
@@ -215,12 +215,8 @@ jQuery( function( $ ) {
 			}
 		}
 
-		let handler = PaystackPop.setup( paymentData );
-
-		handler.openIframe();
-
-		return false;
-
+		const paystack = new PaystackPop();
+		paystack.newTransaction( paymentData );
 	}
 
 } );
