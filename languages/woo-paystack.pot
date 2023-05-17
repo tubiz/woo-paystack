@@ -634,7 +634,7 @@ msgstr ""
 #, php-format
 msgid ""
 "Paystack does not support your store currency. Kindly set it to either NGN "
-"(&#8358), GHS (&#x20b5;), USD (&#36;), KES (KSh), ZAR (R), or XOF (CFA) <a "
+"(&#8358), GHS (&#x20b5;), USD (&#36;), KES (KSh), ZAR (R), XOF (CFA), or EGP (E£) <a "
 "href=\"%s\">here</a>"
 msgstr ""
 

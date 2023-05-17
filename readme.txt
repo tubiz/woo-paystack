@@ -123,6 +123,10 @@ If you do not find Paystack on the Payment method options, please go through the
 
 == Changelog ==
 
+= 5.7.5 - May 15, 2023 =
+*   New: Add support for EGP as an accepted currency.
+*   Misc: Update icon for Kenyan payment methods to checkout.
+
 = 5.7.4 - October 4, 2022 =
 *   New: Add support for XOF as an accepted currency.
 *   New: Minimum PHP version: 7.2
