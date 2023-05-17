@@ -775,8 +775,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				}
 			}
 
-			update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
-
+			$order->update_meta_data( '_paystack_txn_ref', $txnref );
+			$order->save();
 		}
 
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
@@ -845,13 +845,15 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			}
 		} else {
 
+			$order = wc_get_order( $order_id );
+
 			if ( is_user_logged_in() && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-' . $this->id . '-new-payment-method' ] && $this->saved_cards ) {
 
-				update_post_meta( $order_id, '_wc_paystack_save_card', true );
+				$order->update_meta_data( '_wc_paystack_save_card', true );
+
+				$order->save();
 
 			}
-
-			$order = wc_get_order( $order_id );
 
 			return array(
 				'result'   => 'success',
@@ -905,7 +907,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$paystack_params['metadata']['custom_fields'] = $this->get_custom_fields( $order_id );
 		$paystack_params['metadata']['cancel_action'] = wc_get_cart_url();
 
-		update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
+		$order->update_meta_data( '_paystack_txn_ref', $txnref );
+		$order->save();
 
 		$paystack_url = 'https://api.paystack.co/transaction/initialize/';
 
@@ -1008,7 +1011,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 						$order->update_status( 'on-hold', '' );
 
-						add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
+						$order->add_meta_data( '_transaction_id', $paystack_ref, true );
 
 						$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment transaction was successful, but the amount paid is not the same as the total order amount.%2$sYour order is currently on hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 						$notice_type = 'notice';
@@ -1028,7 +1031,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 							$order->update_status( 'on-hold', '' );
 
-							update_post_meta( $order_id, '_transaction_id', $paystack_ref );
+							$order->update_meta_data( '_transaction_id', $paystack_ref );
 
 							$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment was successful, but the payment currency is different from the order currency.%2$sYour order is currently on-hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 							$notice_type = 'notice';
@@ -1052,6 +1055,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 						}
 					}
+
+					$order->save();
 
 					$this->save_subscription_payment_token( $order_id, $paystack_response );
 
@@ -1182,7 +1187,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 						$order->update_status( 'on-hold', '' );
 
-						add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
+						$order->add_meta_data( '_transaction_id', $paystack_ref, true );
 
 						$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment transaction was successful, but the amount paid is not the same as the total order amount.%2$sYour order is currently on hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 						$notice_type = 'notice';
@@ -1204,7 +1209,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 							$order->update_status( 'on-hold', '' );
 
-							update_post_meta( $order_id, '_transaction_id', $paystack_ref );
+							$order->update_meta_data( '_transaction_id', $paystack_ref );
 
 							$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment was successful, but the payment currency is different from the order currency.%2$sYour order is currently on-hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 							$notice_type = 'notice';
@@ -1230,6 +1235,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 							}
 						}
 					}
+
+					$order->save();
 
 					$this->save_card_details( $paystack_response, $order->get_user_id(), $order_id );
 
@@ -1287,7 +1294,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$order = wc_get_order( $order_id );
 
-			$paystack_txn_ref = get_post_meta( $order_id, '_paystack_txn_ref', true );
+			$paystack_txn_ref = $order->get_meta( '_paystack_txn_ref' );
 
 			if ( $event->data->reference != $paystack_txn_ref ) {
 				exit;
@@ -1318,7 +1325,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 				$order->update_status( 'on-hold', '' );
 
-				add_post_meta( $order_id, '_transaction_id', $paystack_ref, true );
+				$order->add_meta_data( '_transaction_id', $paystack_ref, true );
 
 				$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment transaction was successful, but the amount paid is not the same as the total order amount.%2$sYour order is currently on hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 				$notice_type = 'notice';
@@ -1342,7 +1349,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					$order->update_status( 'on-hold', '' );
 
-					update_post_meta( $order_id, '_transaction_id', $paystack_ref );
+					$order->update_meta_data( '_transaction_id', $paystack_ref );
 
 					$notice      = sprintf( __( 'Thank you for shopping with us.%1$sYour payment was successful, but the payment currency is different from the order currency.%2$sYour order is currently on-hold.%3$sKindly contact us for more information regarding your order and payment status.', 'woo-paystack' ), '<br />', '<br />', '<br />' );
 					$notice_type = 'notice';
@@ -1372,6 +1379,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				}
 			}
 
+			$order->save();
+
 			$this->save_card_details( $event, $order->get_user_id(), $order_id );
 
 			exit;
@@ -1392,11 +1401,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$this->save_subscription_payment_token( $order_id, $paystack_response );
 
-		$save_card = get_post_meta( $order_id, '_wc_paystack_save_card', true );
+		$order = wc_get_order( $order_id );
+
+		$save_card = $order->get_meta( '_wc_paystack_save_card' );
 
 		if ( $user_id && $this->saved_cards && $save_card && $paystack_response->data->authorization->reusable && 'card' == $paystack_response->data->authorization->channel ) {
-
-			$order = wc_get_order( $order_id );
 
 			$gateway_id = $order->get_payment_method();
 
@@ -1416,8 +1425,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$token->set_user_id( $user_id );
 			$token->save();
 
-			delete_post_meta( $order_id, '_wc_paystack_save_card' );
-
+			$order->delete_meta_data( '_wc_paystack_save_card' );
+			$order->save();
 		}
 
 	}
@@ -1454,11 +1463,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			}
 
 			foreach ( $subscriptions as $subscription ) {
-
-				$subscription_id = $subscription->get_id();
-
-				update_post_meta( $subscription_id, '_paystack_token', $auth_code );
-
+				$subscription->update_meta_data( '_paystack_token', $auth_code );
+				$subscription->save();
 			}
 		}
 
@@ -1610,13 +1616,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			return false;
 		}
 
-		if ( $this->is_wc_lt( '3.0' ) ) {
-			$order_currency = get_post_meta( $order_id, '_order_currency', true );
-			$transaction_id = get_post_meta( $order_id, '_transaction_id', true );
-		} else {
-			$order_currency = $order->get_currency();
-			$transaction_id = $order->get_transaction_id();
-		}
+		$order_currency = $order->get_currency();
+		$transaction_id = $order->get_transaction_id();
 
 		$verify_url = 'https://api.paystack.co/transaction/verify/' . $transaction_id;
 

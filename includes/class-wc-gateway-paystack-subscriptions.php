@@ -97,9 +97,9 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 		$order_id = $order->get_id();
 
-		$auth_code = get_post_meta( $order_id, '_paystack_token', true );
+		$auth_code = $order->get_meta( '_paystack_token' );
 
-		if ( $auth_code ) {
+		if ( ! empty( $auth_code ) ) {
 
 			$order_amount = $amount * 100;
 

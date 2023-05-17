@@ -587,8 +587,8 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 				}
 			}
 
-			update_post_meta( $order_id, '_paystack_txn_ref', $txnref );
-
+			$order->update_meta_data( '_paystack_txn_ref', $txnref );
+			$order->save();
 		}
 
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
