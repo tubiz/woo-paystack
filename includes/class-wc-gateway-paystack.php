@@ -1453,7 +1453,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( $this->order_contains_subscription( $order_id ) && $paystack_response->data->authorization->reusable && 'card' == $paystack_response->data->authorization->channel ) {
 
-			$auth_code = $paystack_response->data->authorization->authorization_code;
+			$auth_code      = $paystack_response->data->authorization->authorization_code;
+			$customer_email = $paystack_response->data->customer->email;
+
+			$payment_token = "$auth_code###$customer_email";
 
 			// Also store it on the subscriptions being purchased or paid for in the order
 			if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
@@ -1470,8 +1473,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			}
 
+			if ( empty( $subscriptions ) ) {
+				return;
+			}
+
 			foreach ( $subscriptions as $subscription ) {
-				$subscription->update_meta_data( '_paystack_token', $auth_code );
+				$subscription->update_meta_data( '_paystack_token', $payment_token );
 				$subscription->save();
 			}
 		}
