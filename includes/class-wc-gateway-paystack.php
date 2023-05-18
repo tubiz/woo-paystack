@@ -996,11 +996,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$request = wp_remote_post( $paystack_url, $args );
 
-			if ( ! is_wp_error( $request ) && 200 === wp_remote_retrieve_response_code( $request ) ) {
+			$response_code = wp_remote_retrieve_response_code( $request );
+
+			if ( ! is_wp_error( $request ) && in_array( $response_code, array( 200, 400 ), true ) ) {
 
 				$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
-				if ( 'success' == $paystack_response->data->status ) {
+				if ( ( 200 === $response_code ) && ( 'success' === strtolower( $paystack_response->data->status ) ) ) {
 
 					$order = wc_get_order( $order_id );
 
@@ -1083,10 +1085,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					$order_notice  = __( 'Payment was declined by Paystack.', 'woo-paystack' );
 					$failed_notice = __( 'Payment failed using the saved card. Kindly use another payment option.', 'woo-paystack' );
 
-					if ( isset( $paystack_response->data->gateway_response ) && ! empty( $paystack_response->data->gateway_response ) ) {
+					if ( ! empty( $paystack_response->message ) ) {
 
-						$order_notice  = sprintf( __( 'Payment was declined by Paystack. Reason: %s.', 'woo-paystack' ), $paystack_response->data->gateway_response );
-						$failed_notice = sprintf( __( 'Payment failed using the saved card. Reason: %s. Kindly use another payment option.', 'woo-paystack' ), $paystack_response->data->gateway_response );
+						$order_notice  = sprintf( __( 'Payment was declined by Paystack. Reason: %s.', 'woo-paystack' ), $paystack_response->message );
+						$failed_notice = sprintf( __( 'Payment failed using the saved card. Reason: %s. Kindly use another payment option.', 'woo-paystack' ), $paystack_response->message );
 
 					}
 
