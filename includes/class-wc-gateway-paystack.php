@@ -820,7 +820,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		} elseif ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
 
 			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
-			$token    = WC_Payment_Tokens::get( $token_id );
+			$token    = \WC_Payment_Tokens::get( $token_id );
 
 			if ( $token->get_user_id() !== get_current_user_id() ) {
 
@@ -971,11 +971,20 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
+			if ( strpos( $token, '###' ) !== false ) {
+				$payment_token  = explode( '###', $token );
+				$auth_code      = $payment_token[0];
+				$customer_email = $payment_token[1];
+			} else {
+				$auth_code      = $token;
+				$customer_email = $order->get_billing_email();
+			}
+
 			$body = array(
-				'email'              => $order->get_billing_email(),
+				'email'              => $customer_email,
 				'amount'             => $order_amount,
 				'metadata'           => $metadata,
-				'authorization_code' => $token,
+				'authorization_code' => $auth_code,
 				'reference'          => $txnref,
 			);
 
@@ -1414,14 +1423,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$gateway_id = $order->get_payment_method();
 
-			$last4     = $paystack_response->data->authorization->last4;
-			$exp_year  = $paystack_response->data->authorization->exp_year;
-			$brand     = $paystack_response->data->authorization->card_type;
-			$exp_month = $paystack_response->data->authorization->exp_month;
-			$auth_code = $paystack_response->data->authorization->authorization_code;
+			$last4          = $paystack_response->data->authorization->last4;
+			$exp_year       = $paystack_response->data->authorization->exp_year;
+			$brand          = $paystack_response->data->authorization->card_type;
+			$exp_month      = $paystack_response->data->authorization->exp_month;
+			$auth_code      = $paystack_response->data->authorization->authorization_code;
+			$customer_email = $paystack_response->data->customer->email;
+
+			$payment_token = "$auth_code###$customer_email";
 
 			$token = new WC_Payment_Token_CC();
-			$token->set_token( $auth_code );
+			$token->set_token( $payment_token );
 			$token->set_gateway_id( $gateway_id );
 			$token->set_card_type( strtolower( $brand ) );
 			$token->set_last4( $last4 );
@@ -1450,7 +1462,10 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		if ( $this->order_contains_subscription( $order_id ) && $paystack_response->data->authorization->reusable && 'card' == $paystack_response->data->authorization->channel ) {
 
-			$auth_code = $paystack_response->data->authorization->authorization_code;
+			$auth_code      = $paystack_response->data->authorization->authorization_code;
+			$customer_email = $paystack_response->data->customer->email;
+
+			$payment_token = "$auth_code###$customer_email";
 
 			// Also store it on the subscriptions being purchased or paid for in the order
 			if ( function_exists( 'wcs_order_contains_subscription' ) && wcs_order_contains_subscription( $order_id ) ) {
@@ -1467,8 +1482,12 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			}
 
+			if ( empty( $subscriptions ) ) {
+				return;
+			}
+
 			foreach ( $subscriptions as $subscription ) {
-				$subscription->update_meta_data( '_paystack_token', $auth_code );
+				$subscription->update_meta_data( '_paystack_token', $payment_token );
 				$subscription->save();
 			}
 		}
