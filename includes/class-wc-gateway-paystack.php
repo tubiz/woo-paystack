@@ -820,7 +820,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		} elseif ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
 
 			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
-			$token    = WC_Payment_Tokens::get( $token_id );
+			$token    = \WC_Payment_Tokens::get( $token_id );
 
 			if ( $token->get_user_id() !== get_current_user_id() ) {
 
@@ -971,11 +971,20 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
+			if ( strpos( $token, '###' ) !== false ) {
+				$payment_token  = explode( '###', $token );
+				$auth_code      = $payment_token[0];
+				$customer_email = $payment_token[1];
+			} else {
+				$auth_code      = $token;
+				$customer_email = $order->get_billing_email();
+			}
+
 			$body = array(
-				'email'              => $order->get_billing_email(),
+				'email'              => $customer_email,
 				'amount'             => $order_amount,
 				'metadata'           => $metadata,
-				'authorization_code' => $token,
+				'authorization_code' => $auth_code,
 				'reference'          => $txnref,
 			);
 
