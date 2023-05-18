@@ -1414,14 +1414,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$gateway_id = $order->get_payment_method();
 
-			$last4     = $paystack_response->data->authorization->last4;
-			$exp_year  = $paystack_response->data->authorization->exp_year;
-			$brand     = $paystack_response->data->authorization->card_type;
-			$exp_month = $paystack_response->data->authorization->exp_month;
-			$auth_code = $paystack_response->data->authorization->authorization_code;
+			$last4          = $paystack_response->data->authorization->last4;
+			$exp_year       = $paystack_response->data->authorization->exp_year;
+			$brand          = $paystack_response->data->authorization->card_type;
+			$exp_month      = $paystack_response->data->authorization->exp_month;
+			$auth_code      = $paystack_response->data->authorization->authorization_code;
+			$customer_email = $paystack_response->data->customer->email;
+
+			$payment_token = "$auth_code###$customer_email";
 
 			$token = new WC_Payment_Token_CC();
-			$token->set_token( $auth_code );
+			$token->set_token( $payment_token );
 			$token->set_gateway_id( $gateway_id );
 			$token->set_card_type( strtolower( $brand ) );
 			$token->set_last4( $last4 );
