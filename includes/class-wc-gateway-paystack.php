@@ -1750,9 +1750,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	}
 
 	/**
-     * Retrieve a transaction from Paystack.
-     *
-     * @since 5.7.5
+	 * Retrieve a transaction from Paystack.
+	 *
+	 * @since 5.7.5
      *
 	 * @param $paystack_txn_ref
 	 * @return false|mixed
