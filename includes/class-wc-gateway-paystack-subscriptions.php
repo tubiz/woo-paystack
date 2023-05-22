@@ -97,11 +97,15 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 		$order_id = $order->get_id();
 
-		$auth_code = get_post_meta( $order_id, '_paystack_token', true );
+		$paystack_token = $order->get_meta( '_paystack_token' );
 
-		if ( $auth_code ) {
+		if ( ! empty( $paystack_token ) ) {
 
 			$order_amount = $amount * 100;
+			$txnref       = $order_id . '_' . time();
+
+			$order->update_meta_data( '_paystack_txn_ref', $txnref );
+			$order->save();
 
 			$paystack_url = 'https://api.paystack.co/transaction/charge_authorization';
 
@@ -112,11 +116,21 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
 
+			if ( strpos( $paystack_token, '###' ) !== false ) {
+				$payment_token  = explode( '###', $paystack_token );
+				$auth_code      = $payment_token[0];
+				$customer_email = $payment_token[1];
+			} else {
+				$auth_code      = $paystack_token;
+				$customer_email = $order->get_billing_email();
+			}
+
 			$body = array(
-				'email'              => $order->get_billing_email(),
+				'email'              => $customer_email,
 				'amount'             => $order_amount,
 				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
+				'reference'          => $txnref,
 			);
 
 			$args = array(
