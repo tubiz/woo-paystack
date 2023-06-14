@@ -1621,9 +1621,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	/**
 	 * Process a refund request from the Order details screen.
 	 *
-	 * @param int    $order_id WC Order ID.
-	 * @param null   $amount   WC Order Amount.
-	 * @param string $reason   Refund Reason
+	 * @param int $order_id WC Order ID.
+	 * @param float|null $amount Refund Amount.
+	 * @param string $reason Refund Reason
 	 *
 	 * @return bool|WP_Error
 	 */
@@ -1658,8 +1658,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					'merchant_note' => $merchant_note,
 				);
 
-				$args['body'] = $body;
-				$refund_url   = 'https://api.paystack.co/refund';
+				$headers = array(
+					'Authorization' => 'Bearer ' . $this->secret_key,
+				);
+
+				$args = array(
+					'headers' => $headers,
+					'timeout' => 60,
+					'body'    => $body,
+				);
+
+				$refund_url = 'https://api.paystack.co/refund';
 
 				$refund_request = wp_remote_post( $refund_url, $args );
 
