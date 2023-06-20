@@ -4,7 +4,7 @@ Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
 Requires at least: 5.8
 Tested up to: 6.2
-Stable tag: 5.7.5
+Stable tag: 5.7.6
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -122,6 +122,11 @@ If you do not find Paystack on the Payment method options, please go through the
 
 
 == Changelog ==
+
+= 5.7.6 - June 20, 2023 =
+*   New: Minimum WooCommerce supported version: 7.0
+*   Fix: Unable to process refund on the view order screen
+*   Improve: Paystack test mode notice will now be displayed in the WooCommerce Admin Notes Inbox
 
 = 5.7.5 - May 22, 2023 =
 *   Update: Add support for EGP as an accepted currency
