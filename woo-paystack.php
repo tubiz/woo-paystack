@@ -3,16 +3,19 @@
  * Plugin Name: Paystack WooCommerce Payment Gateway
  * Plugin URI: https://paystack.com
  * Description: WooCommerce payment gateway for Paystack
- * Version: 5.7.5
+ * Version: 5.7.6
  * Author: Tunbosun Ayinla
  * Author URI: https://bosun.me
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- * WC requires at least: 6.1
- * WC tested up to: 7.7
+ * WC requires at least: 7.0
+ * WC tested up to: 7.8
  * Text Domain: woo-paystack
  * Domain Path: /languages
  */
+
+use Automattic\WooCommerce\Admin\Notes\Note;
+use Automattic\WooCommerce\Admin\Notes\Notes;
 
 if ( ! defined( 'ABSPATH' ) ) {
 	exit;
@@ -21,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 define( 'WC_PAYSTACK_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'WC_PAYSTACK_VERSION', '5.7.5' );
+define( 'WC_PAYSTACK_VERSION', '5.7.6' );
 
 /**
  * Initialize Paystack WooCommerce payment gateway.
@@ -35,7 +38,7 @@ function tbz_wc_paystack_init() {
 		return;
 	}
 
-	add_action( 'admin_notices', 'tbz_wc_paystack_testmode_notice' );
+	add_action( 'admin_init', 'tbz_wc_paystack_testmode_notice' );
 
 	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack.php';
 
@@ -145,21 +148,50 @@ function tbz_wc_paystack_wc_missing_notice() {
  **/
 function tbz_wc_paystack_testmode_notice() {
 
-	if ( ! current_user_can( 'manage_options' ) ) {
+	if ( ! class_exists( Notes::class ) ) {
+		return;
+	}
+
+	if ( ! class_exists( WC_Data_Store::class ) ) {
+		return;
+	}
+
+	if ( ! method_exists( Notes::class, 'get_note_by_name' ) ) {
+		return;
+	}
+
+	$test_mode_note = Notes::get_note_by_name( 'paystack-test-mode' );
+
+	if ( false !== $test_mode_note ) {
 		return;
 	}
 
 	$paystack_settings = get_option( 'woocommerce_paystack_settings' );
-	$test_mode         = isset( $paystack_settings['testmode'] ) ? $paystack_settings['testmode'] : '';
+	$test_mode         = $paystack_settings['testmode'] ?? '';
 
-	if ( 'yes' === $test_mode ) {
-		/* translators: 1. Paystack settings page URL link. */
-		echo '<div class="error"><p>' . sprintf( __( 'Paystack test mode is still enabled, Click <strong><a href="%s">here</a></strong> to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ), esc_url( admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) ) ) . '</p></div>';
+	if ( 'yes' !== $test_mode ) {
+		Notes::delete_notes_with_name( 'paystack-test-mode' );
+
+		return;
 	}
+
+	$note = new Note();
+	$note->set_title( __( 'Paystack test mode enabled', 'woo-paystack' ) );
+	$note->set_content( __( 'Paystack test mode is currently enabled. Remember to disable it when you want to start accepting live payment on your site.', 'woo-paystack' ) );
+	$note->set_type( Note::E_WC_ADMIN_NOTE_INFORMATIONAL );
+	$note->set_layout( 'plain' );
+	$note->set_is_snoozable( false );
+	$note->set_name( 'paystack-test-mode' );
+	$note->set_source( 'woo-paystack' );
+	$note->add_action( 'disable-paystack-test-mode', __( 'Disable Paystack test mode', 'woo-paystack' ), admin_url( 'admin.php?page=wc-settings&tab=checkout&section=paystack' ) );
+	$note->save();
 }
 
-add_action( 'before_woocommerce_init', function () {
-	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
-		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+add_action(
+	'before_woocommerce_init',
+	function () {
+		if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+			\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+		}
 	}
-} );
+);
