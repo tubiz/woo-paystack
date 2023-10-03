@@ -118,6 +118,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
 				'reference'          => $txnref,
+				'currency'           => $order->get_currency(),
 			);
 
 			$args = array(
