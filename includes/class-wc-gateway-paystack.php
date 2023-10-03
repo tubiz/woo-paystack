@@ -986,6 +986,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
 				'reference'          => $txnref,
+				'currency'           => $order->get_currency(),
 			);
 
 			$args = array(
