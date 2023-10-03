@@ -25,13 +25,13 @@ const Content = () => {
 const Label = () => {
 	return (
 		<>
-			<span>
+			<div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem' }}>
 				{ label }
 				<img
 					src={ settings.logo_url }
 					alt={ label }
 				/>
-			</span>
+			</div>
 		</>
 	);
 };
