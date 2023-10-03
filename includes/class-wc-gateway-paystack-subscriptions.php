@@ -24,19 +24,6 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 	}
 
 	/**
-	 * Check if an order contains a subscription.
-	 *
-	 * @param int $order_id WC Order ID.
-	 *
-	 * @return bool
-	 */
-	public function order_contains_subscription( $order_id ) {
-
-		return function_exists( 'wcs_order_contains_subscription' ) && ( wcs_order_contains_subscription( $order_id ) || wcs_order_contains_renewal( $order_id ) );
-
-	}
-
-	/**
 	 * Process a trial subscription order with 0 total.
 	 *
 	 * @param int $order_id WC Order ID.

@@ -1806,4 +1806,17 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		return apply_filters( 'wc_paystack_gateway_icon_url', $url, $this->id );
 	}
+
+	/**
+	 * Check if an order contains a subscription.
+	 *
+	 * @param int $order_id WC Order ID.
+	 *
+	 * @return bool
+	 */
+	public function order_contains_subscription( $order_id ) {
+
+		return function_exists( 'wcs_order_contains_subscription' ) && ( wcs_order_contains_subscription( $order_id ) || wcs_order_contains_renewal( $order_id ) );
+
+	}
 }
