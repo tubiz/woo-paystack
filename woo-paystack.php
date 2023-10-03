@@ -195,3 +195,19 @@ add_action(
 		}
 	}
 );
+
+/**
+ * Registers WooCommerce Blocks integration.
+ */
+function tbz_wc_gateway_paystack_woocommerce_block_support() {
+	if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+		require_once __DIR__ . '/includes/class-wc-gateway-paystack-blocks-support.php';
+		add_action(
+			'woocommerce_blocks_payment_method_type_registration',
+			static function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+				$payment_method_registry->register( new WC_Gateway_Paystack_Blocks_Support() );
+			}
+		);
+	}
+}
+add_action( 'woocommerce_blocks_loaded', 'tbz_wc_gateway_paystack_woocommerce_block_support' );

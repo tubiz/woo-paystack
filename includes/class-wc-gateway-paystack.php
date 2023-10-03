@@ -1099,8 +1099,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					wc_add_notice( $failed_notice, 'error' );
 
-					return false;
+					do_action( 'wc_gateway_paystack_process_payment_error', $failed_notice, $order );
 
+					return false;
 				}
 			}
 		} else {
@@ -1785,5 +1786,38 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		}
 
 		return false;
+	}
+
+	/**
+	 * Get Paystack payment icon URL.
+	 */
+	public function get_logo_url() {
+
+		$base_location = wc_get_base_location();
+
+		if ( 'GH' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) );
+		} elseif ( 'ZA' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) );
+		} elseif ( 'KE' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ke.png', WC_PAYSTACK_MAIN_FILE ) );
+		} else {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) );
+		}
+
+		return apply_filters( 'wc_paystack_gateway_icon_url', $url, $this->id );
+	}
+
+	/**
+	 * Check if an order contains a subscription.
+	 *
+	 * @param int $order_id WC Order ID.
+	 *
+	 * @return bool
+	 */
+	public function order_contains_subscription( $order_id ) {
+
+		return function_exists( 'wcs_order_contains_subscription' ) && ( wcs_order_contains_subscription( $order_id ) || wcs_order_contains_renewal( $order_id ) );
+
 	}
 }
