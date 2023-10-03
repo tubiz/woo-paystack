@@ -1786,4 +1786,24 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		return false;
 	}
+
+	/**
+	 * Get Paystack payment icon URL.
+	 */
+	public function get_logo_url() {
+
+		$base_location = wc_get_base_location();
+
+		if ( 'GH' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-gh.png', WC_PAYSTACK_MAIN_FILE ) );
+		} elseif ( 'ZA' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) );
+		} elseif ( 'KE' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ke.png', WC_PAYSTACK_MAIN_FILE ) );
+		} else {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) );
+		}
+
+		return apply_filters( 'wc_paystack_gateway_icon_url', $url, $this->id );
+	}
 }
