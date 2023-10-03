@@ -445,7 +445,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 		wp_enqueue_script( 'jquery' );
 
-		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v1/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, false );
+		wp_enqueue_script( 'paystack', 'https://js.paystack.co/v2/inline.js', array( 'jquery' ), WC_PAYSTACK_VERSION, false );
 
 		wp_enqueue_script( 'wc_paystack', plugins_url( 'assets/js/paystack' . $suffix . '.js', WC_PAYSTACK_MAIN_FILE ), array( 'jquery', 'paystack' ), WC_PAYSTACK_VERSION, false );
 

@@ -2,15 +2,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Paystack WooCommerce Payment Gateway\n"
-"POT-Creation-Date: 2023-05-22 14:17+0100\n"
-"PO-Revision-Date: 2023-05-22 14:17+0100\n"
+"POT-Creation-Date: 2023-10-03 22:28+0100\n"
+"PO-Revision-Date: 2023-10-03 22:28+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
-"X-Generator: Poedit 3.3.1\n"
+"X-Generator: Poedit 3.4\n"
 "X-Poedit-Basepath: ..\n"
 "X-Poedit-Flags-xgettext: --add-comments=translators:\n"
 "X-Poedit-WPHeader: woo-paystack.php\n"
@@ -20,6 +20,8 @@ msgstr ""
 "_nx_noop:3c,1,2;__ngettext_noop:1,2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.min.js\n"
+"X-Poedit-SearchPathExcluded-1: node_modules\n"
+"X-Poedit-SearchPathExcluded-2: vendor\n"
 
 #: includes/class-wc-gateway-custom-paystack.php:15
 #: includes/class-wc-gateway-paystack.php:393
@@ -584,32 +586,32 @@ msgstr ""
 msgid "Paystack Ghana"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack-subscriptions.php:55
+#: includes/class-wc-gateway-paystack-subscriptions.php:42
 msgid "This subscription has a free trial, reason for the 0 amount"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack-subscriptions.php:82
+#: includes/class-wc-gateway-paystack-subscriptions.php:69
 #, php-format
 msgid "Paystack Transaction Failed (%s)"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack-subscriptions.php:154
-#: includes/class-wc-gateway-paystack.php:1237
-#: includes/class-wc-gateway-paystack.php:1390
+#: includes/class-wc-gateway-paystack-subscriptions.php:142
+#: includes/class-wc-gateway-paystack.php:1239
+#: includes/class-wc-gateway-paystack.php:1392
 #, php-format
 msgid "Payment via Paystack successful (Transaction Reference: %s)"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack-subscriptions.php:166
+#: includes/class-wc-gateway-paystack-subscriptions.php:154
 msgid "Paystack payment failed."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack-subscriptions.php:169
+#: includes/class-wc-gateway-paystack-subscriptions.php:157
 #, php-format
 msgid "Paystack payment failed. Reason: %s"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack-subscriptions.php:178
+#: includes/class-wc-gateway-paystack-subscriptions.php:166
 msgid ""
 "This subscription can&#39;t be renewed automatically. The customer will have "
 "to login to their account to renew their subscription"
@@ -775,9 +777,9 @@ msgstr ""
 msgid "Unable to process payment try again"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1032
-#: includes/class-wc-gateway-paystack.php:1198
-#: includes/class-wc-gateway-paystack.php:1348
+#: includes/class-wc-gateway-paystack.php:1033
+#: includes/class-wc-gateway-paystack.php:1200
+#: includes/class-wc-gateway-paystack.php:1350
 #, php-format
 msgid ""
 "Thank you for shopping with us.%1$sYour payment transaction was successful, "
@@ -786,9 +788,9 @@ msgid ""
 "your order and payment status."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1039
-#: includes/class-wc-gateway-paystack.php:1205
-#: includes/class-wc-gateway-paystack.php:1355
+#: includes/class-wc-gateway-paystack.php:1040
+#: includes/class-wc-gateway-paystack.php:1207
+#: includes/class-wc-gateway-paystack.php:1357
 #, php-format
 msgid ""
 "<strong>Look into this order</strong>%1$sThis order is currently on hold."
@@ -798,9 +800,9 @@ msgid ""
 "strong> %9$s"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1052
-#: includes/class-wc-gateway-paystack.php:1220
-#: includes/class-wc-gateway-paystack.php:1372
+#: includes/class-wc-gateway-paystack.php:1053
+#: includes/class-wc-gateway-paystack.php:1222
+#: includes/class-wc-gateway-paystack.php:1374
 #, php-format
 msgid ""
 "Thank you for shopping with us.%1$sYour payment was successful, but the "
@@ -809,9 +811,9 @@ msgid ""
 "order and payment status."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1059
-#: includes/class-wc-gateway-paystack.php:1227
-#: includes/class-wc-gateway-paystack.php:1379
+#: includes/class-wc-gateway-paystack.php:1060
+#: includes/class-wc-gateway-paystack.php:1229
+#: includes/class-wc-gateway-paystack.php:1381
 #, php-format
 msgid ""
 "<strong>Look into this order</strong>%1$sThis order is currently on hold."
@@ -821,59 +823,59 @@ msgid ""
 "strong> %9$s"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1088
-#: includes/class-wc-gateway-paystack.php:1259
+#: includes/class-wc-gateway-paystack.php:1089
+#: includes/class-wc-gateway-paystack.php:1261
 msgid "Payment was declined by Paystack."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1089
+#: includes/class-wc-gateway-paystack.php:1090
 msgid "Payment failed using the saved card. Kindly use another payment option."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1093
+#: includes/class-wc-gateway-paystack.php:1094
 #, php-format
 msgid "Payment was declined by Paystack. Reason: %s."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1094
+#: includes/class-wc-gateway-paystack.php:1095
 #, php-format
 msgid ""
 "Payment failed using the saved card. Reason: %s. Kindly use another payment "
 "option."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1108
+#: includes/class-wc-gateway-paystack.php:1110
 msgid "Payment Failed."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1119
+#: includes/class-wc-gateway-paystack.php:1121
 msgid "You can only add a new card when placing an order."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1136
+#: includes/class-wc-gateway-paystack.php:1138
 msgid ""
 "Thank you for your order, please click the button below to pay with Paystack."
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1138
+#: includes/class-wc-gateway-paystack.php:1140
 msgid "Pay Now"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1141
+#: includes/class-wc-gateway-paystack.php:1143
 msgid "Cancel order &amp; restore cart"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1651
+#: includes/class-wc-gateway-paystack.php:1653
 #, php-format
 msgid "Refund for Order ID: #%1$s on %2$s"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1673
+#: includes/class-wc-gateway-paystack.php:1684
 #, php-format
 msgid "Refunded %1$s. Refund ID: %2$s. Reason: %3$s"
 msgstr ""
 
-#: includes/class-wc-gateway-paystack.php:1686
+#: includes/class-wc-gateway-paystack.php:1697
 msgid "Can&#39;t process refund at the moment. Try again later."
 msgstr ""
 
@@ -897,28 +899,37 @@ msgstr ""
 msgid "Two"
 msgstr ""
 
-#: woo-paystack.php:69
+#: resources/js/frontend/blocks/index.js:13
+msgid "Paystack "
+msgstr ""
+
+#: woo-paystack.php:72
 msgid "View Paystack WooCommerce Settings"
 msgstr ""
 
-#: woo-paystack.php:69
+#: woo-paystack.php:72
 msgid "Settings"
 msgstr ""
 
-#: woo-paystack.php:140
+#: woo-paystack.php:143
 #, php-format
 msgid ""
 "Paystack requires WooCommerce to be installed and active. Click %s to "
 "install WooCommerce."
 msgstr ""
 
-#. translators: 1. Paystack settings page URL link.
-#: woo-paystack.php:157
-#, php-format
+#: woo-paystack.php:179
+msgid "Paystack test mode enabled"
+msgstr ""
+
+#: woo-paystack.php:180
 msgid ""
-"Paystack test mode is still enabled, Click <strong><a href=\"%s\">here</a></"
-"strong> to disable it when you want to start accepting live payment on your "
-"site."
+"Paystack test mode is currently enabled. Remember to disable it when you "
+"want to start accepting live payment on your site."
+msgstr ""
+
+#: woo-paystack.php:186
+msgid "Disable Paystack test mode"
 msgstr ""
 
 #. Plugin Name of the plugin/theme

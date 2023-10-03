@@ -3,13 +3,13 @@
  * Plugin Name: Paystack WooCommerce Payment Gateway
  * Plugin URI: https://paystack.com
  * Description: WooCommerce payment gateway for Paystack
- * Version: 5.7.6
+ * Version: 5.8.0
  * Author: Tunbosun Ayinla
  * Author URI: https://bosun.me
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  * WC requires at least: 7.0
- * WC tested up to: 7.8
+ * WC tested up to: 8.1
  * Text Domain: woo-paystack
  * Domain Path: /languages
  */
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 define( 'WC_PAYSTACK_MAIN_FILE', __FILE__ );
 define( 'WC_PAYSTACK_URL', untrailingslashit( plugins_url( '/', __FILE__ ) ) );
 
-define( 'WC_PAYSTACK_VERSION', '5.7.6' );
+define( 'WC_PAYSTACK_VERSION', '5.8.0' );
 
 /**
  * Initialize Paystack WooCommerce payment gateway.
@@ -195,3 +195,19 @@ add_action(
 		}
 	}
 );
+
+/**
+ * Registers WooCommerce Blocks integration.
+ */
+function tbz_wc_gateway_paystack_woocommerce_block_support() {
+	if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
+		require_once __DIR__ . '/includes/class-wc-gateway-paystack-blocks-support.php';
+		add_action(
+			'woocommerce_blocks_payment_method_type_registration',
+			static function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
+				$payment_method_registry->register( new WC_Gateway_Paystack_Blocks_Support() );
+			}
+		);
+	}
+}
+add_action( 'woocommerce_blocks_loaded', 'tbz_wc_gateway_paystack_woocommerce_block_support' );
