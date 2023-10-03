@@ -1099,8 +1099,9 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 					wc_add_notice( $failed_notice, 'error' );
 
-					return false;
+					do_action( 'wc_gateway_paystack_process_payment_error', $failed_notice, $order );
 
+					return false;
 				}
 			}
 		} else {
