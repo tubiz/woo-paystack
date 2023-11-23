@@ -40,17 +40,17 @@ function tbz_wc_paystack_init() {
 
 	add_action( 'admin_init', 'tbz_wc_paystack_testmode_notice' );
 
-	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack.php';
+	require_once __DIR__ . '/includes/class-wc-gateway-paystack.php';
 
-	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-paystack-subscriptions.php';
+	require_once __DIR__ . '/includes/class-wc-gateway-paystack-subscriptions.php';
 
-	require_once dirname( __FILE__ ) . '/includes/class-wc-gateway-custom-paystack.php';
+	require_once __DIR__ . '/includes/custom-gateways/class-wc-gateway-custom-paystack.php';
 
-	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-one.php';
-	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-two.php';
-	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-three.php';
-	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-four.php';
-	require_once dirname( __FILE__ ) . '/includes/custom-gateways/class-wc-gateway-paystack-five.php';
+	require_once __DIR__ . '/includes/custom-gateways/gateway-one/class-wc-gateway-paystack-one.php';
+	require_once __DIR__ . '/includes/custom-gateways/gateway-two/class-wc-gateway-paystack-two.php';
+	require_once __DIR__ . '/includes/custom-gateways/gateway-three/class-wc-gateway-paystack-three.php';
+	require_once __DIR__ . '/includes/custom-gateways/gateway-four/class-wc-gateway-paystack-four.php';
+	require_once __DIR__ . '/includes/custom-gateways/gateway-five/class-wc-gateway-paystack-five.php';
 
 	add_filter( 'woocommerce_payment_gateways', 'tbz_wc_add_paystack_gateway', 99 );
 
@@ -202,10 +202,21 @@ add_action(
 function tbz_wc_gateway_paystack_woocommerce_block_support() {
 	if ( class_exists( 'Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType' ) ) {
 		require_once __DIR__ . '/includes/class-wc-gateway-paystack-blocks-support.php';
+		require_once __DIR__ . '/includes/custom-gateways/class-wc-gateway-custom-paystack-blocks-support.php';
+		require_once __DIR__ . '/includes/custom-gateways/gateway-one/class-wc-gateway-paystack-one-blocks-support.php';
+		require_once __DIR__ . '/includes/custom-gateways/gateway-two/class-wc-gateway-paystack-two-blocks-support.php';
+		require_once __DIR__ . '/includes/custom-gateways/gateway-three/class-wc-gateway-paystack-three-blocks-support.php';
+		require_once __DIR__ . '/includes/custom-gateways/gateway-four/class-wc-gateway-paystack-four-blocks-support.php';
+		require_once __DIR__ . '/includes/custom-gateways/gateway-five/class-wc-gateway-paystack-five-blocks-support.php';
 		add_action(
 			'woocommerce_blocks_payment_method_type_registration',
 			static function( Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry $payment_method_registry ) {
 				$payment_method_registry->register( new WC_Gateway_Paystack_Blocks_Support() );
+				$payment_method_registry->register( new WC_Gateway_Paystack_One_Blocks_Support() );
+				$payment_method_registry->register( new WC_Gateway_Paystack_Two_Blocks_Support() );
+				$payment_method_registry->register( new WC_Gateway_Paystack_Three_Blocks_Support() );
+				$payment_method_registry->register( new WC_Gateway_Paystack_Four_Blocks_Support() );
+				$payment_method_registry->register( new WC_Gateway_Paystack_Five_Blocks_Support() );
 			}
 		);
 	}
