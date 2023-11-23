@@ -612,4 +612,25 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 	}
 
+	/**
+	 * Check if the custom Paystack gateway is enabled.
+	 *
+	 * @return bool
+	 */
+	public function is_available() {
+
+		if ( 'yes' == $this->enabled ) {
+
+			if ( ! ( $this->public_key && $this->secret_key ) ) {
+
+				return false;
+
+			}
+
+			return true;
+
+		}
+
+		return false;
+	}
 }
