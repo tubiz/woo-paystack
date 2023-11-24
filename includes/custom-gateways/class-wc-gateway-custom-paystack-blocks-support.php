@@ -4,20 +4,16 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
 use Automattic\WooCommerce\StoreApi\Payments\PaymentContext;
 use Automattic\WooCommerce\StoreApi\Payments\PaymentResult;
 
-final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType {
-
-	/**
-	 * Payment method name/id/slug.
-	 *
-	 * @var string
-	 */
-	protected $name = 'paystack';
+class WC_Gateway_Custom_Paystack_Blocks_Support extends AbstractPaymentMethodType {
 
 	/**
 	 * Initializes the payment method type.
 	 */
 	public function initialize() {
-		$this->settings = get_option( 'woocommerce_paystack_settings', array() );
+		$paystack_gateway_settings        = get_option( 'woocommerce_paystack_settings', array() );
+		$custom_paystack_gateway_settings = get_option( "woocommerce_{$this->name}_settings", array() );
+
+		$this->settings = wp_parse_args( $custom_paystack_gateway_settings, $paystack_gateway_settings );
 
 		add_action( 'woocommerce_rest_checkout_process_payment_with_context', array( $this, 'failed_payment_notice' ), 8, 2 );
 	}
@@ -30,7 +26,11 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 	public function is_active() {
 		$payment_gateways_class = WC()->payment_gateways();
 		$payment_gateways       = $payment_gateways_class->payment_gateways();
-		return $payment_gateways['paystack']->is_available();
+		if ( ! isset( $payment_gateways[ $this->name ] ) ) {
+			return false;
+		}
+
+		return $payment_gateways[ $this->name ]->is_available();
 	}
 
 	/**
@@ -39,7 +39,7 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 	 * @return array
 	 */
 	public function get_payment_method_script_handles() {
-		$script_asset_path = plugins_url( '/assets/js/blocks/frontend/blocks.asset.php', WC_PAYSTACK_MAIN_FILE );
+		$script_asset_path = plugins_url( "/assets/js/blocks/frontend/blocks/{$this->name}.asset.php", WC_PAYSTACK_MAIN_FILE );
 		$script_asset      = file_exists( $script_asset_path )
 			? require $script_asset_path
 			: array(
@@ -47,10 +47,10 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 				'version'      => WC_PAYSTACK_VERSION,
 			);
 
-		$script_url = plugins_url( '/assets/js/blocks/frontend/blocks.js', WC_PAYSTACK_MAIN_FILE );
+		$script_url = plugins_url( "/assets/js/blocks/frontend/blocks/{$this->name}.js", WC_PAYSTACK_MAIN_FILE );
 
 		wp_register_script(
-			'wc-paystack-blocks',
+			"wc-{$this->name}-blocks",
 			$script_url,
 			$script_asset['dependencies'],
 			$script_asset['version'],
@@ -61,7 +61,7 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 			wp_set_script_translations( 'wc-paystack-blocks', 'woo-paystack', );
 		}
 
-		return array( 'wc-paystack-blocks' );
+		return array( "wc-{$this->name}-blocks" );
 	}
 
 	/**
@@ -72,14 +72,24 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 	public function get_payment_method_data() {
 		$payment_gateways_class = WC()->payment_gateways();
 		$payment_gateways       = $payment_gateways_class->payment_gateways();
-		$gateway                = $payment_gateways['paystack'];
+		$gateway                = $payment_gateways[ $this->name ];
+
+		$payment_icons = $this->get_setting( 'payment_icons' );
+		if ( empty( $payment_icons ) ) {
+			$payment_icons = array( 'paystack' );
+		}
+
+		$payment_icons_url = array();
+		foreach ( $payment_icons as $payment_icon ) {
+			$payment_icons_url[] = WC_HTTPS::force_https_url( plugins_url( "assets/images/{$payment_icon}.png", WC_PAYSTACK_MAIN_FILE ) );
+		}
 
 		return array(
 			'title'             => $this->get_setting( 'title' ),
 			'description'       => $this->get_setting( 'description' ),
 			'supports'          => array_filter( $gateway->supports, array( $gateway, 'supports' ) ),
 			'allow_saved_cards' => $gateway->saved_cards && is_user_logged_in(),
-			'logo_urls'         => array( $payment_gateways['paystack']->get_logo_url() ),
+			'logo_urls'         => $payment_icons_url,
 		);
 	}
 
@@ -90,7 +100,7 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 	 * @param PaymentResult  $result  Result object for the payment.
 	 */
 	public function failed_payment_notice( PaymentContext $context, PaymentResult &$result ) {
-		if ( 'paystack' === $context->payment_method ) {
+		if ( $this->name === $context->payment_method ) {
 			add_action(
 				'wc_gateway_paystack_process_payment_error',
 				function( $failed_notice ) use ( &$result ) {
