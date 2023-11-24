@@ -79,7 +79,7 @@ final class WC_Gateway_Paystack_Blocks_Support extends AbstractPaymentMethodType
 			'description'       => $this->get_setting( 'description' ),
 			'supports'          => array_filter( $gateway->supports, array( $gateway, 'supports' ) ),
 			'allow_saved_cards' => $gateway->saved_cards && is_user_logged_in(),
-			'logo_url'          => array( $payment_gateways['paystack']->get_logo_url() ),
+			'logo_urls'         => array( $payment_gateways['paystack']->get_logo_url() ),
 		);
 	}
 
