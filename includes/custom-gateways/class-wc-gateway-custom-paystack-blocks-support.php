@@ -58,7 +58,7 @@ class WC_Gateway_Custom_Paystack_Blocks_Support extends AbstractPaymentMethodTyp
 		);
 
 		if ( function_exists( 'wp_set_script_translations' ) ) {
-			wp_set_script_translations( 'wc-paystack-blocks', 'woo-paystack', );
+			wp_set_script_translations( "wc-{$this->name}-blocks", 'woo-paystack', );
 		}
 
 		return array( "wc-{$this->name}-blocks" );
