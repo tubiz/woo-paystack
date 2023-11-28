@@ -3,8 +3,8 @@ Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
 Requires at least: 5.8
-Tested up to: 6.3
-Stable tag: 5.8.0
+Tested up to: 6.4
+Stable tag: 5.8.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -122,6 +122,12 @@ If you do not find Paystack on the Payment method options, please go through the
 
 
 == Changelog ==
+
+= 5.8.1 - November 28, 2023 =
+*   New: Add support for WooCommerce checkout block to custom gateways
+*   New: Add support for RWF as an accepted currency
+*   Tweak: WooCommerce 8.3 compatibility
+*   Improve: Ensure order amount is in integer when initializing payment on Paystack
 
 = 5.8.0 - October 3, 2023 =
 *   New: Add support for WooCommerce checkout block
