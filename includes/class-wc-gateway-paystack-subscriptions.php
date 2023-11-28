@@ -114,7 +114,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 			$body = array(
 				'email'              => $customer_email,
-				'amount'             => $order_amount,
+				'amount'             => absint( $order_amount ),
 				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
 				'reference'          => $txnref,

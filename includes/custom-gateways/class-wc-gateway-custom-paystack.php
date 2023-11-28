@@ -468,7 +468,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
 				$paystack_params['email']    = $email;
-				$paystack_params['amount']   = $amount;
+				$paystack_params['amount']   = absint( $amount );
 				$paystack_params['txnref']   = $txnref;
 				$paystack_params['currency'] = $currency;
 
