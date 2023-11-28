@@ -684,7 +684,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			if ( $the_order_id == $order_id && $the_order_key == $order_key ) {
 
 				$paystack_params['email']    = $email;
-				$paystack_params['amount']   = $amount;
+				$paystack_params['amount']   = absint( $amount );
 				$paystack_params['txnref']   = $txnref;
 				$paystack_params['currency'] = $currency;
 
@@ -881,7 +881,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$payment_channels = $this->get_gateway_payment_channels( $order );
 
 		$paystack_params = array(
-			'amount'       => $amount,
+			'amount'       => absint( $amount ),
 			'email'        => $order->get_billing_email(),
 			'currency'     => $order->get_currency(),
 			'reference'    => $txnref,
@@ -982,7 +982,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$body = array(
 				'email'              => $customer_email,
-				'amount'             => $order_amount,
+				'amount'             => absint( $order_amount ),
 				'metadata'           => $metadata,
 				'authorization_code' => $auth_code,
 				'reference'          => $txnref,
@@ -1024,7 +1024,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					$gateway_symbol   = get_woocommerce_currency_symbol( $payment_currency );
 
 					// check if the amount paid is equal to the order amount.
-					if ( $amount_paid < $order_total ) {
+					if ( $amount_paid < absint( $order_total ) ) {
 
 						$order->update_status( 'on-hold', '' );
 
@@ -1191,7 +1191,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 					$gateway_symbol   = get_woocommerce_currency_symbol( $payment_currency );
 
 					// check if the amount paid is equal to the order amount.
-					if ( $amount_paid < $order_total ) {
+					if ( $amount_paid < absint( $order_total ) ) {
 
 						$order->update_status( 'on-hold', '' );
 
@@ -1341,7 +1341,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		$gateway_symbol = get_woocommerce_currency_symbol( $payment_currency );
 
 		// check if the amount paid is equal to the order amount.
-		if ( $amount_paid < $order_total ) {
+		if ( $amount_paid < absint( $order_total ) ) {
 
 			$order->update_status( 'on-hold', '' );
 
