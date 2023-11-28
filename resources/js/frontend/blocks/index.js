@@ -1,49 +1,22 @@
 /**
  * External dependencies
  */
-import { __ } from '@wordpress/i18n';
 import { registerPaymentMethod } from '@woocommerce/blocks-registry';
-import { decodeEntities } from '@wordpress/html-entities';
 import { getSetting } from '@woocommerce/settings';
-
+import {Content, ariaLabel, Label} from './base';
 import { PAYMENT_METHOD_NAME } from './constants';
+
 const settings = getSetting( 'paystack_data', {} );
-
-const defaultLabel = __(
-	'Paystack ',
-	'woo-paystack'
-);
-
-const label = decodeEntities( settings.title ) || defaultLabel;
-/**
- * Content component
- */
-const Content = () => {
-	return decodeEntities( settings.description || '' );
-};
-
-const Label = () => {
-	return (
-		<>
-			<div style={{ display: 'flex', flexDirection: 'row', gap: '0.5rem' }}>
-				{ label }
-				<img
-					src={ settings.logo_url }
-					alt={ label }
-				/>
-			</div>
-		</>
-	);
-};
+const label = ariaLabel({ title: settings.title });
 
 /**
  * Paystack payment method config object.
  */
-const Paystack = {
+const Paystack_Gateway = {
 	name: PAYMENT_METHOD_NAME,
-	label: <Label />,
-	content: <Content />,
-	edit: <Content />,
+	label: <Label logoUrls={ settings.logo_urls } title={ label } />,
+	content: <Content description={ settings.description } />,
+	edit: <Content description={ settings.description } />,
 	canMakePayment: () => true,
 	ariaLabel: label,
 	supports: {
@@ -53,4 +26,4 @@ const Paystack = {
 	},
 };
 
-registerPaymentMethod( Paystack );
+registerPaymentMethod( Paystack_Gateway );

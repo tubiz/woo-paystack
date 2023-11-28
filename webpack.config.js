@@ -29,6 +29,11 @@ module.exports = {
 	...defaultConfig,
 	entry: {
 		'frontend/blocks': '/resources/js/frontend/blocks/index.js',
+		'frontend/blocks/paystack-one': '/resources/js/frontend/blocks/gateway-one/index.js',
+		'frontend/blocks/paystack-two': '/resources/js/frontend/blocks/gateway-two/index.js',
+		'frontend/blocks/paystack-three': '/resources/js/frontend/blocks/gateway-three/index.js',
+		'frontend/blocks/paystack-four': '/resources/js/frontend/blocks/gateway-four/index.js',
+		'frontend/blocks/paystack-five': '/resources/js/frontend/blocks/gateway-five/index.js',
 	},
 	output: {
 		path: path.resolve( __dirname, 'assets/js/blocks' ),
