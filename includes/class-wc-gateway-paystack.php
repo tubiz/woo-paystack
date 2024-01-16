@@ -299,6 +299,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		} elseif ( 'KE' === $base_location['country'] ) {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ke.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
+		} elseif ( 'CI' === $base_location['country'] ) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-civ.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		} else {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		}
@@ -1802,6 +1804,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) );
 		} elseif ( 'KE' === $base_location['country'] ) {
 			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ke.png', WC_PAYSTACK_MAIN_FILE ) );
+		} elseif ( 'CI' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-civ.png', WC_PAYSTACK_MAIN_FILE ) );
 		} else {
 			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) );
 		}
