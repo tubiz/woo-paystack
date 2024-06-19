@@ -8,6 +8,9 @@
  * Author URI: https://bosun.me
  * License: GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Requires Plugins: woocommerce
+ * Requires at least: 6.2
+ * Requires PHP: 7.4
  * WC requires at least: 7.0
  * WC tested up to: 8.3
  * Text Domain: woo-paystack
