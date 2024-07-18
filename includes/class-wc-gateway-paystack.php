@@ -788,6 +788,30 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$order->save();
 		}
 
+		$payment_channels = $this->get_gateway_payment_channels( $order );
+
+		if ( ! empty( $payment_channels ) ) {
+			if ( in_array( 'card', $payment_channels, true ) ) {
+				$paystack_params['card_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank', $payment_channels, true ) ) {
+				$paystack_params['bank_channel'] = 'true';
+			}
+
+			if ( in_array( 'ussd', $payment_channels, true ) ) {
+				$paystack_params['ussd_channel'] = 'true';
+			}
+
+			if ( in_array( 'qr', $payment_channels, true ) ) {
+				$paystack_params['qr_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank_transfer', $payment_channels, true ) ) {
+				$paystack_params['bank_transfer_channel'] = 'true';
+			}
+		}
+
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
 
 	}
