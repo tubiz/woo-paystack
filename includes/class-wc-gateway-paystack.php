@@ -1752,20 +1752,18 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @return array
 	 */
 	protected function get_gateway_payment_channels( $order ) {
-
-		$payment_method = $order->get_payment_method();
-
-		if ( 'paystack' === $payment_method ) {
-			return array();
-		}
-
 		$payment_channels = $this->payment_channels;
-
-		if ( empty( $payment_channels ) ) {
+		if ( empty( $payment_channels ) && ( 'paystack' !== $order->get_payment_method() ) ) {
 			$payment_channels = array( 'card' );
 		}
 
-		return $payment_channels;
+		/**
+		 * Filter the list of payment channels.
+		 *
+		 * @param array $payment_channels A list of payment channels.
+		 * @since 5.8.2
+		 */
+		return apply_filters( 'wc_paystack_payment_channels', $payment_channels, $this->id );
 	}
 
 	/**
