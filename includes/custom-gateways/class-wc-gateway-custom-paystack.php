@@ -483,7 +483,7 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 			}
 
 			/** This filter is documented in includes/class-wc-gateway-paystack.php */
-			$payment_channels = apply_filters( 'wc_paystack_payment_channels', $this->payment_channels, $this->id );
+			$payment_channels = apply_filters( 'wc_paystack_payment_channels', $this->payment_channels, $this->id, $order );
 
 			if ( in_array( 'bank', $payment_channels, true ) ) {
 				$paystack_params['bank_channel'] = 'true';

@@ -1785,9 +1785,11 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 		 * Filter the list of payment channels.
 		 *
 		 * @param array $payment_channels A list of payment channels.
+		 * @param string $id Payment method ID.
+		 * @param WC_Order $order Order object.
 		 * @since 5.8.2
 		 */
-		return apply_filters( 'wc_paystack_payment_channels', $payment_channels, $this->id );
+		return apply_filters( 'wc_paystack_payment_channels', $payment_channels, $this->id, $order );
 	}
 
 	/**
