@@ -175,6 +175,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $msg;
 
 	/**
+	 * Payment channels.
+	 *
+	 * @var array
+	 */
+	public $payment_channels = array();
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -779,6 +786,30 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			$order->update_meta_data( '_paystack_txn_ref', $txnref );
 			$order->save();
+		}
+
+		$payment_channels = $this->get_gateway_payment_channels( $order );
+
+		if ( ! empty( $payment_channels ) ) {
+			if ( in_array( 'card', $payment_channels, true ) ) {
+				$paystack_params['card_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank', $payment_channels, true ) ) {
+				$paystack_params['bank_channel'] = 'true';
+			}
+
+			if ( in_array( 'ussd', $payment_channels, true ) ) {
+				$paystack_params['ussd_channel'] = 'true';
+			}
+
+			if ( in_array( 'qr', $payment_channels, true ) ) {
+				$paystack_params['qr_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank_transfer', $payment_channels, true ) ) {
+				$paystack_params['bank_transfer_channel'] = 'true';
+			}
 		}
 
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
@@ -1587,8 +1618,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$billing_address = $order->get_formatted_billing_address();
 				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
 
-				$paystack_params['meta_billing_address'] = $billing_address;
-
 				$custom_fields[] = array(
 					'display_name'  => 'Billing Address',
 					'variable_name' => 'billing_address',
@@ -1747,20 +1776,20 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @return array
 	 */
 	protected function get_gateway_payment_channels( $order ) {
-
-		$payment_method = $order->get_payment_method();
-
-		if ( 'paystack' === $payment_method ) {
-			return array();
-		}
-
 		$payment_channels = $this->payment_channels;
-
-		if ( empty( $payment_channels ) ) {
+		if ( empty( $payment_channels ) && ( 'paystack' !== $order->get_payment_method() ) ) {
 			$payment_channels = array( 'card' );
 		}
 
-		return $payment_channels;
+		/**
+		 * Filter the list of payment channels.
+		 *
+		 * @param array $payment_channels A list of payment channels.
+		 * @param string $id Payment method ID.
+		 * @param WC_Order $order Order object.
+		 * @since 5.8.2
+		 */
+		return apply_filters( 'wc_paystack_payment_channels', $payment_channels, $this->id, $order );
 	}
 
 	/**
