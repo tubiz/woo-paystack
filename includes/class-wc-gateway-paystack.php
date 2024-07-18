@@ -1594,8 +1594,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$billing_address = $order->get_formatted_billing_address();
 				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
 
-				$paystack_params['meta_billing_address'] = $billing_address;
-
 				$custom_fields[] = array(
 					'display_name'  => 'Billing Address',
 					'variable_name' => 'billing_address',
