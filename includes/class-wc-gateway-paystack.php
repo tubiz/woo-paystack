@@ -175,6 +175,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $msg;
 
 	/**
+	 * Payment channels.
+	 *
+	 * @var array
+	 */
+	public $payment_channels = array();
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
