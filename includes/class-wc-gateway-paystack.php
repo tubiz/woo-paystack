@@ -175,6 +175,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	public $msg;
 
 	/**
+	 * Payment channels.
+	 *
+	 * @var array
+	 */
+	public $payment_channels = array();
+
+	/**
 	 * Constructor
 	 */
 	public function __construct() {
@@ -299,6 +306,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		} elseif ( 'KE' === $base_location['country'] ) {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ke.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
+		} elseif ( 'CI' === $base_location['country'] ) {
+			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-civ.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		} else {
 			$icon = '<img src="' . WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) ) . '" alt="Paystack Payment Options" />';
 		}
@@ -779,6 +788,30 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$order->save();
 		}
 
+		$payment_channels = $this->get_gateway_payment_channels( $order );
+
+		if ( ! empty( $payment_channels ) ) {
+			if ( in_array( 'card', $payment_channels, true ) ) {
+				$paystack_params['card_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank', $payment_channels, true ) ) {
+				$paystack_params['bank_channel'] = 'true';
+			}
+
+			if ( in_array( 'ussd', $payment_channels, true ) ) {
+				$paystack_params['ussd_channel'] = 'true';
+			}
+
+			if ( in_array( 'qr', $payment_channels, true ) ) {
+				$paystack_params['qr_channel'] = 'true';
+			}
+
+			if ( in_array( 'bank_transfer', $payment_channels, true ) ) {
+				$paystack_params['bank_transfer_channel'] = 'true';
+			}
+		}
+
 		wp_localize_script( 'wc_paystack', 'wc_paystack_params', $paystack_params );
 
 	}
@@ -812,14 +845,13 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @return array|void
 	 */
 	public function process_payment( $order_id ) {
+		$payment_token = 'wc-' . trim( $this->id ) . '-payment-token';
 
-		if ( 'redirect' === $this->payment_page ) {
+		// phpcs:ignore WordPress.Security.NonceVerification
+		if ( isset( $_POST[ $payment_token ] ) && 'new' !== wc_clean( $_POST[ $payment_token ] ) ) {
 
-			return $this->process_redirect_payment_option( $order_id );
-
-		} elseif ( isset( $_POST[ 'wc-' . $this->id . '-payment-token' ] ) && 'new' !== $_POST[ 'wc-' . $this->id . '-payment-token' ] ) {
-
-			$token_id = wc_clean( $_POST[ 'wc-' . $this->id . '-payment-token' ] );
+			// phpcs:ignore WordPress.Security.NonceVerification
+			$token_id = wc_clean( $_POST[ $payment_token ] );
 			$token    = \WC_Payment_Tokens::get( $token_id );
 
 			if ( $token->get_user_id() !== get_current_user_id() ) {
@@ -827,41 +859,42 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				wc_add_notice( 'Invalid token ID', 'error' );
 
 				return;
-
-			} else {
-
-				$status = $this->process_token_payment( $token->get_token(), $order_id );
-
-				if ( $status ) {
-
-					$order = wc_get_order( $order_id );
-
-					return array(
-						'result'   => 'success',
-						'redirect' => $this->get_return_url( $order ),
-					);
-
-				}
 			}
-		} else {
+
+			$token_payment_status = $this->process_token_payment( $token->get_token(), $order_id );
+
+			if ( ! $token_payment_status ) {
+				return;
+			}
 
 			$order = wc_get_order( $order_id );
 
-			if ( is_user_logged_in() && isset( $_POST[ 'wc-' . $this->id . '-new-payment-method' ] ) && true === (bool) $_POST[ 'wc-' . $this->id . '-new-payment-method' ] && $this->saved_cards ) {
-
-				$order->update_meta_data( '_wc_paystack_save_card', true );
-
-				$order->save();
-
-			}
-
 			return array(
 				'result'   => 'success',
-				'redirect' => $order->get_checkout_payment_url( true ),
+				'redirect' => $this->get_return_url( $order ),
 			);
-
 		}
 
+		$order = wc_get_order( $order_id );
+
+		$new_payment_method = 'wc-' . trim( $this->id ) . '-new-payment-method';
+
+		// phpcs:ignore WordPress.Security.NonceVerification
+		if ( isset( $_POST[ $new_payment_method ] ) && ( true === (bool) $_POST[ $new_payment_method ] && $this->saved_cards ) && is_user_logged_in() ) {
+
+			$order->update_meta_data( '_wc_paystack_save_card', true );
+
+			$order->save();
+		}
+
+		if ( 'redirect' === $this->payment_page ) {
+			return $this->process_redirect_payment_option( $order_id );
+		}
+
+		return array(
+			'result'   => 'success',
+			'redirect' => $order->get_checkout_payment_url( true ),
+		);
 	}
 
 	/**
@@ -1109,6 +1142,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 			wc_add_notice( __( 'Payment Failed.', 'woo-paystack' ), 'error' );
 
+			return false;
 		}
 
 	}
@@ -1584,8 +1618,6 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 				$billing_address = $order->get_formatted_billing_address();
 				$billing_address = esc_html( preg_replace( '#<br\s*/?>#i', ', ', $billing_address ) );
 
-				$paystack_params['meta_billing_address'] = $billing_address;
-
 				$custom_fields[] = array(
 					'display_name'  => 'Billing Address',
 					'variable_name' => 'billing_address',
@@ -1744,20 +1776,20 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 	 * @return array
 	 */
 	protected function get_gateway_payment_channels( $order ) {
-
-		$payment_method = $order->get_payment_method();
-
-		if ( 'paystack' === $payment_method ) {
-			return array();
-		}
-
 		$payment_channels = $this->payment_channels;
-
-		if ( empty( $payment_channels ) ) {
+		if ( empty( $payment_channels ) && ( 'paystack' !== $order->get_payment_method() ) ) {
 			$payment_channels = array( 'card' );
 		}
 
-		return $payment_channels;
+		/**
+		 * Filter the list of payment channels.
+		 *
+		 * @param array $payment_channels A list of payment channels.
+		 * @param string $id Payment method ID.
+		 * @param WC_Order $order Order object.
+		 * @since 5.8.2
+		 */
+		return apply_filters( 'wc_paystack_payment_channels', $payment_channels, $this->id, $order );
 	}
 
 	/**
@@ -1802,6 +1834,8 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-za.png', WC_PAYSTACK_MAIN_FILE ) );
 		} elseif ( 'KE' === $base_location['country'] ) {
 			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-ke.png', WC_PAYSTACK_MAIN_FILE ) );
+		} elseif ( 'CI' === $base_location['country'] ) {
+			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-civ.png', WC_PAYSTACK_MAIN_FILE ) );
 		} else {
 			$url = WC_HTTPS::force_https_url( plugins_url( 'assets/images/paystack-wc.png', WC_PAYSTACK_MAIN_FILE ) );
 		}

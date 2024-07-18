@@ -482,23 +482,26 @@ class WC_Gateway_Custom_Paystack extends WC_Gateway_Paystack_Subscriptions {
 
 			}
 
-			if ( in_array( 'bank', $this->payment_channels ) ) {
+			/** This filter is documented in includes/class-wc-gateway-paystack.php */
+			$payment_channels = apply_filters( 'wc_paystack_payment_channels', $this->payment_channels, $this->id, $order );
+
+			if ( in_array( 'bank', $payment_channels, true ) ) {
 				$paystack_params['bank_channel'] = 'true';
 			}
 
-			if ( in_array( 'card', $this->payment_channels ) ) {
+			if ( in_array( 'card', $payment_channels, true ) ) {
 				$paystack_params['card_channel'] = 'true';
 			}
 
-			if ( in_array( 'ussd', $this->payment_channels ) ) {
+			if ( in_array( 'ussd', $payment_channels, true ) ) {
 				$paystack_params['ussd_channel'] = 'true';
 			}
 
-			if ( in_array( 'qr', $this->payment_channels ) ) {
+			if ( in_array( 'qr', $payment_channels, true ) ) {
 				$paystack_params['qr_channel'] = 'true';
 			}
 
-			if ( in_array( 'bank_transfer', $this->payment_channels ) ) {
+			if ( in_array( 'bank_transfer', $payment_channels, true ) ) {
 				$paystack_params['bank_transfer_channel'] = 'true';
 			}
 
