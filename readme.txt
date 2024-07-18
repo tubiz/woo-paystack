@@ -2,9 +2,9 @@
 Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
-Requires at least: 5.8
-Tested up to: 6.4
-Stable tag: 5.8.1
+Requires at least: 6.2
+Tested up to: 6.6
+Stable tag: 5.8.2
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
@@ -122,6 +122,14 @@ If you do not find Paystack on the Payment method options, please go through the
 
 
 == Changelog ==
+
+= 5.8.2 - July 18, 2024 =
+*   New: Introduce filter hook `wc_paystack_payment_channels`
+*   New: Add WooCommerce plugin dependency
+*   Misc: Add payment icon for Côte d'Ivoire (Ivory Coast)
+*   Fix: Payment with saved card not working if payment method option is set to redirect
+*   Tweak: Minimum WooCommerce supported version: 8.0
+*   Tweak: WooCommerce 9.1 compatibility
 
 = 5.8.1 - November 28, 2023 =
 *   New: Add support for WooCommerce checkout block to custom gateways
