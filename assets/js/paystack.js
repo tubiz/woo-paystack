@@ -200,7 +200,6 @@ jQuery( function( $ ) {
 			transaction_charge: transaction_charges,
 			metadata: {
 				custom_fields: wcPaystackCustomFields(),
-				referrer: wc_paystack_params.referrer_url,
 			},
 			onSuccess: paystack_callback,
 			onCancel: () => {
