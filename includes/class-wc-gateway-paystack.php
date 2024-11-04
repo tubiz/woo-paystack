@@ -939,6 +939,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 
 		$paystack_params['metadata']['custom_fields'] = $this->get_custom_fields( $order_id );
 		$paystack_params['metadata']['cancel_action'] = wc_get_cart_url();
+		$paystack_params['metadata']['referrer'] = get_permalink(wc_get_page_id('shop'));
 
 		$order->update_meta_data( '_paystack_txn_ref', $txnref );
 		$order->save();
