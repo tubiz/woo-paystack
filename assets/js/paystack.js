@@ -1,5 +1,6 @@
 jQuery( function( $ ) {
 
+	$('head').append('<style>.merchant-logo img, img.merchant-logo { max-height: 30px !important; width: auto; }</style>');
 	let paystack_submit = false;
 
 	$( '#wc-paystack-form' ).hide();
@@ -13,6 +14,7 @@ jQuery( function( $ ) {
 	jQuery( '#paystack_form form#order_review' ).submit( function() {
 		return wcPaystackFormHandler();
 	} );
+	
 
 	function wcPaystackCustomFields() {
 
@@ -189,11 +191,11 @@ jQuery( function( $ ) {
 			} );
 		};
 
-		let paymentData = {
+		const paymentData = {
 			key: wc_paystack_params.key,
 			email: wc_paystack_params.email,
 			amount: amount,
-			ref: wc_paystack_params.txnref,
+			reference: wc_paystack_params.txnref, 
 			currency: wc_paystack_params.currency,
 			subaccount: subaccount_code,
 			bearer: charges_account,
@@ -203,20 +205,28 @@ jQuery( function( $ ) {
 			},
 			onSuccess: paystack_callback,
 			onCancel: () => {
-				$( '#wc-paystack-form' ).show();
-				$( this.el ).unblock();
+				$('#wc-paystack-form').show();
+				$(this.el).unblock();
 			}
 		};
-
-		if ( Array.isArray( wcPaymentChannels() ) && wcPaymentChannels().length ) {
-			paymentData[ 'channels' ] = wcPaymentChannels();
-			if ( !$.isEmptyObject( wcPaystackCustomFilters() ) ) {
-				paymentData[ 'metadata' ][ 'custom_filters' ] = wcPaystackCustomFilters();
+		
+		if (Array.isArray(wcPaymentChannels()) && wcPaymentChannels().length) {
+			paymentData.channels = wcPaymentChannels();
+			if (!$.isEmptyObject(wcPaystackCustomFilters())) {
+				paymentData.metadata.custom_filters = wcPaystackCustomFilters();
 			}
 		}
-
-		const paystack = new PaystackPop();
-		paystack.newTransaction( paymentData );
+		
+		try {
+			const paystack = new PaystackPop();
+			paystack.checkout(paymentData).then(function(transaction) {
+				console.log('Transaction:', transaction);
+			}).catch(function(error) {
+				console.error('Paystack checkout error:', error);
+			});
+		} catch (error) {
+			console.error('Paystack checkout error:', error);
+		}
 	}
 
 } );
