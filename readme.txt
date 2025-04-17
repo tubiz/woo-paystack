@@ -3,7 +3,7 @@ Contributors: tubiz
 Donate link: https://bosun.me/donate
 Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
 Requires at least: 6.2
-Tested up to: 6.6
+Tested up to: 6.8
 Stable tag: 5.8.2
 Requires PHP: 7.4
 License: GPLv2 or later
