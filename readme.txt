@@ -9,7 +9,7 @@ Requires PHP: 7.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Paystack for WooCommerce allows your store in Nigeria, Ghana, Kenya, or South Africa to accept secure payments from multiple local and global payment channels.
+Paystack for WooCommerce allows your WooCommerce store to accept secure payments from multiple local and global payment channels.
 
 == Description ==
 
