@@ -123,7 +123,7 @@ If you do not find Paystack on the Payment method options, please go through the
 
 == Changelog ==
 
-= 5.8.3 - April 29, 2026 =
+= 5.8.3 - April 30, 2026 =
 *   Tweak: WooCommerce 10.7 compatibility
 *   Tweak: Minimum WooCommerce supported version: 9.6
 
