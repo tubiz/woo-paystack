@@ -133,7 +133,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 				$paystack_response = json_decode( wp_remote_retrieve_body( $request ) );
 
-				if ( 'success' == $paystack_response->data->status ) {
+				if ( 'success' === strtolower( $paystack_response->data->status ) ) {
 
 					$paystack_ref = $paystack_response->data->reference;
 
@@ -150,17 +150,16 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 					return true;
 
-				} else {
-
-					$gateway_response = __( 'Paystack payment failed.', 'woo-paystack' );
-
-					if ( isset( $paystack_response->data->gateway_response ) && ! empty( $paystack_response->data->gateway_response ) ) {
-						$gateway_response = sprintf( __( 'Paystack payment failed. Reason: %s', 'woo-paystack' ), $paystack_response->data->gateway_response );
-					}
-
-					return new WP_Error( 'paystack_error', $gateway_response );
-
 				}
+
+				$gateway_response = __( 'Paystack payment failed.', 'woo-paystack' );
+
+				if ( isset( $paystack_response->data->gateway_response ) && ! empty( $paystack_response->data->gateway_response ) ) {
+					/* Translators: 1: Gateway response for the failed payment. */
+					$gateway_response = sprintf( __( 'Paystack payment failed. Reason: %s', 'woo-paystack' ), $paystack_response->data->gateway_response );
+				}
+
+				return new WP_Error( 'paystack_error', $gateway_response );
 			}
 		}
 
