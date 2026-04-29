@@ -122,7 +122,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 			);
 
 			$args = array(
-				'body'    => json_encode( $body ),
+				'body'    => wp_json_encode( $body ),
 				'headers' => $headers,
 				'timeout' => 60,
 			);

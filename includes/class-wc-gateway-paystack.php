@@ -1024,7 +1024,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			);
 
 			$args = array(
-				'body'    => json_encode( $body ),
+				'body'    => wp_json_encode( $body ),
 				'headers' => $headers,
 				'timeout' => 60,
 			);
