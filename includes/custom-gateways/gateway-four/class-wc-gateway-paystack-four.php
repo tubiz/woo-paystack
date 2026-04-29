@@ -1,5 +1,9 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WC_Gateway_Paystack_Four extends WC_Gateway_Custom_Paystack {
 
 	/**
