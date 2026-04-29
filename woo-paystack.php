@@ -34,8 +34,6 @@ define( 'WC_PAYSTACK_VERSION', '5.8.2' );
  */
 function tbz_wc_paystack_init() {
 
-	load_plugin_textdomain( 'woo-paystack', false, plugin_basename( dirname( __FILE__ ) ) . '/languages' );
-
 	if ( ! class_exists( 'WC_Payment_Gateway' ) ) {
 		add_action( 'admin_notices', 'tbz_wc_paystack_wc_missing_notice' );
 		return;
