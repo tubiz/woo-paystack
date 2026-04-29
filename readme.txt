@@ -1,7 +1,7 @@
 === Paystack WooCommerce Payment Gateway ===
 Contributors: tubiz
 Donate link: https://bosun.me/donate
-Tags: paystack, woocommerce, payment gateway, tubiz plugins, verve, ghana, kenya, nigeria, south africa, naira, cedi, rand, mastercard, visa
+Tags: paystack, woocommerce, payment gateway, mastercard, visa
 Requires at least: 6.2
 Tested up to: 6.6
 Stable tag: 5.8.2
