@@ -65,7 +65,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 		$response = $this->process_subscription_payment( $renewal_order, $amount_to_charge );
 
 		if ( is_wp_error( $response ) ) {
-
+			/* Translators: 1: Error message for the transaction. */
 			$renewal_order->update_status( 'failed', sprintf( __( 'Paystack Transaction Failed (%s)', 'woo-paystack' ), $response->get_error_message() ) );
 
 		}
@@ -139,6 +139,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 
 					$order->payment_complete( $paystack_ref );
 
+					/* Translators: 1: Paystack transaction reference. */
 					$message = sprintf( __( 'Payment via Paystack successful (Transaction Reference: %s)', 'woo-paystack' ), $paystack_ref );
 
 					$order->add_order_note( $message );
