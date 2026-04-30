@@ -1004,6 +1004,7 @@ class WC_Gateway_Paystack extends WC_Payment_Gateway_CC {
 			);
 
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
+			$metadata['referrer']      = esc_url( site_url() );
 
 			if ( strpos( $token, '###' ) !== false ) {
 				$payment_token  = explode( '###', $token );

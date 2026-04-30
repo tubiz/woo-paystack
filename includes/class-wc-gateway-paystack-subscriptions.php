@@ -102,6 +102,7 @@ class WC_Gateway_Paystack_Subscriptions extends WC_Gateway_Paystack {
 			);
 
 			$metadata['custom_fields'] = $this->get_custom_fields( $order_id );
+			$metadata['referrer']      = esc_url( site_url() );
 
 			if ( strpos( $paystack_token, '###' ) !== false ) {
 				$payment_token  = explode( '###', $paystack_token );
