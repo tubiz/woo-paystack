@@ -10,8 +10,8 @@
 		"node": ">=16.17.0"
 	},
 	"devDependencies": {
-		"@woocommerce/dependency-extraction-webpack-plugin": "^3.0.1",
-		"@wordpress/scripts": "^28.3.0"
+		"@woocommerce/dependency-extraction-webpack-plugin": "2.2.0",
+		"@wordpress/scripts": "^32.1.0"
 	},
 	"scripts": {
 		"start": "wp-scripts start",

@@ -4,6 +4,10 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
 use Automattic\WooCommerce\StoreApi\Payments\PaymentContext;
 use Automattic\WooCommerce\StoreApi\Payments\PaymentResult;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 class WC_Gateway_Custom_Paystack_Blocks_Support extends AbstractPaymentMethodType {
 
 	/**
