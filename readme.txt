@@ -1,9 +1,8 @@
 === Paystack WooCommerce Payment Gateway ===
-Contributors: tubiz
-Donate link: https://bosun.me/donate
+Contributors: paystack, tubiz
 Tags: paystack, woocommerce, payment gateway, mastercard, visa
 Requires at least: 6.8
-Tested up to: 6.9
+Tested up to: 7.0
 Stable tag: 5.8.3
 Requires PHP: 7.4
 License: GPLv2 or later
@@ -62,13 +61,6 @@ This plugin is meant to be used by merchants in Ghana, Kenya, Nigeria and South 
 *	For customers paying with a Verve card, their subscription can't be renewed automatically, once a payment is due their subscription will be on-hold. The customer will have to login to his account to manually renew his subscription.
 
 *	If a subscription has a free trial and no signup-fee, automatic renewal is not possible for the first payment because the initial order total will be 0, after the free trial the subscription will be put on-hold. The customer will have to login to his account to renew his subscription. If a Mastercard or Visa card is used to renew the subscription subsequent renewals will be automatic throughout the duration of the subscription, if a Verve card is used automatic renewal isn't possible.
-
-= Suggestions / Feature Request =
-
-If you have suggestions or a new feature request, feel free to get in touch with me via the contact form on my website [here](http://bosun.me/get-in-touch/)
-
-You can also follow me on Twitter! **[@tubiz](https://twitter.com/tubiz)**
-
 
 == Installation ==
 
